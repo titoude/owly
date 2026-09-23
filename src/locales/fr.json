@@ -96,7 +96,8 @@
     "title": "Historique",
     "empty": "Pas encore d'observation. La première prend environ une minute.",
     "emptyCta": "Enregistrer la première observation",
-    "baseline": "baseline"
+    "baseline": "baseline",
+    "deleteConfirm": "Supprimer cette observation ?"
   },
   "patterns": {
     "title": "Tendances",

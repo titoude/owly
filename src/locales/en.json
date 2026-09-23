@@ -96,7 +96,8 @@
     "title": "History",
     "empty": "No observations yet. The first one takes about a minute.",
     "emptyCta": "Record first observation",
-    "baseline": "baseline"
+    "baseline": "baseline",
+    "deleteConfirm": "Delete this observation?"
   },
   "patterns": {
     "title": "Patterns",

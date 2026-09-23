@@ -10,6 +10,7 @@ export default function History() {
   const { t } = useTranslation();
   const { active } = useApp();
   const [obs, setObs] = useState<Observation[]>([]);
+  const [confirmId, setConfirmId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!active?.id) return;
@@ -67,13 +68,32 @@ export default function History() {
             </div>
           )}
           {o.note && <div className="text-sm text-slate-300 italic">“{o.note}”</div>}
-          <button
-            type="button"
-            onClick={() => o.id && void remove(o.id)}
-            className="text-xs text-slate-600 hover:text-red-400"
-          >
-            {t("common.delete")}
-          </button>
+          {confirmId === o.id ? (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => o.id && void remove(o.id)}
+                className="text-xs font-semibold text-red-400"
+              >
+                {t("history.deleteConfirm")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmId(null)}
+                className="text-xs text-slate-500"
+              >
+                {t("common.cancel")}
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setConfirmId(o.id ?? null)}
+              className="text-xs text-slate-600 hover:text-red-400"
+            >
+              {t("common.delete")}
+            </button>
+          )}
         </div>
       ))}
     </div>
