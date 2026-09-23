@@ -1,13 +1,25 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useApp } from "../appContext";
+import { seedDemo } from "../demo";
 
 export default function Onboarding() {
   const { t } = useTranslation();
   const nav = useNavigate();
+  const { refresh } = useApp();
+  const [loadingDemo, setLoadingDemo] = useState(false);
+
+  async function exploreDemo() {
+    setLoadingDemo(true);
+    await seedDemo();
+    await refresh();
+    nav("/");
+  }
   return (
     <div className="pt-10 space-y-8">
       <div className="text-center space-y-3">
-        <div className="text-6xl">🦉</div>
+        <img src="/icon.svg" alt="" className="mx-auto size-24 rounded-3xl" />
         <h1 className="text-3xl font-bold leading-tight">{t("onboarding.title")}</h1>
         <p className="text-slate-400 text-sm font-medium tracking-wide">{t("app.tagline")}</p>
       </div>
@@ -24,8 +36,8 @@ export default function Onboarding() {
         <button type="button" className="btn-primary w-full" onClick={() => void nav("/child/new")}>
           {t("onboarding.cta")}
         </button>
-        <button type="button" className="btn-ghost w-full" onClick={() => void nav("/settings?demo=1")}>
-          {t("onboarding.demo")}
+        <button type="button" className="btn-ghost w-full" disabled={loadingDemo} onClick={() => void exploreDemo()}>
+          {loadingDemo ? t("common.loading") : t("onboarding.demo")}
         </button>
       </div>
     </div>
