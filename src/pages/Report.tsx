@@ -89,6 +89,7 @@ export default function Report() {
             <input
               key={i}
               className="input text-sm"
+              aria-label={`${t("report.questions")} ${i + 1}`}
               value={q}
               onChange={(e) => setQuestions((arr) => arr.map((x, j) => (j === i ? e.target.value : x)))}
               placeholder={t(`report.q${i}`)}
