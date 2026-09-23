@@ -10,6 +10,11 @@ i18n.use(initReactI18next).init({
   interpolation: { escapeValue: false },
 });
 
+document.documentElement.lang = i18n.language;
+i18n.on("languageChanged", (l) => {
+  document.documentElement.lang = l;
+});
+
 export function setLang(lang: "en" | "fr") {
   localStorage.setItem("owly-lang", lang);
   void i18n.changeLanguage(lang);
