@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-slate-950 text-slate-100 antialiased;
+  min-height: 100dvh;
+}
+
+/* 3 a.m. design: everything big enough to hit with a thumb while holding a child */
+.touch-target {
+  @apply min-h-12 min-w-12;
+}
+
+.card {
+  @apply rounded-2xl bg-slate-900/80 border border-slate-800;
+}
+
+.btn-primary {
+  @apply rounded-2xl bg-teal-500 text-slate-950 font-semibold px-5 py-3.5 min-h-12
+    active:scale-[0.98] transition disabled:opacity-40 disabled:cursor-not-allowed
+    hover:bg-teal-400 focus-visible:outline-2 focus-visible:outline-teal-300;
+}
+
+.btn-ghost {
+  @apply rounded-2xl bg-slate-800 text-slate-200 px-4 py-3 min-h-12
+    active:scale-[0.98] transition hover:bg-slate-700
+    focus-visible:outline-2 focus-visible:outline-slate-400;
+}
+
+.input {
+  @apply w-full rounded-xl bg-slate-800 border border-slate-700 px-4 py-3 text-slate-100
+    placeholder:text-slate-500 focus:outline-2 focus:outline-teal-500 focus:border-transparent;
+}
+
+.label {
+  @apply block text-sm font-medium text-slate-400 mb-1.5;
+}

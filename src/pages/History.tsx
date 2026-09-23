@@ -1,0 +1,81 @@
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { useApp } from "../appContext";
+import { db } from "../db";
+import type { Observation } from "../types";
+import { ScoreBadge } from "../components/ScoreBadge";
+
+export default function History() {
+  const { t } = useTranslation();
+  const { active } = useApp();
+  const [obs, setObs] = useState<Observation[]>([]);
+
+  useEffect(() => {
+    if (!active?.id) return;
+    void db.observations
+      .where("childId").equals(active.id)
+      .reverse().sortBy("recordedAt")
+      .then(setObs);
+  }, [active]);
+
+  async function remove(id: number) {
+    await db.observations.delete(id);
+    setObs((o) => o.filter((x) => x.id !== id));
+  }
+
+  if (!active) return null;
+
+  if (obs.length === 0) {
+    return (
+      <div className="text-center space-y-4 pt-20">
+        <div className="text-5xl">🦉</div>
+        <p className="text-slate-400">{t("history.empty")}</p>
+        <Link to="/observe" className="btn-primary inline-block">
+          {t("history.emptyCta")}
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <h1 className="text-xl font-bold">{t("history.title")}</h1>
+      {obs.map((o) => (
+        <div key={o.id} className="card p-4 space-y-2">
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <div className="font-medium">
+                {new Date(o.startedAt).toLocaleDateString()}{" "}
+                {new Date(o.startedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                {o.baseline && (
+                  <span className="ml-2 text-xs text-emerald-400">· {t("history.baseline")}</span>
+                )}
+              </div>
+              <div className="text-xs text-slate-500">
+                {o.durationMinutes ? `${o.durationMinutes} min` : ""}
+                {o.bodyZones.length > 0 && ` · ${o.bodyZones.map((z) => t(`zones.${z}`)).join(", ")}`}
+                {o.suspectedCause && ` · ${o.suspectedCause}`}
+              </div>
+            </div>
+            <ScoreBadge total={o.total} />
+          </div>
+          {o.interventions.length > 0 && (
+            <div className="text-xs text-slate-400">
+              {o.interventions.map((i) => t(`interventions.${i.type}`)).join(", ")}
+              {o.interventions.some((i) => i.helped === "yes") && " ✓"}
+            </div>
+          )}
+          {o.note && <div className="text-sm text-slate-300 italic">“{o.note}”</div>}
+          <button
+            type="button"
+            onClick={() => o.id && void remove(o.id)}
+            className="text-xs text-slate-600 hover:text-red-400"
+          >
+            {t("common.delete")}
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
