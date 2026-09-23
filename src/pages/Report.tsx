@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useApp } from "../appContext";
 import { db } from "../db";
-import { buildReport, downloadPdf } from "../report";
+// pdf-lib is heavy — report.ts is lazy-loaded on first Generate click
+// to keep the initial bundle small on low-end phones.
 import type { Observation } from "../types";
 
 const PERIODS = [7, 14, 30, null] as const;
@@ -33,6 +34,7 @@ export default function Report() {
     if (!active) return;
     setBusy(true);
     try {
+      const { buildReport, downloadPdf } = await import("../report");
       const bytes = await buildReport(active, obs, { periodDays: period, questions });
       const date = new Date().toISOString().slice(0, 10);
       downloadPdf(bytes, `owly-report-${active.name.toLowerCase()}-${date}.pdf`);

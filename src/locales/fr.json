@@ -229,5 +229,32 @@
     "mild": "Gêne légère",
     "moderate": "Douleur modérée",
     "severe": "Douleur sévère"
+  },
+  "flaccDesc": {
+    "face": [
+      "Pas d'expression particulière ni sourire",
+      "Grimace ou froncement occasionnel, renfermé, désintéressé",
+      "Menton qui tremble en permanence, mâchoire serrée"
+    ],
+    "legs": [
+      "Position normale ou détendue",
+      "Agité, tendu, raide",
+      "Coups de pied ou jambes repliées"
+    ],
+    "activity": [
+      "Allongé calmement, position normale, bouge facilement",
+      "Se tortille, remue sans cesse, tendu",
+      "Cambré, rigide ou saccadé"
+    ],
+    "cry": [
+      "Pas de cris (éveillé ou endormi)",
+      "Gémissements ou plaintes occasionnelles",
+      "Cris continus, hurlements ou sanglots, plaintes fréquentes"
+    ],
+    "consolability": [
+      "Calme, détendu",
+      "Rassuré par un contact, un câlin ou la parole occasionnelle ; distrayable",
+      "Difficile à consoler ou à réconforter"
+    ]
   }
 }

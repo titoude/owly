@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../appContext";
@@ -25,6 +25,13 @@ export default function Observe() {
   const [interventions, setInterventions] = useState<Intervention[]>([]);
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
+  const stepHeading = useRef<HTMLDivElement>(null);
+
+  // Move focus to the step region on each step change so keyboard and
+  // screen-reader users don't lose their place in the 8-step flow.
+  useEffect(() => {
+    stepHeading.current?.focus({ preventScroll: true });
+  }, [step]);
 
   const total = useMemo(() => {
     if (Object.values(scores).some((v) => v < 0)) return null;
@@ -61,7 +68,7 @@ export default function Observe() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between" ref={stepHeading} tabIndex={-1}>
         <h1 className="text-xl font-bold">{t("observe.start")}</h1>
         <span className="text-xs text-slate-500">
           {step + 1}/{STEPS}
