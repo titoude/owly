@@ -36,14 +36,19 @@ export async function importAll(json: string): Promise<void> {
     // Recompute total from scores — never trust a stale or hand-edited field.
     return { ...o, total: totalFlacc(o.scores) };
   });
-  await db.children.clear();
-  await db.observations.clear();
-  await db.children.bulkAdd(dump.children);
-  await db.observations.bulkAdd(observations);
+  // Atomic: never leave the user with a half-restored database.
+  await db.transaction("rw", [db.children, db.observations], async () => {
+    await db.children.clear();
+    await db.observations.clear();
+    await db.children.bulkAdd(dump.children);
+    await db.observations.bulkAdd(observations);
+  });
 }
 
 export async function deleteAll(): Promise<void> {
-  await db.children.clear();
-  await db.observations.clear();
-  await db.settings.clear();
+  await db.transaction("rw", [db.children, db.observations, db.settings], async () => {
+    await db.children.clear();
+    await db.observations.clear();
+    await db.settings.clear();
+  });
 }
