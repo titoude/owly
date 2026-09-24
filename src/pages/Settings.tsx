@@ -173,7 +173,7 @@ export default function Settings() {
             <p className="text-sm text-red-700">{t("settings.deleteConfirm")}</p>
             <div className="flex gap-2">
               <button type="button" className="btn-ghost flex-1" onClick={() => setConfirmDel(false)}>{t("common.cancel")}</button>
-              <button type="button" className="flex-1 rounded-xl bg-red-500/90 py-2 font-semibold text-white" onClick={() => void wipe()}>
+              <button type="button" className="flex-1 rounded-xl bg-red-600 py-2 font-semibold text-white" onClick={() => void wipe()}>
                 {t("common.delete")}
               </button>
             </div>
@@ -192,7 +192,7 @@ export default function Settings() {
               <button type="button" className="btn-ghost flex-1" onClick={() => setConfirmDemoClear(false)}>{t("common.cancel")}</button>
               <button
                 type="button"
-                className="flex-1 rounded-xl bg-red-500/90 py-2 font-semibold text-white"
+                className="flex-1 rounded-xl bg-red-600 py-2 font-semibold text-white"
                 onClick={() => void clearDemo().then(refresh).then(() => setConfirmDemoClear(false))}
               >
                 {t("common.delete")}

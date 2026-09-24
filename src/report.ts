@@ -1,6 +1,5 @@
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
 import { bandFor, type Child, type Observation } from "./types";
-import { BODY_ZONES } from "./flacc";
 import i18n from "./i18n";
 
 const INK = rgb(0.13, 0.15, 0.2);
@@ -8,7 +7,7 @@ const MUTED = rgb(0.42, 0.45, 0.52);
 const ACCENT = rgb(0.05, 0.6, 0.55);
 const LINE = rgb(0.85, 0.87, 0.9);
 
-const ZONE_LABEL: Map<string, string> = new Map(BODY_ZONES.map((z) => [z.id, z.label]));
+const zoneLabel = (z: string) => i18n.t(`zones.${z}`, { defaultValue: z });
 const intervLabel = (id: string): string => i18n.t(`interventions.${id}`, { defaultValue: id });
 
 interface Ctx {
@@ -137,7 +136,7 @@ export async function buildReport(child: Child, observations: Observation[], opt
     const topZones = [...zoneCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
     line(ctx, `• ${t("episodesLine", { count: episodes.length, avg: avg.toFixed(1), max: Math.max(...episodes.map((o) => o.total)) })}`);
     if (night > 0) line(ctx, `• ${t("nightLine", { night, count: episodes.length })}`);
-    if (topZones.length) line(ctx, `• ${t("areasLine")}: ${topZones.map(([z, n]) => `${ZONE_LABEL.get(z) ?? z} (${n}×)`).join(", ")}`);
+    if (topZones.length) line(ctx, `• ${t("areasLine")}: ${topZones.map(([z, n]) => `${zoneLabel(z)} (${n}×)`).join(", ")}`);
     const med = episodes.flatMap((o) => o.interventions).filter((i) => i.type === "medication" && i.label);
     if (med.length) line(ctx, `• ${t("medLine")}: ${[...new Set(med.map((m) => m.label))].join(", ")}`);
     const worked = new Map<string, { yes: number; n: number }>();
@@ -162,7 +161,7 @@ export async function buildReport(child: Child, observations: Observation[], opt
   ctx.y -= 10;
   const shown = episodes.slice(-14);
   for (const o of shown) {
-    const areas = o.bodyZones.map((z) => ZONE_LABEL.get(z) ?? z).join("+").replace(/\s+/g, "");
+    const areas = o.bodyZones.map((z) => zoneLabel(z)).join("+").replace(/\s+/g, "");
     const cells = [
       fmtDate(o.startedAt),
       `${o.total}/10`,

@@ -158,8 +158,6 @@
       "howTheySignal": "How they usually signal discomfort",
       "individualBehaviours": "Individual pain behaviours (rFLACC)",
       "whatShows": "What the observations show",
-      "episodesLine": "{{count}} episodes, average FLACC {{avg}}/10 (max {{max}})",
-      "nightLine": "{{night}}/{{count}} occurred at night (22:00–06:00)",
       "areasLine": "Suspected areas",
       "medLine": "Medication given",
       "helped": "helped",
@@ -175,7 +173,10 @@
       "baselineLine": "Baseline (calm) observations: {{count}} — FLACC {{scores}}",
       "questions": "Questions for the clinician",
       "footer1": "Recorded with Owly — a free, open-source observation journal (FLACC: Merkel 1997; individualised rFLACC: Malviya 2006).",
-      "footer2": "Observations are caregiver-reported and are not a diagnosis."
+      "footer2": "Observations are caregiver-reported and are not a diagnosis.",
+      "episodesLine_one": "{{count}} episode, average FLACC {{avg}}/10 (max {{max}})",
+      "episodesLine_other": "{{count}} episodes, average FLACC {{avg}}/10 (max {{max}})",
+      "nightLine": "{{night}}/{{count}} occurred at night (22:00–06:00)"
     },
     "allTime": "All recorded episodes"
   },

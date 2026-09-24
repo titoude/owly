@@ -158,8 +158,6 @@
       "howTheySignal": "Comment l'enfant signale son inconfort",
       "individualBehaviours": "Comportements douloureux individuels (rFLACC)",
       "whatShows": "Ce que montrent les observations",
-      "episodesLine": "{{count}} épisodes, FLACC moyen {{avg}}/10 (max {{max}})",
-      "nightLine": "{{night}}/{{count}} survenus la nuit (22h00–06h00)",
       "areasLine": "Zones suspectées",
       "medLine": "Médicaments donnés",
       "helped": "ont aidé",
@@ -175,7 +173,10 @@
       "baselineLine": "Observations de base (calme) : {{count}} — FLACC {{scores}}",
       "questions": "Questions pour le clinicien",
       "footer1": "Enregistré avec Owly — journal d'observation libre et gratuit (FLACC : Merkel 1997 ; rFLACC individualisé : Malviya 2006).",
-      "footer2": "Les observations sont rapportées par l'aidant et ne constituent pas un diagnostic."
+      "footer2": "Les observations sont rapportées par l'aidant et ne constituent pas un diagnostic.",
+      "episodesLine_one": "{{count}} épisode, FLACC moyen {{avg}}/10 (max {{max}})",
+      "episodesLine_other": "{{count}} épisodes, FLACC moyen {{avg}}/10 (max {{max}})",
+      "nightLine": "{{night}}/{{count}} survenus la nuit (22h00–06h00)"
     },
     "allTime": "Tous les épisodes enregistrés"
   },
