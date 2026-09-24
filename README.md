@@ -30,6 +30,8 @@ Owly is **local-first**: every observation lives in IndexedDB on your device. No
 
 ## Quick start
 
+Requires **Node.js ≥ 20** (built and tested on 22).
+
 ```bash
 npm install
 npm run dev        # http://localhost:5173
@@ -59,7 +61,7 @@ npm run preview    # serve the production build
 - pdf-lib — on-device PDF generation
 - vite-plugin-pwa — offline, installable
 - Vitest + Testing Library + fake-indexeddb (13 unit/integration tests)
-- Playwright golden-path e2e (`e2e/smoke.mjs`, 9 scenarios against the production build)
+- Playwright e2e against the production build: `npm run e2e` (9 golden-path scenarios) and `npm run e2e:full` (15 exhaustive scenarios: PDF download, PIN lock, FR/EN switch, JSON export…)
 - oxlint + `tsc -b` in CI
 - i18next — English & French
 
