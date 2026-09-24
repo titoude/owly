@@ -5,7 +5,7 @@ import fr from "./locales/fr.json";
 
 i18n.use(initReactI18next).init({
   resources: { en: { translation: en }, fr: { translation: fr } },
-  lng: localStorage.getItem("owly-lang") ?? "en",
+  lng: localStorage.getItem("owly-lang") ?? (navigator.language.startsWith("fr") ? "fr" : "en"),
   fallbackLng: "en",
   interpolation: { escapeValue: false },
 });

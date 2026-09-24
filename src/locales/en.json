@@ -22,7 +22,9 @@
       "60-second check-ins, even at 3 a.m.",
       "Validated pain scale (FLACC), individualized to your child",
       "Everything stays on this device — nothing is sent anywhere"
-    ]
+    ],
+    "restore": "Restore a backup",
+    "restoreError": "Could not restore that backup file."
   },
   "child": {
     "name": "Name (or nickname)",
@@ -32,7 +34,9 @@
     "communicatesHint": "e.g. bangs head, pulls at ear, becomes very still, laughs when hurting",
     "create": "Save profile",
     "title": "Your child's profile",
-    "saveError": "Could not save — please try again."
+    "saveError": "Could not save — please try again.",
+    "delete": "Delete this profile",
+    "deleteConfirm": "Deletes this child and all their observations. This cannot be undone."
   },
   "customDescriptors": {
     "title": "How does {{name}} show pain?",
@@ -81,7 +85,8 @@
     "saved": "Saved",
     "score": "FLACC score",
     "summary": "Summary",
-    "saveError": "Could not save — please try again."
+    "saveError": "Could not save — please try again.",
+    "pickTime": "Pick a time"
   },
   "interventions": {
     "comfort": "Comfort (hug, hold, blanket)",
@@ -117,22 +122,17 @@
     "avgScore": "Avg. score",
     "insight": "Insights",
     "insightNight": "Most episodes happen at night — worth mentioning to the doctor.",
-    "insightZone": "\"{{zone}}\" is the most suspected area ({{n}} episodes).",
     "insightWorked": "\"{{label}}\" helped in {{yes}} of {{n}} uses.",
-    "scoreChartLabel": "Bar chart: {{n}} most recent episodes, average {{avg}}, max {{max}}"
+    "scoreChartLabel": "Bar chart: {{n}} most recent episodes, average {{avg}}, max {{max}}",
+    "insightZone_one": "\"{{zone}}\" is the most suspected area ({{n}} episode).",
+    "insightZone_other": "\"{{zone}}\" is the most suspected area ({{n}} episodes)."
   },
   "report": {
     "title": "Doctor report",
     "body": "A one-page summary built for a busy clinician: who your child is, what you observed, patterns, and what you tried.",
     "period": "Include observations from",
-    "last30": "Last 30 days",
-    "last90": "Last 90 days",
     "all": "All",
     "generate": "Generate PDF report",
-    "previewHint": "Print-ready A4. Review before sharing.",
-    "questionsTitle": "Questions I want to ask",
-    "questionsHint": "One per line — they'll appear on the report.",
-    "defaultQuestions": "Could this pattern suggest a specific cause?\nShould any test be done (ears, tummy, sleep)?\nIs a different pain-relief plan needed?",
     "subtitle": "Generate a one-page PDF to bring to the appointment.",
     "days": "{{n}}d",
     "included": "episodes included",
@@ -169,7 +169,7 @@
       "colDuration": "duration",
       "colAreas": "areas",
       "colCause": "cause / note",
-      "earlierEpisodes": "… {{count}} earlier episodes in the full export",
+      "earlierEpisodes": "… plus {{count}} older episodes not shown",
       "baselineLine": "Baseline (calm) observations: {{count}} — FLACC {{scores}}",
       "questions": "Questions for the clinician",
       "footer1": "Recorded with Owly — a free, open-source observation journal (FLACC: Merkel 1997; individualised rFLACC: Malviya 2006).",
@@ -192,7 +192,7 @@
     "export": "Download all data (JSON)",
     "import": "Import a backup",
     "delete": "Erase everything",
-    "deleteConfirm": "This permanently deletes every profile and observation on this device. Type DELETE to confirm.",
+    "deleteConfirm": "This permanently deletes every profile and observation on this device.",
     "privacy": "Privacy",
     "passcode": "App passcode",
     "passcodeSet": "Set a 4-digit passcode",
@@ -206,7 +206,7 @@
     "pin": "App lock (PIN)",
     "pinBody": "Require a 4-digit PIN to open Owly. Protects the journal when others use this device.",
     "pinSet": "Set PIN",
-    "pinSaved": "PIN saved — Owly will ask for it on next open",
+    "pinSaved": "PIN saved — Owly is now locked",
     "pinRemove": "Remove PIN",
     "imported": "Backup restored",
     "importError": "Couldn't read that file — is it an Owly backup?",
@@ -216,7 +216,11 @@
     "demoLoad": "Load demo data",
     "demoLoaded": "Demo child loaded — explore away",
     "license": "Owly is free and open source (MIT). FLACC: Merkel et al. 1997 — public clinical instrument. Owly is an observation journal, not a medical device.",
-    "unlockWait": "Too many attempts — wait 30 seconds"
+    "unlockWait": "Too many attempts — wait 30 seconds",
+    "forgotPin": "Forgot the code?",
+    "forgotPinWarning": "Without the PIN, the journal cannot be recovered. You can erase everything and start over — this deletes all profiles and observations on this device.",
+    "wipeAll": "Erase everything",
+    "importWarn": "Replaces all current data on this device."
   },
   "common": {
     "back": "Back",

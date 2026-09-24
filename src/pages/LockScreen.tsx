@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getSetting, setSetting } from "../db";
+import { deleteAll } from "../export";
 import { verifyPin } from "../pin";
 
 const MAX_ATTEMPTS = 5;
@@ -11,7 +12,15 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
   const [pin, setPin] = useState("");
   const [error, setError] = useState(false);
   const [cooldownUntil, setCooldownUntil] = useState(0);
+  const [confirmWipe, setConfirmWipe] = useState(false);
+  const [wiping, setWiping] = useState(false);
   const attempts = useRef(0);
+
+  useEffect(() => {
+    void getSetting<number>("pinCooldownUntil").then((v) => {
+      if (v && v > Date.now()) setCooldownUntil(v);
+    });
+  }, []);
 
   async function tryUnlock(value: string) {
     const stored = await getSetting<string>("passcode");
@@ -26,13 +35,21 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
       setPin("");
       if (attempts.current >= MAX_ATTEMPTS) {
         attempts.current = 0;
-        setCooldownUntil(Date.now() + LOCKOUT_MS);
+        const until = Date.now() + LOCKOUT_MS;
+        setCooldownUntil(until);
+        void setSetting("pinCooldownUntil", until);
         setTimeout(() => setCooldownUntil(0), LOCKOUT_MS);
       }
     }
   }
 
   const coolingDown = cooldownUntil > Date.now();
+
+  async function wipe() {
+    setWiping(true);
+    await deleteAll();
+    location.reload();
+  }
 
   return (
     <div className="min-h-dvh grid place-items-center">
@@ -57,6 +74,28 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
           className={`input text-center text-2xl tracking-[0.5em] w-40 ${error ? "border-red-500" : ""}`}
           aria-label={t("settings.unlock")}
         />
+        {!confirmWipe ? (
+          <button type="button" className="text-xs text-neutral-500 underline underline-offset-2" onClick={() => setConfirmWipe(true)}>
+            {t("settings.forgotPin")}
+          </button>
+        ) : (
+          <div className="card p-4 space-y-2 text-left">
+            <p className="text-xs text-neutral-600">{t("settings.forgotPinWarning")}</p>
+            <div className="flex gap-2">
+              <button type="button" className="btn-ghost flex-1 text-sm" onClick={() => setConfirmWipe(false)}>
+                {t("common.cancel")}
+              </button>
+              <button
+                type="button"
+                className="flex-1 rounded-xl bg-red-600 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                disabled={wiping}
+                onClick={() => void wipe()}
+              >
+                {wiping ? t("common.loading") : t("settings.wipeAll")}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,20 +1,34 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../appContext";
 import { seedDemo } from "../demo";
+import { importAll } from "../export";
 
 export default function Onboarding() {
   const { t } = useTranslation();
   const nav = useNavigate();
   const { refresh } = useApp();
   const [loadingDemo, setLoadingDemo] = useState(false);
+  const [restoreError, setRestoreError] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   async function exploreDemo() {
     setLoadingDemo(true);
     await seedDemo();
     await refresh();
     nav("/");
+  }
+
+  async function restore(file: File) {
+    setRestoreError(null);
+    try {
+      await importAll(await file.text());
+      await refresh();
+      nav("/");
+    } catch {
+      setRestoreError(t("onboarding.restoreError"));
+    }
   }
   return (
     <div className="pt-10 space-y-8">
@@ -39,6 +53,17 @@ export default function Onboarding() {
         <button type="button" className="btn-ghost w-full" disabled={loadingDemo} onClick={() => void exploreDemo()}>
           {loadingDemo ? t("common.loading") : t("onboarding.demo")}
         </button>
+        <button type="button" className="btn-ghost w-full text-sm" onClick={() => fileRef.current?.click()}>
+          {t("onboarding.restore")}
+        </button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept=".json"
+          className="hidden"
+          onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void restore(f); }}
+        />
+        {restoreError && <p className="text-sm text-red-700 text-center" role="alert">{restoreError}</p>}
       </div>
     </div>
   );

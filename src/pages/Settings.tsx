@@ -29,7 +29,7 @@ export default function Settings() {
   const [pinSet, setPinSet] = useState<boolean | null>(null);
   const [confirmDel, setConfirmDel] = useState(false);
   const [confirmDemoClear, setConfirmDemoClear] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
+  const [msg, setMsg] = useState<{ text: string; error: boolean } | null>(null);
 
   useEffect(() => {
     void getSetting<string>("passcode").then((p) => setPinSet(!!p));
@@ -51,7 +51,7 @@ export default function Settings() {
     await setSetting("passcode", await newPinRecord(pin));
     setPin("");
     setPinSet(true);
-    setMsg(t("settings.pinSaved"));
+    setMsg({ text: t("settings.pinSaved"), error: false });
     // Arm the lock immediately — not "on next open".
     window.dispatchEvent(new Event("owly:lock"));
   }
@@ -69,9 +69,9 @@ export default function Settings() {
     try {
       await importAll(await file.text());
       await refresh();
-      setMsg(t("settings.imported"));
+      setMsg({ text: t("settings.imported"), error: false });
     } catch {
-      setMsg(t("settings.importError"));
+      setMsg({ text: t("settings.importError"), error: true });
     }
   }
 
@@ -86,7 +86,7 @@ export default function Settings() {
   async function loadDemo() {
     await seedDemo();
     await refresh();
-    setMsg(t("settings.demoLoaded"));
+    setMsg({ text: t("settings.demoLoaded"), error: false });
   }
 
   const hasDemo = children.some((c: Child) => c.isDemo);
@@ -165,6 +165,7 @@ export default function Settings() {
         <h2 className="text-sm font-semibold text-neutral-600">{t("settings.data")}</h2>
         <button type="button" className="btn-ghost w-full" onClick={() => void doExport()}>{t("settings.export")}</button>
         <button type="button" className="btn-ghost w-full" onClick={() => fileRef.current?.click()}>{t("settings.import")}</button>
+        <p className="text-xs text-neutral-500">{t("settings.importWarn")}</p>
         <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void doImport(f); }} />
         {!confirmDel ? (
           <button type="button" className="btn-ghost w-full text-red-700" onClick={() => setConfirmDel(true)}>{t("settings.deleteAll")}</button>
@@ -210,7 +211,7 @@ export default function Settings() {
         <p className="text-xs text-neutral-600">{t("settings.license")}</p>
       </section>
 
-      {msg && <p className="text-center text-sm text-teal-700">{msg}</p>}
+      {msg && <p className={`text-center text-sm ${msg.error ? "text-red-700" : "text-teal-700"}`} role={msg.error ? "alert" : "status"}>{msg.text}</p>}
     </div>
   );
 }

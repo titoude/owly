@@ -22,7 +22,7 @@ interface Ctx {
 // StandardFonts (Helvetica) only encode WinAnsi — emoji, CJK, etc. throw
 // inside drawText. Strip them so an unusual name/note can never crash the PDF.
 function safe(s: string): string {
-  return s.replace(/[^\u0020-\u00FF\u2013\u2014\u2018\u2019\u201C\u201D\u2026]/g, "");
+  return s.replace(/[^\u0020-\u00FF\u0152\u0153\u0178\u2013\u2014\u2018\u2019\u201C\u201D\u2026]/g, "");
 }
 
 function t(key: string, opts?: Record<string, unknown>): string {
@@ -152,8 +152,8 @@ export async function buildReport(child: Child, observations: Observation[], opt
 
   // Timeline table — fixed column x positions (proportional font can't padEnd)
   heading(ctx, t("episodeLog"));
-  const cols = [0, 90, 132, 178, 224, 318]; // date, score, band, duration, areas, cause/note
-  const colW = [90, 42, 46, 46, 94, 181];
+  const cols = [0, 88, 128, 180, 224, 318]; // date, score, band, duration, areas, cause/note
+  const colW = [88, 40, 52, 44, 94, 181];
   const headerRow = [t("colDate"), t("colScore"), t("colBand"), t("colDuration"), t("colAreas"), t("colCause")];
   headerRow.forEach((h, i) => {
     page.drawText(safe(h), { x: ctx.left + cols[i], y: ctx.y, size: 7.5, font: bold, color: MUTED });
@@ -180,7 +180,8 @@ export async function buildReport(child: Child, observations: Observation[], opt
   }
 
   // Baselines
-  const baselines = observations.filter((o) => o.baseline);
+  const baselines = observations.filter((o) => o.baseline)
+    .filter((o) => opts.periodDays == null || o.startedAt >= Date.now() - opts.periodDays * 864e5);
   if (baselines.length > 0) {
     ctx.y -= 4;
     line(ctx, t("baselineLine", { count: baselines.length, scores: baselines.map((b) => b.total).join(", ") }), { size: 8, color: MUTED });

@@ -22,7 +22,9 @@
       "Relevés de 60 secondes, même à 3 h du matin",
       "Échelle validée (FLACC), individualisée à votre enfant",
       "Tout reste sur cet appareil — rien n'est envoyé"
-    ]
+    ],
+    "restore": "Restaurer une sauvegarde",
+    "restoreError": "Impossible de restaurer ce fichier de sauvegarde."
   },
   "child": {
     "name": "Prénom (ou surnom)",
@@ -32,15 +34,17 @@
     "communicatesHint": "ex. se tape la tête, tire l'oreille, devient très immobile, rit quand il a mal",
     "create": "Enregistrer le profil",
     "title": "Profil de votre enfant",
-    "saveError": "Enregistrement impossible — réessayez."
+    "saveError": "Enregistrement impossible — réessayez.",
+    "delete": "Supprimer ce profil",
+    "deleteConfirm": "Supprime cet enfant et toutes ses observations. Irréversible."
   },
   "customDescriptors": {
-    "title": "Comment {{name}} montre-t-il sa douleur ?",
+    "title": "Comment {{name}} montre sa douleur ?",
     "body": "Les infirmières appellent ça le FLACC individualisé (rFLACC). Optionnel : décrivez les comportements propres à votre enfant pour chaque catégorie — ils apparaîtront comme aide-mémoire pendant les observations.",
     "hint": "ex. tire l'oreille gauche, grince des dents, retient sa respiration"
   },
   "redflags": {
-    "title": "Appellez de l'aide maintenant",
+    "title": "Appelez de l'aide maintenant",
     "body": "Owly n'est pas fait pour les urgences. Si l'un de ces signes est présent, arrêtez tout et appelez le 15/112 ou allez aux urgences :",
     "items": [
       "Difficulté à respirer, ou lèvres bleues",
@@ -56,10 +60,10 @@
   },
   "observe": {
     "start": "Nouvelle observation",
-    "baselineQ": "Episode douloureux ou moment calme (baseline) ?",
-    "episode": "Episode de douleur",
+    "baselineQ": "Épisode douloureux ou moment calme (baseline) ?",
+    "episode": "Épisode de douleur",
     "baseline": "Baseline (moment calme)",
-    "baselineHint": "Quelques observations baseline aident vous et le médecin à connaître le « normal » de votre enfant.",
+    "baselineHint": "Quelques observations baseline aident vous et votre médecin à connaître le « normal » de votre enfant.",
     "pickScore": "Choisissez la description la plus proche",
     "theirs": "Comment {{name}} le montre :",
     "when": "Quand ça a commencé ?",
@@ -81,7 +85,8 @@
     "saved": "Enregistré",
     "score": "Score FLACC",
     "summary": "Résumé",
-    "saveError": "Enregistrement impossible — réessayez."
+    "saveError": "Enregistrement impossible — réessayez.",
+    "pickTime": "Choisir l'heure"
   },
   "interventions": {
     "comfort": "Réconfort (câlin, doudou, couverture)",
@@ -112,27 +117,22 @@
     "evening": "Soir (18–22)",
     "zones": "Zones soupçonnées",
     "worked": "Ce qui a aidé",
-    "workedRate": "{{yes}}/{{n}} ont aidé",
+    "workedRate": "{{yes}}/{{n}} aidé",
     "episodes": "épisodes",
     "avgScore": "Score moyen",
     "insight": "Points d'attention",
     "insightNight": "La plupart des épisodes arrivent la nuit — à mentionner au médecin.",
-    "insightZone": "« {{zone}} » est la zone la plus soupçonnée ({{n}} épisodes).",
     "insightWorked": "« {{label}} » a aidé {{yes}} fois sur {{n}}.",
-    "scoreChartLabel": "Graphique : {{n}} épisodes récents, moyenne {{avg}}, max {{max}}"
+    "scoreChartLabel": "Graphique : {{n}} épisodes récents, moyenne {{avg}}, max {{max}}",
+    "insightZone_one": "« {{zone}} » est la zone la plus soupçonnée ({{n}} épisode).",
+    "insightZone_other": "« {{zone}} » est la zone la plus soupçonnée ({{n}} épisodes)."
   },
   "report": {
     "title": "Rapport médecin",
     "body": "Un résumé d'une page pensé pour un clinicien pressé : qui est votre enfant, ce que vous avez observé, les tendances, ce que vous avez essayé.",
     "period": "Inclure les observations des",
-    "last30": "30 derniers jours",
-    "last90": "90 derniers jours",
     "all": "Tout",
     "generate": "Générer le rapport PDF",
-    "previewHint": "A4 prêt à imprimer. Relisez avant de partager.",
-    "questionsTitle": "Questions que je veux poser",
-    "questionsHint": "Une par ligne — elles apparaîtront sur le rapport.",
-    "defaultQuestions": "Cette tendance peut-elle suggérer une cause précise ?\nFaut-il un examen (oreilles, ventre, sommeil) ?\nFaut-il un autre plan de gestion de la douleur ?",
     "subtitle": "Génère un PDF d'une page à apporter au rendez-vous.",
     "days": "{{n}} j",
     "included": "épisodes inclus",
@@ -169,7 +169,7 @@
       "colDuration": "durée",
       "colAreas": "zones",
       "colCause": "cause / note",
-      "earlierEpisodes": "… {{count}} épisodes plus anciens dans l'export complet",
+      "earlierEpisodes": "… plus {{count}} épisodes plus anciens non affichés",
       "baselineLine": "Observations de base (calme) : {{count}} — FLACC {{scores}}",
       "questions": "Questions pour le clinicien",
       "footer1": "Enregistré avec Owly — journal d'observation libre et gratuit (FLACC : Merkel 1997 ; rFLACC individualisé : Malviya 2006).",
@@ -192,7 +192,7 @@
     "export": "Télécharger toutes les données (JSON)",
     "import": "Importer une sauvegarde",
     "delete": "Tout effacer",
-    "deleteConfirm": "Ceci efface définitivement tous les profils et observations de cet appareil. Tapez DELETE pour confirmer.",
+    "deleteConfirm": "Ceci efface définitivement tous les profils et observations de cet appareil.",
     "privacy": "Confidentialité",
     "passcode": "Code de l'app",
     "passcodeSet": "Définir un code à 4 chiffres",
@@ -206,7 +206,7 @@
     "pin": "Verrouillage (PIN)",
     "pinBody": "Exiger un code à 4 chiffres pour ouvrir Owly. Protège le journal si d'autres utilisent cet appareil.",
     "pinSet": "Définir le PIN",
-    "pinSaved": "PIN enregistré — Owly le demandera à la prochaine ouverture",
+    "pinSaved": "PIN enregistré — Owly est maintenant verrouillé",
     "pinRemove": "Retirer le PIN",
     "imported": "Sauvegarde restaurée",
     "importError": "Impossible de lire ce fichier — est-ce bien une sauvegarde Owly ?",
@@ -216,7 +216,11 @@
     "demoLoad": "Charger les données de démo",
     "demoLoaded": "Enfant de démo chargé — explorez librement",
     "license": "Owly est gratuit et open source (MIT). FLACC : Merkel et al. 1997 — instrument clinique public. Owly est un journal d'observation, pas un dispositif médical.",
-    "unlockWait": "Trop de tentatives — patientez 30 secondes"
+    "unlockWait": "Trop de tentatives — patientez 30 secondes",
+    "forgotPin": "Code oublié ?",
+    "forgotPinWarning": "Sans le PIN, le journal est irrécupérable. Vous pouvez tout effacer et recommencer — cela supprime tous les profils et observations de cet appareil.",
+    "wipeAll": "Tout effacer",
+    "importWarn": "Remplace toutes les données actuelles de cet appareil."
   },
   "common": {
     "back": "Retour",

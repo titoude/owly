@@ -68,7 +68,7 @@ export default function History() {
               {o.interventions.some((i) => i.helped === "yes") && " ✓"}
             </div>
           )}
-          {o.note && <div className="text-sm text-neutral-600 italic">“{o.note}”</div>}
+          {o.note && <div className="text-sm text-neutral-600 italic break-words">“{o.note}”</div>}
           {confirmId === o.id ? (
             <div className="flex items-center gap-2">
               <button

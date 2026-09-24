@@ -26,7 +26,7 @@ export default function RedFlags() {
         ))}
       </ul>
       <p className="text-sm text-neutral-600 italic">{t("redflags.footer")}</p>
-      <button type="button" className="btn-ghost w-full" onClick={() => void nav(-1)}>
+      <button type="button" className="btn-ghost w-full" onClick={() => void nav("/")}>
         {t("redflags.understood")}
       </button>
     </div>

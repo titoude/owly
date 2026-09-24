@@ -12,7 +12,7 @@ interface Props {
 export function FlaccPicker({ category, child, value, onChange }: Props) {
   const { t } = useTranslation();
   const cat = FLACC[category];
-  const custom = child.customDescriptors[category];
+  const custom = child.customDescriptors?.[category];
 
   return (
     <fieldset className="space-y-2">

@@ -11,6 +11,11 @@ import { ScoreBadge } from "../components/ScoreBadge";
 
 const STEPS = 8;
 
+function toLocalInput(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 export default function Observe() {
   const { t } = useTranslation();
   const { active } = useApp();
@@ -18,6 +23,7 @@ export default function Observe() {
   const [step, setStep] = useState(0);
   const [baseline, setBaseline] = useState(false);
   const [minutesAgo, setMinutesAgo] = useState(0);
+  const [customAt, setCustomAt] = useState<string | null>(null);
   const [scores, setScores] = useState<FlaccScores>({ face: -1, legs: -1, activity: -1, cry: -1, consolability: -1 });
   const [duration, setDuration] = useState<number | null>(null);
   const [zones, setZones] = useState<string[]>([]);
@@ -50,7 +56,7 @@ export default function Observe() {
     setSaving(true);
     const obs: Observation = {
       childId: active.id,
-      startedAt: Date.now() - minutesAgo * 60_000,
+      startedAt: customAt ? new Date(customAt).getTime() : Date.now() - minutesAgo * 60_000,
       recordedAt: Date.now(),
       scores: scores as FlaccScores,
       total,
@@ -121,14 +127,31 @@ export default function Observe() {
                 <button
                   key={m}
                   type="button"
-                  onClick={() => setMinutesAgo(m)}
-                  aria-pressed={minutesAgo === m}
-                  className={`btn-ghost text-sm ${minutesAgo === m ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
+                  onClick={() => { setMinutesAgo(m); setCustomAt(null); }}
+                  aria-pressed={minutesAgo === m && customAt === null}
+                  className={`btn-ghost text-sm ${minutesAgo === m && customAt === null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
                 >
                   {m === 0 ? t("observe.now") : t("observe.minutesAgo", { n: m })}
                 </button>
               ))}
+              <button
+                type="button"
+                onClick={() => { if (customAt === null) setCustomAt(toLocalInput(new Date())); }}
+                aria-pressed={customAt !== null}
+                className={`btn-ghost text-sm ${customAt !== null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
+              >
+                {t("observe.pickTime")}
+              </button>
             </div>
+            {customAt !== null && (
+              <input
+                type="datetime-local"
+                className="input text-sm w-full"
+                value={customAt}
+                max={toLocalInput(new Date())}
+                onChange={(e) => setCustomAt(e.target.value)}
+              />
+            )}
           </div>
         </div>
       )}

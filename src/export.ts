@@ -80,7 +80,7 @@ export async function importAll(json: string): Promise<void> {
   await db.transaction("rw", [db.children, db.observations], async () => {
     await db.children.clear();
     await db.observations.clear();
-    await db.children.bulkAdd(dump.children);
+    await db.children.bulkAdd(children);
     await db.observations.bulkAdd(observations);
   });
 }

@@ -19,6 +19,7 @@ export default function ChildForm() {
   const [desc, setDesc] = useState<CustomDescriptors>(EMPTY_DESC);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [confirmDel, setConfirmDel] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -36,7 +37,10 @@ export default function ChildForm() {
     setSaving(true);
     const payload = {
       name: name.trim(),
-      birthYear: birthYear ? Number(birthYear) : null,
+      birthYear: (() => {
+        const y = Number(birthYear);
+        return birthYear && Number.isInteger(y) && y >= 1900 && y <= new Date().getFullYear() ? y : null;
+      })(),
       conditions: conditions.trim(),
       communicates: communicates.trim(),
       customDescriptors: desc,
@@ -56,6 +60,16 @@ export default function ChildForm() {
       setSaving(false);
       setSaveError(t("child.saveError"));
     }
+  }
+
+  async function remove() {
+    if (!id) return;
+    await db.transaction("rw", [db.children, db.observations], async () => {
+      await db.observations.where("childId").equals(Number(id)).delete();
+      await db.children.delete(Number(id));
+    });
+    await refresh();
+    nav("/settings");
   }
 
   return (
@@ -113,6 +127,24 @@ export default function ChildForm() {
       <button type="button" className="btn-primary w-full" disabled={!name.trim() || saving} onClick={() => void save()}>
         {saving ? t("common.loading") : t("child.create")}
       </button>
+      {id && !confirmDel && (
+        <button type="button" className="btn-ghost w-full text-red-700" onClick={() => setConfirmDel(true)}>
+          {t("child.delete")}
+        </button>
+      )}
+      {id && confirmDel && (
+        <div className="rounded-xl border border-red-300 p-3 space-y-2">
+          <p className="text-xs text-neutral-600">{t("child.deleteConfirm")}</p>
+          <div className="flex gap-2">
+            <button type="button" className="btn-ghost flex-1 text-sm" onClick={() => setConfirmDel(false)}>
+              {t("common.cancel")}
+            </button>
+            <button type="button" className="flex-1 rounded-xl bg-red-600 py-2 text-sm font-semibold text-white" onClick={() => void remove()}>
+              {t("common.delete")}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

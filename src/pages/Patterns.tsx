@@ -59,7 +59,7 @@ export default function Patterns() {
     const max = Math.max(...Object.values(byTime));
     const nightStrictlyTop = byTime.night === max && Object.values(byTime).filter((v) => v === max).length === 1;
     if (nightStrictlyTop && max >= 2 && max > episodes.length / 2) out.push(t("patterns.insightNight"));
-    if (zones.length > 0) out.push(t("patterns.insightZone", { zone: t(`zones.${zones[0][0]}`), n: zones[0][1] }));
+    if (zones.length > 0) out.push(t("patterns.insightZone", { zone: t(`zones.${zones[0][0]}`), n: zones[0][1], count: zones[0][1] }));
     const w = helped.find(([, v]) => v.yes >= 2);
     if (w) out.push(t("patterns.insightWorked", { label: t(`interventions.${w[0]}`), yes: w[1].yes, n: w[1].n }));
     return out;

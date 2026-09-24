@@ -20,7 +20,7 @@ export default function Dashboard() {
       .where("childId").equals(active.id)
       .reverse().sortBy("recordedAt")
       .then((all) => {
-        setCount(all.length);
+        setCount(all.filter((o) => !o.baseline).length);
         setRecent(all.slice(0, 3));
       });
   }, [active]);
@@ -32,7 +32,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">{active.name}</h1>
+          <h1 className="text-2xl font-bold break-words">{active.name}</h1>
           <p className="text-sm text-neutral-600">
             {count} {t("patterns.episodes")}
           </p>
