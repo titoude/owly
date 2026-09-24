@@ -1,10 +1,10 @@
 // Exhaustive E2E — every user flow on the PRODUCTION build, with screenshots.
 // Usage: npm run build && npx vite preview --port 4173 && node e2e/full.mjs
-import { chromium } from "playwright";
 import { mkdirSync } from "node:fs";
+import { launchBrowser } from "./browser.mjs";
 
 const BASE = process.env.BASE_URL || "http://localhost:4173";
-const SHOTS = "/home/ubuntu/owly-shots";
+const SHOTS = process.env.SHOTS_DIR || "e2e-shots";
 mkdirSync(SHOTS, { recursive: true });
 
 const results = [];
@@ -13,7 +13,7 @@ const ok = (name, pass, extra = "") => {
   console.log(`${pass ? "PASS" : "FAIL"} ${name}${extra ? " — " + extra : ""}`);
 };
 
-const browser = await chromium.launch({ executablePath: "/home/ubuntu/.local/bin/google-chrome" });
+const browser = await launchBrowser();
 const ctx = await browser.newContext({
   viewport: { width: 390, height: 844 },
   deviceScaleFactor: 2,

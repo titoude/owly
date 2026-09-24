@@ -1,6 +1,6 @@
 // E2E smoke test — golden path through the PRODUCTION build.
 // Usage: npm run build && npx vite preview --port 4173 (in another shell) && node e2e/smoke.mjs
-import { chromium } from "playwright";
+import { launchBrowser } from "./browser.mjs";
 
 const BASE = process.env.BASE_URL || "http://localhost:4173";
 const results = [];
@@ -9,7 +9,7 @@ const ok = (name, pass, extra = "") => {
   console.log(`${pass ? "PASS" : "FAIL"} ${name}${extra ? " — " + extra : ""}`);
 };
 
-const browser = await chromium.launch({ executablePath: "/home/ubuntu/.local/bin/google-chrome" });
+const browser = await launchBrowser();
 const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
 const errors = [];
 page.on("pageerror", (e) => errors.push(e.message));
