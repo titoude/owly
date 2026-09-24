@@ -146,7 +146,8 @@
     ],
     "range": "Période",
     "localNote": "Généré entièrement sur cet appareil — rien n'est envoyé.",
-    "empty": "Enregistrez d'abord au moins un épisode de douleur — le rapport a besoin d'observations."
+    "empty": "Enregistrez d'abord au moins un épisode de douleur — le rapport a besoin d'observations.",
+    "error": "Impossible de générer le PDF — réessayez."
   },
   "settings": {
     "title": "Réglages",

@@ -146,7 +146,8 @@
     ],
     "range": "Period",
     "localNote": "Generated entirely on this device — nothing is uploaded.",
-    "empty": "Record at least one pain episode first — the report needs observations."
+    "empty": "Record at least one pain episode first — the report needs observations.",
+    "error": "Could not generate the PDF — please try again."
   },
   "settings": {
     "title": "Settings",

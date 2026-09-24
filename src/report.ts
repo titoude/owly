@@ -20,7 +20,7 @@ interface Ctx {
 
 function line(ctx: Ctx, text: string, opts: { size?: number; font?: PDFFont; color?: typeof INK; gap?: number } = {}) {
   const size = opts.size ?? 9.5;
-  ctx.page.drawText(text, {
+  ctx.page.drawText(safe(text), {
     x: ctx.left,
     y: ctx.y,
     size,
@@ -34,6 +34,12 @@ function heading(ctx: Ctx, text: string) {
   ctx.y -= 6;
   line(ctx, text.toUpperCase(), { font: ctx.bold, size: 8.5, color: ACCENT, gap: 11 });
   ctx.page.drawLine({ start: { x: ctx.left, y: ctx.y + 4 }, end: { x: ctx.left + ctx.width, y: ctx.y + 4 }, thickness: 0.7, color: LINE });
+}
+
+// StandardFonts (Helvetica) only encode WinAnsi — emoji, CJK, etc. throw
+// inside drawText. Strip them so an unusual name/note can never crash the PDF.
+function safe(s: string): string {
+  return s.replace(/[^\u0020-\u00FF\u2013\u2014\u2018\u2019\u201C\u201D\u2026]/g, "");
 }
 
 function trunc(s: string, max: number): string {

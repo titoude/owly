@@ -16,6 +16,7 @@ export default function Report() {
   const [period, setPeriod] = useState<number | null>(30);
   const [questions, setQuestions] = useState<string[]>(["", ""]);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -33,11 +34,14 @@ export default function Report() {
   async function generate() {
     if (!active) return;
     setBusy(true);
+    setError(null);
     try {
       const { buildReport, downloadPdf } = await import("../report");
       const bytes = await buildReport(active, obs, { periodDays: period, questions });
       const date = new Date().toISOString().slice(0, 10);
       downloadPdf(bytes, `owly-report-${active.name.toLowerCase()}-${date}.pdf`);
+    } catch {
+      setError(t("report.error"));
     } finally {
       setBusy(false);
     }
@@ -122,6 +126,7 @@ export default function Report() {
       <button type="button" className="btn-primary w-full" disabled={busy || episodeCount === 0} onClick={() => void generate()}>
         {busy ? t("common.loading") : t("report.generate")}
       </button>
+      {error && <p className="text-sm text-red-600 text-center" role="alert">{error}</p>}
       <p className="text-xs text-neutral-500 text-center">{t("report.localNote")}</p>
     </div>
   );
