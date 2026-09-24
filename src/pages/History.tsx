@@ -50,7 +50,7 @@ export default function History() {
                 {new Date(o.startedAt).toLocaleDateString()}{" "}
                 {new Date(o.startedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                 {o.baseline && (
-                  <span className="ml-2 text-xs text-emerald-600">· {t("history.baseline")}</span>
+                  <span className="ml-2 text-xs text-emerald-700">· {t("history.baseline")}</span>
                 )}
               </div>
               <div className="text-xs text-neutral-500">

@@ -100,7 +100,7 @@ export default function Settings() {
             <button
               type="button"
               onClick={() => void setActive(c.id!)}
-              className={`text-left ${c.id === active?.id ? "font-semibold text-teal-600" : "text-neutral-500"}`}
+              className={`text-left ${c.id === active?.id ? "font-semibold text-teal-700" : "text-neutral-500"}`}
             >
               {c.name}{" "}
               {c.isDemo ? (
@@ -125,7 +125,7 @@ export default function Settings() {
               onClick={() => void changeLang(l)}
               className={`touch-target rounded-xl font-medium transition-all duration-150 ${
                 i18n.language === l
-                  ? "bg-teal-600 text-white font-semibold shadow-[0_4px_14px_-4px_rgba(45,212,191,0.5)]"
+                  ? "bg-teal-700 text-white font-semibold shadow-[0_4px_14px_-4px_rgba(45,212,191,0.5)]"
                   : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200/70"
               }`}
             >
@@ -208,7 +208,7 @@ export default function Settings() {
         <p className="text-xs text-neutral-500">{t("settings.license")}</p>
       </section>
 
-      {msg && <p className="text-center text-sm text-teal-600">{msg}</p>}
+      {msg && <p className="text-center text-sm text-teal-700">{msg}</p>}
     </div>
   );
 }

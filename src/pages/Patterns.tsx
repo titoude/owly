@@ -154,7 +154,7 @@ export default function Patterns() {
           {helped.map(([type, v]) => (
             <div key={type} className="flex items-center justify-between text-sm">
               <span className="text-neutral-500">{t(`interventions.${type}`)}</span>
-              <span className={v.yes / v.n >= 0.5 ? "text-emerald-600" : "text-neutral-500"}>
+              <span className={v.yes / v.n >= 0.5 ? "text-emerald-700" : "text-neutral-500"}>
                 {t("patterns.workedRate", { yes: v.yes, n: v.n })}
               </span>
             </div>

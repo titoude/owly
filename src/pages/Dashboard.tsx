@@ -47,7 +47,7 @@ export default function Dashboard() {
         className="group w-full card p-6 text-left !border-teal-200 !bg-teal-50 hover:!bg-teal-100/70 hover:!border-teal-300 active:scale-[0.99] transition-all duration-150"
       >
         <div className="flex items-center gap-4">
-          <span className="grid place-items-center size-12 rounded-2xl bg-teal-600 text-white shadow-[0_8px_20px_-6px_rgba(45,212,191,0.5)] transition-transform duration-150 group-active:scale-95">
+          <span className="grid place-items-center size-12 rounded-2xl bg-teal-700 text-white shadow-[0_8px_20px_-6px_rgba(45,212,191,0.5)] transition-transform duration-150 group-active:scale-95">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <circle cx="12" cy="12" r="8.5" />
               <path d="M12 8v8M8 12h8" />
@@ -69,7 +69,7 @@ export default function Dashboard() {
                 <div className="text-sm font-medium">
                   {new Date(o.startedAt).toLocaleDateString()}{" "}
                   {new Date(o.startedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                  {o.baseline && <span className="ml-2 text-xs text-emerald-600">· {t("history.baseline")}</span>}
+                  {o.baseline && <span className="ml-2 text-xs text-emerald-700">· {t("history.baseline")}</span>}
                 </div>
                 <div className="text-xs text-neutral-500">
                   {o.bodyZones.map((z) => t(`zones.${z}`)).join(", ") || "—"}
@@ -78,7 +78,7 @@ export default function Dashboard() {
               <ScoreBadge total={o.total} />
             </div>
           ))}
-          <Link to="/history" className="block text-sm text-teal-600 pt-1">
+          <Link to="/history" className="block text-sm text-teal-700 pt-1">
             {t("history.title")} →
           </Link>
         </section>

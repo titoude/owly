@@ -1,8 +1,17 @@
 {
   "name": "owly",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "Local-first pain observation journal for nonverbal children — FLACC scale check-ins, pattern insights, one-page doctor PDF. 100% on-device, EN/FR.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/titoude/owly.git"
+  },
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -10,7 +19,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc -b",
-    "e2e": "node e2e/smoke.mjs"
+    "e2e": "node e2e/smoke.mjs",
+    "e2e:full": "node e2e/full.mjs"
   },
   "dependencies": {
     "dexie": "^4.4.6",

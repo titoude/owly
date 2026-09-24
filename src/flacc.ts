@@ -68,9 +68,9 @@ export const BAND_COLOR: Record<PainBand, string> = {
 };
 
 export const BAND_TEXT: Record<PainBand, string> = {
-  none: "text-emerald-600",
-  mild: "text-amber-600",
-  moderate: "text-orange-600",
+  none: "text-emerald-700",
+  mild: "text-amber-700",
+  moderate: "text-orange-700",
   severe: "text-red-600",
 };
 

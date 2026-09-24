@@ -17,7 +17,7 @@ h1, h2, h3 {
 }
 
 ::selection {
-  @apply bg-teal-600/20 text-teal-900;
+  @apply bg-teal-700/20 text-teal-900;
 }
 
 /* 3 a.m. design: everything big enough to hit with a thumb while holding a child */
@@ -34,9 +34,9 @@ h1, h2, h3 {
 }
 
 .btn-primary {
-  @apply rounded-2xl bg-teal-600 text-white font-semibold px-5 py-3.5 min-h-12
+  @apply rounded-2xl bg-teal-700 text-white font-semibold px-5 py-3.5 min-h-12
     active:scale-[0.975] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed
-    hover:bg-teal-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600;
+    hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700;
   box-shadow:
     0 1px 2px rgba(16, 24, 40, 0.12),
     0 8px 20px -8px rgba(13, 148, 136, 0.45);
@@ -50,8 +50,8 @@ h1, h2, h3 {
 
 .input {
   @apply w-full rounded-2xl bg-white border border-neutral-300 px-4 py-3 text-neutral-900
-    placeholder:text-neutral-400 focus:outline-none focus:border-teal-600
-    focus:ring-4 focus:ring-teal-600/15 transition;
+    placeholder:text-neutral-400 focus:outline-none focus:border-teal-700
+    focus:ring-4 focus:ring-teal-700/15 transition;
 }
 
 .label {

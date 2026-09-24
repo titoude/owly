@@ -76,7 +76,7 @@ export default function Observe() {
       </div>
       <div className="h-1 rounded-full bg-neutral-100 overflow-hidden">
         <div
-          className="h-1 rounded-full bg-teal-600 transition-all duration-300 ease-out"
+          className="h-1 rounded-full bg-teal-700 transition-all duration-300 ease-out"
           style={{ width: `${((step + 1) / STEPS) * 100}%` }}
         />
       </div>
@@ -114,7 +114,7 @@ export default function Observe() {
                   key={m}
                   type="button"
                   onClick={() => setMinutesAgo(m)}
-                  className={`btn-ghost text-sm ${minutesAgo === m ? "border border-teal-600 !bg-teal-50 text-teal-800" : ""}`}
+                  className={`btn-ghost text-sm ${minutesAgo === m ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
                 >
                   {m === 0 ? t("observe.now") : t("observe.minutesAgo", { n: m })}
                 </button>
@@ -147,7 +147,7 @@ export default function Observe() {
                   key={m}
                   type="button"
                   onClick={() => setDuration(m)}
-                  className={`btn-ghost text-sm ${duration === m ? "border border-teal-600 !bg-teal-50 text-teal-800" : ""}`}
+                  className={`btn-ghost text-sm ${duration === m ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
                 >
                   {m} min
                 </button>
@@ -155,7 +155,7 @@ export default function Observe() {
               <button
                 type="button"
                 onClick={() => setDuration(null)}
-                className={`btn-ghost text-sm ${duration === null ? "border border-teal-600 !bg-teal-50 text-teal-800" : ""}`}
+                className={`btn-ghost text-sm ${duration === null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
               >
                 {t("observe.durationUnknown")}
               </button>
@@ -213,7 +213,7 @@ export default function Observe() {
                               )
                             }
                             className={`rounded-md px-2.5 py-1 text-xs
-                              ${it.helped === h ? "bg-teal-600 text-white font-semibold" : "bg-neutral-200 text-neutral-500"}`}
+                              ${it.helped === h ? "bg-teal-700 text-white font-semibold" : "bg-neutral-200 text-neutral-500"}`}
                           >
                             {t(`observe.${h}`)}
                           </button>

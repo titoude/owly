@@ -78,7 +78,7 @@ export default function Report() {
               onClick={() => setPeriod(d)}
               className={`touch-target rounded-xl text-sm font-medium transition-all duration-150 ${
                 period === d
-                  ? "bg-teal-600 text-white font-semibold shadow-[0_4px_14px_-4px_rgba(45,212,191,0.5)]"
+                  ? "bg-teal-700 text-white font-semibold shadow-[0_4px_14px_-4px_rgba(45,212,191,0.5)]"
                   : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200/70"
               }`}
             >
