@@ -10,7 +10,6 @@ const child: Child = {
   conditions: "Autism, non-verbal",
   communicates: "pulls ears, rocks",
   customDescriptors: { face: "grimaces", legs: "", activity: "", cry: "", consolability: "" },
-  passcodeHash: null,
   createdAt: 0,
 };
 

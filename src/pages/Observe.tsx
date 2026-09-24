@@ -25,6 +25,7 @@ export default function Observe() {
   const [interventions, setInterventions] = useState<Intervention[]>([]);
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const stepHeading = useRef<HTMLDivElement>(null);
 
   // Move focus to the step region on each step change so keyboard and
@@ -60,8 +61,13 @@ export default function Observe() {
       note: note.trim(),
       baseline,
     };
-    await db.observations.add(obs);
-    nav("/history");
+    try {
+      await db.observations.add(obs);
+      nav("/history");
+    } catch {
+      setSaving(false);
+      setSaveError(t("observe.saveError"));
+    }
   }
 
   if (!active) return null;
@@ -70,7 +76,7 @@ export default function Observe() {
     <div className="space-y-6">
       <div className="flex items-center justify-between" ref={stepHeading} tabIndex={-1}>
         <h1 className="text-xl font-bold">{t("observe.start")}</h1>
-        <span className="text-xs text-neutral-500">
+        <span className="text-xs text-neutral-600" role="status">
           {step + 1}/{STEPS}
         </span>
       </div>
@@ -90,7 +96,8 @@ export default function Observe() {
               <button
                 type="button"
                 onClick={() => setBaseline(false)}
-                className={`card p-4 text-left font-semibold transition-all duration-150 ${!baseline ? "!border-orange-300 !bg-orange-50 text-orange-800" : "text-neutral-500"}`}
+                aria-pressed={!baseline}
+                className={`card p-4 text-left font-semibold transition-all duration-150 ${!baseline ? "!border-orange-300 !bg-orange-50 text-orange-800" : "text-neutral-600"}`}
               >
                 <span className="mr-1.5 inline-block size-2.5 rounded-full bg-orange-400 align-middle" />
                 {t("observe.episode")}
@@ -98,13 +105,14 @@ export default function Observe() {
               <button
                 type="button"
                 onClick={() => setBaseline(true)}
-                className={`card p-4 text-left font-semibold transition-all duration-150 ${baseline ? "!border-emerald-300 !bg-emerald-50 text-emerald-700" : "text-neutral-500"}`}
+                aria-pressed={baseline}
+                className={`card p-4 text-left font-semibold transition-all duration-150 ${baseline ? "!border-emerald-300 !bg-emerald-50 text-emerald-700" : "text-neutral-600"}`}
               >
                 <span className="mr-1.5 inline-block size-2.5 rounded-full bg-emerald-400 align-middle" />
                 {t("observe.baseline")}
               </button>
             </div>
-            {baseline && <p className="text-xs text-neutral-500">{t("observe.baselineHint")}</p>}
+            {baseline && <p className="text-xs text-neutral-600">{t("observe.baselineHint")}</p>}
           </div>
           <div className="space-y-2">
             <p className="label">{t("observe.when")}</p>
@@ -114,6 +122,7 @@ export default function Observe() {
                   key={m}
                   type="button"
                   onClick={() => setMinutesAgo(m)}
+                  aria-pressed={minutesAgo === m}
                   className={`btn-ghost text-sm ${minutesAgo === m ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
                 >
                   {m === 0 ? t("observe.now") : t("observe.minutesAgo", { n: m })}
@@ -147,6 +156,7 @@ export default function Observe() {
                   key={m}
                   type="button"
                   onClick={() => setDuration(m)}
+                  aria-pressed={duration === m}
                   className={`btn-ghost text-sm ${duration === m ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
                 >
                   {m} min
@@ -155,6 +165,7 @@ export default function Observe() {
               <button
                 type="button"
                 onClick={() => setDuration(null)}
+                aria-pressed={duration === null}
                 className={`btn-ghost text-sm ${duration === null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
               >
                 {t("observe.durationUnknown")}
@@ -197,7 +208,8 @@ export default function Observe() {
                           it ? iv.filter((x) => x.type !== type) : [...iv, { type, label: "", helped: null }],
                         )
                       }
-                      className={`flex-1 text-left text-sm ${it ? "text-teal-700" : "text-neutral-500"}`}
+                      aria-pressed={!!it}
+                      className={`flex-1 text-left text-sm ${it ? "text-teal-700" : "text-neutral-600"}`}
                     >
                       {it ? "✓ " : ""}{t(`interventions.${type}`)}
                     </button>
@@ -212,8 +224,9 @@ export default function Observe() {
                                 iv.map((x) => (x.type === type ? { ...x, helped: h } : x)),
                               )
                             }
+                            aria-pressed={it.helped === h}
                             className={`rounded-md px-2.5 py-1 text-xs
-                              ${it.helped === h ? "bg-teal-700 text-white font-semibold" : "bg-neutral-200 text-neutral-500"}`}
+                              ${it.helped === h ? "bg-teal-700 text-white font-semibold" : "bg-neutral-200 text-neutral-600"}`}
                           >
                             {t(`observe.${h}`)}
                           </button>
@@ -257,6 +270,7 @@ export default function Observe() {
             {t("common.back")}
           </button>
         )}
+        {saveError && <p className="text-sm text-red-700 text-center w-full" role="alert">{saveError}</p>}
         {step < STEPS - 1 ? (
           <button
             type="button"

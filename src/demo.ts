@@ -19,7 +19,6 @@ export async function seedDemo(): Promise<void> {
       cry: "high-pitched hums, no words",
       consolability: "only his weighted blanket helps",
     },
-    passcodeHash: null,
     createdAt: Date.now() - 22 * 864e5,
     isDemo: true,
   } as Child)) as number;

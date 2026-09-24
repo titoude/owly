@@ -35,8 +35,7 @@ export function BodyMap({ selected, onToggle }: Props) {
       <svg
         viewBox="0 0 100 90"
         className="w-36 shrink-0"
-        role="group"
-        aria-label="Body map"
+        aria-hidden="true"
       >
         {FIGURE.filter((z) => z.id !== "back").map((z) => {
           const sel = selected.includes(z.id);
@@ -67,7 +66,7 @@ export function BodyMap({ selected, onToggle }: Props) {
               onClick={() => onToggle(z.id)}
               aria-pressed={sel}
               className={`rounded-lg px-2.5 py-2 text-xs text-left transition
-                ${sel ? "bg-orange-100 text-orange-800 border border-orange-300" : "bg-neutral-100 text-neutral-500 border border-neutral-200"}`}
+                ${sel ? "bg-orange-100 text-orange-800 border border-orange-300" : "bg-neutral-100 text-neutral-600 border border-neutral-200"}`}
             >
               {t(`zones.${z.id}`)}
             </button>

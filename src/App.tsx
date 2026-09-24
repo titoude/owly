@@ -81,11 +81,14 @@ function Shell() {
       setLocked(!!p);
       setLockChecked(true);
     });
+    const arm = () => setLocked(true);
+    window.addEventListener("owly:lock", arm);
+    return () => window.removeEventListener("owly:lock", arm);
   }, []);
 
   if (loading || !lockChecked) {
     return (
-      <div className="min-h-dvh grid place-items-center text-neutral-500">
+      <div className="min-h-dvh grid place-items-center text-neutral-600">
         {t("common.loading")}
       </div>
     );
@@ -107,8 +110,12 @@ function Shell() {
   }
 
   if (!active && loc.pathname !== "/child/new" && !loc.pathname.startsWith("/welcome")) {
-    // children exist but none active — pick happens automatically via context fallback
-    return null;
+    // children exist but none active yet — context fallback picks one shortly
+    return (
+      <div className="min-h-dvh grid place-items-center text-neutral-600">
+        {t("common.loading")}
+      </div>
+    );
   }
 
   return (
@@ -137,7 +144,7 @@ function Shell() {
                 onClick={() => void nav(n.to)}
                 aria-current={selected ? "page" : undefined}
                 className={`flex flex-col items-center gap-1 py-2.5 text-[10.5px] font-medium touch-target transition-colors duration-150
-                  ${selected ? "text-teal-700" : "text-neutral-500 hover:text-neutral-500"}`}
+                  ${selected ? "text-teal-700" : "text-neutral-600 hover:text-neutral-900"}`}
               >
                 <span aria-hidden className="leading-none"><n.Icon /></span>
                 {t(n.label)}

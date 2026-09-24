@@ -71,7 +71,7 @@ export const BAND_TEXT: Record<PainBand, string> = {
   none: "text-emerald-700",
   mild: "text-amber-700",
   moderate: "text-orange-700",
-  severe: "text-red-600",
+  severe: "text-red-700",
 };
 
 // Body map zones — kept coarse on purpose (a parent taps, not an anatomist draws).

@@ -7,7 +7,8 @@ import type { Observation } from "../types";
 import { ScoreBadge } from "../components/ScoreBadge";
 
 export default function Dashboard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const loc = i18n.language === "fr" ? "fr-FR" : "en-GB";
   const { active } = useApp();
   const nav = useNavigate();
   const [recent, setRecent] = useState<Observation[]>([]);
@@ -32,7 +33,7 @@ export default function Dashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">{active.name}</h1>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-600">
             {count} {t("patterns.episodes")}
           </p>
         </div>
@@ -55,23 +56,23 @@ export default function Dashboard() {
           </span>
           <span>
             <span className="block text-lg font-bold text-teal-800 tracking-tight">{t("observe.start")}</span>
-            <span className="block text-sm text-neutral-500">{t("observe.pickScore")} — 60 s</span>
+            <span className="block text-sm text-neutral-600">{t("observe.pickScore")} — 60 s</span>
           </span>
         </div>
       </button>
 
       {last ? (
         <section className="space-y-2">
-          <h2 className="text-sm font-semibold text-neutral-500">{t("history.title")}</h2>
+          <h2 className="text-sm font-semibold text-neutral-600">{t("history.title")}</h2>
           {recent.map((o) => (
             <div key={o.id} className="card p-3 flex items-center justify-between">
               <div>
                 <div className="text-sm font-medium">
-                  {new Date(o.startedAt).toLocaleDateString()}{" "}
-                  {new Date(o.startedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  {new Date(o.startedAt).toLocaleDateString(loc)}{" "}
+                  {new Date(o.startedAt).toLocaleTimeString(loc, { hour: "2-digit", minute: "2-digit" })}
                   {o.baseline && <span className="ml-2 text-xs text-emerald-700">· {t("history.baseline")}</span>}
                 </div>
-                <div className="text-xs text-neutral-500">
+                <div className="text-xs text-neutral-600">
                   {o.bodyZones.map((z) => t(`zones.${z}`)).join(", ") || "—"}
                 </div>
               </div>
@@ -83,7 +84,7 @@ export default function Dashboard() {
           </Link>
         </section>
       ) : (
-        <p className="text-neutral-500 text-sm">{t("history.empty")}</p>
+        <p className="text-neutral-600 text-sm">{t("history.empty")}</p>
       )}
     </div>
   );

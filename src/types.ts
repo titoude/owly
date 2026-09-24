@@ -46,7 +46,6 @@ export interface Child {
   conditions: string;
   communicates: string; // how the child usually signals discomfort (free text)
   customDescriptors: CustomDescriptors;
-  passcodeHash: string | null;
   createdAt: number;
   isDemo?: boolean;
 }

@@ -54,12 +54,12 @@ export default function Report() {
     return (
       <div className="text-center space-y-4 pt-20">
         <div className="mx-auto grid place-items-center size-16 rounded-3xl bg-neutral-100 border border-neutral-200">
-          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-500" aria-hidden>
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-600" aria-hidden>
             <path d="M6.5 3.5h7L19 8.5v11a1 1 0 0 1-1 1H6.5a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1Z" />
             <path d="M13.5 3.5V9H19M9 13h6.5M9 16.5h4" />
           </svg>
         </div>
-        <p className="text-neutral-500">{t("report.empty")}</p>
+        <p className="text-neutral-600">{t("report.empty")}</p>
         <Link to="/observe" className="btn-primary inline-block">{t("observe.start")}</Link>
       </div>
     );
@@ -69,7 +69,7 @@ export default function Report() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-bold">{t("report.title")}</h1>
-        <p className="text-sm text-neutral-500">{t("report.subtitle")}</p>
+        <p className="text-sm text-neutral-600">{t("report.subtitle")}</p>
       </div>
 
       <div>
@@ -83,14 +83,14 @@ export default function Report() {
               className={`touch-target rounded-xl text-sm font-medium transition-all duration-150 ${
                 period === d
                   ? "bg-teal-700 text-white font-semibold shadow-[0_4px_14px_-4px_rgba(45,212,191,0.5)]"
-                  : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200/70"
+                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200/70"
               }`}
             >
               {d == null ? t("report.all") : t("report.days", { n: d })}
             </button>
           ))}
         </div>
-        <p className="mt-2 text-xs text-neutral-500">
+        <p className="mt-2 text-xs text-neutral-600">
           {episodeCount} {t("report.included")}
         </p>
       </div>
@@ -112,22 +112,24 @@ export default function Report() {
       </div>
 
       <div className="card p-4 space-y-2">
-        <h3 className="text-sm font-semibold text-neutral-500">{t("report.previewTitle")}</h3>
-        <ul className="text-xs text-neutral-500 space-y-1">
+        <h3 className="text-sm font-semibold text-neutral-600">{t("report.previewTitle")}</h3>
+        <ul className="text-xs text-neutral-600 space-y-1">
           {(t("report.includes", { returnObjects: true }) as string[]).map((s, i) => (
             <li key={i}>• {s}</li>
           ))}
         </ul>
-        <p className="text-xs text-neutral-500 pt-1">
-          {t("report.range")}: {fmtD(Date.now() - (period ?? 9999) * 864e5)} → {fmtD(Date.now())}
+        <p className="text-xs text-neutral-600 pt-1">
+          {period == null
+            ? t("report.allTime")
+            : `${t("report.range")}: ${fmtD(Date.now() - period * 864e5)} → ${fmtD(Date.now())}`}
         </p>
       </div>
 
       <button type="button" className="btn-primary w-full" disabled={busy || episodeCount === 0} onClick={() => void generate()}>
         {busy ? t("common.loading") : t("report.generate")}
       </button>
-      {error && <p className="text-sm text-red-600 text-center" role="alert">{error}</p>}
-      <p className="text-xs text-neutral-500 text-center">{t("report.localNote")}</p>
+      {error && <p className="text-sm text-red-700 text-center" role="alert">{error}</p>}
+      <p className="text-xs text-neutral-600 text-center">{t("report.localNote")}</p>
     </div>
   );
 }

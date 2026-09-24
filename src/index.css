@@ -50,12 +50,12 @@ h1, h2, h3 {
 
 .input {
   @apply w-full rounded-2xl bg-white border border-neutral-300 px-4 py-3 text-neutral-900
-    placeholder:text-neutral-400 focus:outline-none focus:border-teal-700
+    placeholder:text-neutral-600 focus:outline-none focus:border-teal-700
     focus:ring-4 focus:ring-teal-700/15 transition;
 }
 
 .label {
-  @apply block text-[13px] font-medium text-neutral-500 mb-1.5 tracking-tight;
+  @apply block text-[13px] font-medium text-neutral-600 mb-1.5 tracking-tight;
 }
 
 /* Score badge chip */

@@ -31,7 +31,8 @@
     "communicates": "Comment il/elle signale habituellement un mal-être",
     "communicatesHint": "ex. se tape la tête, tire l'oreille, devient très immobile, rit quand il a mal",
     "create": "Enregistrer le profil",
-    "title": "Profil de votre enfant"
+    "title": "Profil de votre enfant",
+    "saveError": "Enregistrement impossible — réessayez."
   },
   "customDescriptors": {
     "title": "Comment {{name}} montre-t-il sa douleur ?",
@@ -79,7 +80,8 @@
     "save": "Enregistrer l'observation",
     "saved": "Enregistré",
     "score": "Score FLACC",
-    "summary": "Résumé"
+    "summary": "Résumé",
+    "saveError": "Enregistrement impossible — réessayez."
   },
   "interventions": {
     "comfort": "Réconfort (câlin, doudou, couverture)",
@@ -116,7 +118,8 @@
     "insight": "Points d'attention",
     "insightNight": "La plupart des épisodes arrivent la nuit — à mentionner au médecin.",
     "insightZone": "« {{zone}} » est la zone la plus soupçonnée ({{n}} épisodes).",
-    "insightWorked": "« {{label}} » a aidé {{yes}} fois sur {{n}}."
+    "insightWorked": "« {{label}} » a aidé {{yes}} fois sur {{n}}.",
+    "scoreChartLabel": "Graphique : {{n}} épisodes récents, moyenne {{avg}}, max {{max}}"
   },
   "report": {
     "title": "Rapport médecin",
@@ -147,7 +150,34 @@
     "range": "Période",
     "localNote": "Généré entièrement sur cet appareil — rien n'est envoyé.",
     "empty": "Enregistrez d'abord au moins un épisode de douleur — le rapport a besoin d'observations.",
-    "error": "Impossible de générer le PDF — réessayez."
+    "error": "Impossible de générer le PDF — réessayez.",
+    "pdf": {
+      "title": "RAPPORT D'OBSERVATION DE LA DOULEUR",
+      "born": "né(e) en",
+      "prepared": "Préparé le {{date}} · {{count}} épisode(s) observé(s) · owly.app",
+      "howTheySignal": "Comment l'enfant signale son inconfort",
+      "individualBehaviours": "Comportements douloureux individuels (rFLACC)",
+      "whatShows": "Ce que montrent les observations",
+      "episodesLine": "{{count}} épisodes, FLACC moyen {{avg}}/10 (max {{max}})",
+      "nightLine": "{{night}}/{{count}} survenus la nuit (22h00–06h00)",
+      "areasLine": "Zones suspectées",
+      "medLine": "Médicaments donnés",
+      "helped": "ont aidé",
+      "intervLine": "Interventions",
+      "episodeLog": "Journal des épisodes (FLACC 0–10)",
+      "colDate": "date",
+      "colScore": "score",
+      "colBand": "niveau",
+      "colDuration": "durée",
+      "colAreas": "zones",
+      "colCause": "cause / note",
+      "earlierEpisodes": "… {{count}} épisodes plus anciens dans l'export complet",
+      "baselineLine": "Observations de base (calme) : {{count}} — FLACC {{scores}}",
+      "questions": "Questions pour le clinicien",
+      "footer1": "Enregistré avec Owly — journal d'observation libre et gratuit (FLACC : Merkel 1997 ; rFLACC individualisé : Malviya 2006).",
+      "footer2": "Les observations sont rapportées par l'aidant et ne constituent pas un diagnostic."
+    },
+    "allTime": "Tous les épisodes enregistrés"
   },
   "settings": {
     "title": "Réglages",
@@ -184,7 +214,8 @@
     "demoBody": "Charger « Léo » — un enfant fictif de 9 ans avec 3 semaines d'observations, pour tout essayer immédiatement.",
     "demoLoad": "Charger les données de démo",
     "demoLoaded": "Enfant de démo chargé — explorez librement",
-    "license": "Owly est gratuit et open source (MIT). FLACC : Merkel et al. 1997 — instrument clinique public. Owly est un journal d'observation, pas un dispositif médical."
+    "license": "Owly est gratuit et open source (MIT). FLACC : Merkel et al. 1997 — instrument clinique public. Owly est un journal d'observation, pas un dispositif médical.",
+    "unlockWait": "Trop de tentatives — patientez 30 secondes"
   },
   "common": {
     "back": "Retour",

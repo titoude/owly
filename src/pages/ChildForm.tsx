@@ -18,6 +18,7 @@ export default function ChildForm() {
   const [communicates, setCommunicates] = useState("");
   const [desc, setDesc] = useState<CustomDescriptors>(EMPTY_DESC);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -39,18 +40,22 @@ export default function ChildForm() {
       conditions: conditions.trim(),
       communicates: communicates.trim(),
       customDescriptors: desc,
-      passcodeHash: null,
     };
-    let childId: number;
-    if (id) {
-      childId = Number(id);
-      await db.children.update(childId, payload);
-    } else {
-      childId = (await db.children.add({ ...payload, createdAt: Date.now() } as Child)) as number;
+    try {
+      let childId: number;
+      if (id) {
+        childId = Number(id);
+        await db.children.update(childId, payload);
+      } else {
+        childId = (await db.children.add({ ...payload, createdAt: Date.now() } as Child)) as number;
+      }
+      await refresh();
+      await setActive(childId);
+      nav("/");
+    } catch {
+      setSaving(false);
+      setSaveError(t("child.saveError"));
     }
-    await refresh();
-    await setActive(childId);
-    nav("/");
   }
 
   return (
@@ -89,7 +94,7 @@ export default function ChildForm() {
 
       <div className="card p-4 space-y-3">
         <h2 className="font-semibold">{t("customDescriptors.title", { name: name || "…" })}</h2>
-        <p className="text-xs text-neutral-500">{t("customDescriptors.body")}</p>
+        <p className="text-xs text-neutral-600">{t("customDescriptors.body")}</p>
         {FLACC_CATEGORIES.map((c) => (
           <div key={c}>
             <label className="label text-xs" htmlFor={`d-${c}`}>{t(`flacc.${c}`)}</label>
@@ -104,6 +109,7 @@ export default function ChildForm() {
         ))}
       </div>
 
+      {saveError && <p className="text-sm text-red-700 text-center" role="alert">{saveError}</p>}
       <button type="button" className="btn-primary w-full" disabled={!name.trim() || saving} onClick={() => void save()}>
         {saving ? t("common.loading") : t("child.create")}
       </button>

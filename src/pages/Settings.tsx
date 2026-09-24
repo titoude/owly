@@ -5,7 +5,7 @@ import { useApp } from "../appContext";
 import { getSetting, setSetting } from "../db";
 import { clearDemo, seedDemo } from "../demo";
 import { deleteAll, exportAll, importAll } from "../export";
-import { hashPin } from "../pin";
+import { newPinRecord } from "../pin";
 import type { Child } from "../types";
 
 function download(name: string, text: string, type = "application/json") {
@@ -48,10 +48,12 @@ export default function Settings() {
 
   async function setPasscode() {
     if (pin.length !== 4) return;
-    await setSetting("passcode", await hashPin(pin));
+    await setSetting("passcode", await newPinRecord(pin));
     setPin("");
     setPinSet(true);
     setMsg(t("settings.pinSaved"));
+    // Arm the lock immediately — not "on next open".
+    window.dispatchEvent(new Event("owly:lock"));
   }
 
   async function clearPasscode() {
@@ -94,13 +96,13 @@ export default function Settings() {
       <h1 className="text-xl font-bold">{t("settings.title")}</h1>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-500">{t("settings.children")}</h2>
+        <h2 className="text-sm font-semibold text-neutral-600">{t("settings.children")}</h2>
         {children.map((c) => (
           <div key={c.id} className="flex items-center justify-between">
             <button
               type="button"
               onClick={() => void setActive(c.id!)}
-              className={`text-left ${c.id === active?.id ? "font-semibold text-teal-700" : "text-neutral-500"}`}
+              className={`text-left ${c.id === active?.id ? "font-semibold text-teal-700" : "text-neutral-600"}`}
             >
               {c.name}{" "}
               {c.isDemo ? (
@@ -109,14 +111,14 @@ export default function Settings() {
                 </span>
               ) : null}
             </button>
-            <Link to={`/child/${c.id}/edit`} className="text-xs text-neutral-500 underline">{t("common.edit")}</Link>
+            <Link to={`/child/${c.id}/edit`} className="text-xs text-neutral-600 underline">{t("common.edit")}</Link>
           </div>
         ))}
         <Link to="/child/new" className="btn-ghost block text-center">{t("settings.addChild")}</Link>
       </section>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-500">{t("settings.language")}</h2>
+        <h2 className="text-sm font-semibold text-neutral-600">{t("settings.language")}</h2>
         <div className="grid grid-cols-2 gap-2">
           {(["en", "fr"] as const).map((l) => (
             <button
@@ -126,7 +128,7 @@ export default function Settings() {
               className={`touch-target rounded-xl font-medium transition-all duration-150 ${
                 i18n.language === l
                   ? "bg-teal-700 text-white font-semibold shadow-[0_4px_14px_-4px_rgba(45,212,191,0.5)]"
-                  : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200/70"
+                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200/70"
               }`}
             >
               {l === "en" ? "English" : "Français"}
@@ -136,8 +138,8 @@ export default function Settings() {
       </section>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-500">{t("settings.pin")}</h2>
-        <p className="text-xs text-neutral-500">{t("settings.pinBody")}</p>
+        <h2 className="text-sm font-semibold text-neutral-600">{t("settings.pin")}</h2>
+        <p className="text-xs text-neutral-600">{t("settings.pinBody")}</p>
         {pinSet ? (
           <button type="button" className="btn-ghost w-full" onClick={() => void clearPasscode()}>{t("settings.pinRemove")}</button>
         ) : (
@@ -160,15 +162,15 @@ export default function Settings() {
       </section>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-500">{t("settings.data")}</h2>
+        <h2 className="text-sm font-semibold text-neutral-600">{t("settings.data")}</h2>
         <button type="button" className="btn-ghost w-full" onClick={() => void doExport()}>{t("settings.export")}</button>
         <button type="button" className="btn-ghost w-full" onClick={() => fileRef.current?.click()}>{t("settings.import")}</button>
-        <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={(e) => e.target.files?.[0] && void doImport(e.target.files[0])} />
+        <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void doImport(f); }} />
         {!confirmDel ? (
-          <button type="button" className="btn-ghost w-full text-red-600" onClick={() => setConfirmDel(true)}>{t("settings.deleteAll")}</button>
+          <button type="button" className="btn-ghost w-full text-red-700" onClick={() => setConfirmDel(true)}>{t("settings.deleteAll")}</button>
         ) : (
           <div className="rounded-xl border border-red-500/50 p-3 space-y-2">
-            <p className="text-sm text-red-600">{t("settings.deleteConfirm")}</p>
+            <p className="text-sm text-red-700">{t("settings.deleteConfirm")}</p>
             <div className="flex gap-2">
               <button type="button" className="btn-ghost flex-1" onClick={() => setConfirmDel(false)}>{t("common.cancel")}</button>
               <button type="button" className="flex-1 rounded-xl bg-red-500/90 py-2 font-semibold text-white" onClick={() => void wipe()}>
@@ -180,8 +182,8 @@ export default function Settings() {
       </section>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-500">{t("settings.demo")}</h2>
-        <p className="text-xs text-neutral-500">{t("settings.demoBody")}</p>
+        <h2 className="text-sm font-semibold text-neutral-600">{t("settings.demo")}</h2>
+        <p className="text-xs text-neutral-600">{t("settings.demoBody")}</p>
         {hasDemo ? (
           !confirmDemoClear ? (
             <button type="button" className="btn-ghost w-full" onClick={() => setConfirmDemoClear(true)}>{t("settings.demoClear")}</button>
@@ -203,9 +205,9 @@ export default function Settings() {
       </section>
 
       <section className="card p-4 space-y-2">
-        <h2 className="text-sm font-semibold text-neutral-500">{t("settings.about")}</h2>
-        <p className="text-xs text-neutral-500 leading-relaxed">{t("settings.privacy")}</p>
-        <p className="text-xs text-neutral-500">{t("settings.license")}</p>
+        <h2 className="text-sm font-semibold text-neutral-600">{t("settings.about")}</h2>
+        <p className="text-xs text-neutral-600 leading-relaxed">{t("settings.privacy")}</p>
+        <p className="text-xs text-neutral-600">{t("settings.license")}</p>
       </section>
 
       {msg && <p className="text-center text-sm text-teal-700">{msg}</p>}

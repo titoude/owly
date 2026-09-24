@@ -31,7 +31,8 @@
     "communicates": "How they usually signal discomfort",
     "communicatesHint": "e.g. bangs head, pulls at ear, becomes very still, laughs when hurting",
     "create": "Save profile",
-    "title": "Your child's profile"
+    "title": "Your child's profile",
+    "saveError": "Could not save — please try again."
   },
   "customDescriptors": {
     "title": "How does {{name}} show pain?",
@@ -79,7 +80,8 @@
     "save": "Save observation",
     "saved": "Saved",
     "score": "FLACC score",
-    "summary": "Summary"
+    "summary": "Summary",
+    "saveError": "Could not save — please try again."
   },
   "interventions": {
     "comfort": "Comfort (hug, hold, blanket)",
@@ -116,7 +118,8 @@
     "insight": "Insights",
     "insightNight": "Most episodes happen at night — worth mentioning to the doctor.",
     "insightZone": "\"{{zone}}\" is the most suspected area ({{n}} episodes).",
-    "insightWorked": "\"{{label}}\" helped in {{yes}} of {{n}} uses."
+    "insightWorked": "\"{{label}}\" helped in {{yes}} of {{n}} uses.",
+    "scoreChartLabel": "Bar chart: {{n}} most recent episodes, average {{avg}}, max {{max}}"
   },
   "report": {
     "title": "Doctor report",
@@ -147,7 +150,34 @@
     "range": "Period",
     "localNote": "Generated entirely on this device — nothing is uploaded.",
     "empty": "Record at least one pain episode first — the report needs observations.",
-    "error": "Could not generate the PDF — please try again."
+    "error": "Could not generate the PDF — please try again.",
+    "pdf": {
+      "title": "PAIN OBSERVATION REPORT",
+      "born": "born",
+      "prepared": "Prepared {{date}} · {{count}} episode(s) observed · owly.app",
+      "howTheySignal": "How they usually signal discomfort",
+      "individualBehaviours": "Individual pain behaviours (rFLACC)",
+      "whatShows": "What the observations show",
+      "episodesLine": "{{count}} episodes, average FLACC {{avg}}/10 (max {{max}})",
+      "nightLine": "{{night}}/{{count}} occurred at night (22:00–06:00)",
+      "areasLine": "Suspected areas",
+      "medLine": "Medication given",
+      "helped": "helped",
+      "intervLine": "Interventions",
+      "episodeLog": "Episode log (FLACC 0–10)",
+      "colDate": "date",
+      "colScore": "score",
+      "colBand": "band",
+      "colDuration": "duration",
+      "colAreas": "areas",
+      "colCause": "cause / note",
+      "earlierEpisodes": "… {{count}} earlier episodes in the full export",
+      "baselineLine": "Baseline (calm) observations: {{count}} — FLACC {{scores}}",
+      "questions": "Questions for the clinician",
+      "footer1": "Recorded with Owly — a free, open-source observation journal (FLACC: Merkel 1997; individualised rFLACC: Malviya 2006).",
+      "footer2": "Observations are caregiver-reported and are not a diagnosis."
+    },
+    "allTime": "All recorded episodes"
   },
   "settings": {
     "title": "Settings",
@@ -184,7 +214,8 @@
     "demoBody": "Load “Léo” — a fictional 9-year-old with 3 weeks of observations, to try every feature instantly.",
     "demoLoad": "Load demo data",
     "demoLoaded": "Demo child loaded — explore away",
-    "license": "Owly is free and open source (MIT). FLACC: Merkel et al. 1997 — public clinical instrument. Owly is an observation journal, not a medical device."
+    "license": "Owly is free and open source (MIT). FLACC: Merkel et al. 1997 — public clinical instrument. Owly is an observation journal, not a medical device.",
+    "unlockWait": "Too many attempts — wait 30 seconds"
   },
   "common": {
     "back": "Back",

@@ -14,9 +14,11 @@ function bucket(hour: number): "night" | "morning" | "afternoon" | "evening" {
 }
 
 export default function Patterns() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { active } = useApp();
   const [obs, setObs] = useState<Observation[]>([]);
+  const loc = i18n.language === "fr" ? "fr-FR" : "en-GB";
+  const fmtD = (ms: number) => new Date(ms).toLocaleDateString(loc, { day: "numeric", month: "short" });
 
   useEffect(() => {
     if (!active?.id) return;
@@ -53,9 +55,10 @@ export default function Patterns() {
 
   const insights = useMemo(() => {
     const out: string[] = [];
+    // Night insight only when night is strictly the modal bucket — no tie bias.
     const max = Math.max(...Object.values(byTime));
-    const top = (Object.entries(byTime) as [string, number][]).find(([, v]) => v === max);
-    if (top && max >= 2 && top[0] === "night" && max > episodes.length / 2) out.push(t("patterns.insightNight"));
+    const nightStrictlyTop = byTime.night === max && Object.values(byTime).filter((v) => v === max).length === 1;
+    if (nightStrictlyTop && max >= 2 && max > episodes.length / 2) out.push(t("patterns.insightNight"));
     if (zones.length > 0) out.push(t("patterns.insightZone", { zone: t(`zones.${zones[0][0]}`), n: zones[0][1] }));
     const w = helped.find(([, v]) => v.yes >= 2);
     if (w) out.push(t("patterns.insightWorked", { label: t(`interventions.${w[0]}`), yes: w[1].yes, n: w[1].n }));
@@ -68,11 +71,11 @@ export default function Patterns() {
     return (
       <div className="text-center space-y-4 pt-20">
         <div className="mx-auto grid place-items-center size-16 rounded-3xl bg-neutral-100 border border-neutral-200">
-          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" className="text-neutral-500" aria-hidden>
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" className="text-neutral-600" aria-hidden>
             <path d="M4 19.5V10M9.5 19.5V4.5M15 19.5v-8M20.5 19.5V8" />
           </svg>
         </div>
-        <p className="text-neutral-500">{t("patterns.empty")}</p>
+        <p className="text-neutral-600">{t("patterns.empty")}</p>
         <Link to="/observe" className="btn-primary inline-block">{t("observe.start")}</Link>
       </div>
     );
@@ -85,7 +88,7 @@ export default function Patterns() {
     <div className="space-y-6">
       <div className="flex items-baseline justify-between">
         <h1 className="text-xl font-bold">{t("patterns.title")}</h1>
-        <span className="text-sm text-neutral-500">
+        <span className="text-sm text-neutral-600">
           {episodes.length} {t("patterns.episodes")} · {t("patterns.avgScore")} {avg.toFixed(1)}
         </span>
       </div>
@@ -94,42 +97,46 @@ export default function Patterns() {
         <div className="card p-4 !border-teal-200 !bg-teal-50 space-y-1.5">
           <h2 className="text-sm font-semibold text-teal-700">{t("patterns.insight")}</h2>
           {insights.map((s, i) => (
-            <p key={i} className="text-sm text-neutral-500">• {s}</p>
+            <p key={i} className="text-sm text-neutral-600">• {s}</p>
           ))}
         </div>
       )}
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-500">{t("patterns.scoreOverTime")}</h2>
-        <div className="flex items-end gap-1 h-24">
+        <h2 className="text-sm font-semibold text-neutral-600">{t("patterns.scoreOverTime")}</h2>
+        <div
+          className="flex items-end gap-1 h-24"
+          role="img"
+          aria-label={t("patterns.scoreChartLabel", { n: Math.min(30, episodes.length), avg: avg.toFixed(1), max: maxScore })}
+        >
           {episodes.slice(-30).map((o) => (
             <div
               key={o.id}
-              title={`${new Date(o.startedAt).toLocaleDateString()} — ${o.total}/10`}
+              title={`${fmtD(o.startedAt)} — ${o.total}/10`}
               className={`flex-1 rounded-t-md ${BAND_COLOR[bandFor(o.total)]}`}
-              style={{ height: `${Math.max(8, (o.total / maxScore) * 100)}%`, opacity: 0.9 }}
+              style={{ height: `${(o.total / maxScore) * 100}%`, opacity: 0.9 }}
             />
           ))}
         </div>
-        <div className="flex justify-between text-[10px] text-neutral-500">
-          <span>{episodes.length > 0 && new Date(episodes[Math.max(0, episodes.length - 30)].startedAt).toLocaleDateString()}</span>
-          <span>{episodes.length > 0 && new Date(episodes[episodes.length - 1].startedAt).toLocaleDateString()}</span>
+        <div className="flex justify-between text-[10px] text-neutral-600">
+          <span>{episodes.length > 0 && fmtD(episodes[Math.max(0, episodes.length - 30)].startedAt)}</span>
+          <span>{episodes.length > 0 && fmtD(episodes[episodes.length - 1].startedAt)}</span>
         </div>
       </section>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-500">{t("patterns.byTimeOfDay")}</h2>
+        <h2 className="text-sm font-semibold text-neutral-600">{t("patterns.byTimeOfDay")}</h2>
         <div className="space-y-2">
           {(["night", "morning", "afternoon", "evening"] as const).map((k) => (
             <div key={k} className="flex items-center gap-2 text-sm">
-              <span className="w-28 text-neutral-500">{t(`patterns.${k}`)}</span>
+              <span className="w-28 text-neutral-600">{t(`patterns.${k}`)}</span>
               <div className="flex-1 h-4 rounded-full bg-neutral-100 overflow-hidden">
                 <div
                   className="h-full bg-indigo-400 rounded-full"
                   style={{ width: `${episodes.length ? (byTime[k] / episodes.length) * 100 : 0}%` }}
                 />
               </div>
-              <span className="w-6 text-right text-neutral-500">{byTime[k]}</span>
+              <span className="w-6 text-right text-neutral-600">{byTime[k]}</span>
             </div>
           ))}
         </div>
@@ -137,7 +144,7 @@ export default function Patterns() {
 
       {zones.length > 0 && (
         <section className="card p-4 space-y-2">
-          <h2 className="text-sm font-semibold text-neutral-500">{t("patterns.zones")}</h2>
+          <h2 className="text-sm font-semibold text-neutral-600">{t("patterns.zones")}</h2>
           <div className="flex flex-wrap gap-2">
             {zones.map(([z, n]) => (
               <span key={z} className="badge bg-orange-100 text-orange-800 border border-orange-200">
@@ -150,11 +157,11 @@ export default function Patterns() {
 
       {helped.length > 0 && (
         <section className="card p-4 space-y-2">
-          <h2 className="text-sm font-semibold text-neutral-500">{t("patterns.worked")}</h2>
+          <h2 className="text-sm font-semibold text-neutral-600">{t("patterns.worked")}</h2>
           {helped.map(([type, v]) => (
             <div key={type} className="flex items-center justify-between text-sm">
-              <span className="text-neutral-500">{t(`interventions.${type}`)}</span>
-              <span className={v.yes / v.n >= 0.5 ? "text-emerald-700" : "text-neutral-500"}>
+              <span className="text-neutral-600">{t(`interventions.${type}`)}</span>
+              <span className={v.yes / v.n >= 0.5 ? "text-emerald-700" : "text-neutral-600"}>
                 {t("patterns.workedRate", { yes: v.yes, n: v.n })}
               </span>
             </div>
