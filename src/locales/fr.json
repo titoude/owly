@@ -63,7 +63,7 @@
     "baselineQ": "Épisode douloureux ou moment calme (baseline) ?",
     "episode": "Épisode de douleur",
     "baseline": "Baseline (moment calme)",
-    "baselineHint": "Quelques observations baseline aident vous et votre médecin à connaître le « normal » de votre enfant.",
+    "baselineHint": "Quelques observations baseline vous aident, vous et votre médecin, à connaître le « normal » de votre enfant.",
     "pickScore": "Choisissez la description la plus proche",
     "theirs": "Comment {{name}} le montre :",
     "when": "Quand ça a commencé ?",
@@ -220,7 +220,8 @@
     "forgotPin": "Code oublié ?",
     "forgotPinWarning": "Sans le PIN, le journal est irrécupérable. Vous pouvez tout effacer et recommencer — cela supprime tous les profils et observations de cet appareil.",
     "wipeAll": "Tout effacer",
-    "importWarn": "Remplace toutes les données actuelles de cet appareil."
+    "importWarn": "Remplace toutes les données actuelles de cet appareil.",
+    "wrongPin": "Code incorrect"
   },
   "common": {
     "back": "Retour",

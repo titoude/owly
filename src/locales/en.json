@@ -220,7 +220,8 @@
     "forgotPin": "Forgot the code?",
     "forgotPinWarning": "Without the PIN, the journal cannot be recovered. You can erase everything and start over — this deletes all profiles and observations on this device.",
     "wipeAll": "Erase everything",
-    "importWarn": "Replaces all current data on this device."
+    "importWarn": "Replaces all current data on this device.",
+    "wrongPin": "Wrong code"
   },
   "common": {
     "back": "Back",

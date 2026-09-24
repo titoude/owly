@@ -152,8 +152,8 @@ export async function buildReport(child: Child, observations: Observation[], opt
 
   // Timeline table — fixed column x positions (proportional font can't padEnd)
   heading(ctx, t("episodeLog"));
-  const cols = [0, 88, 128, 180, 224, 318]; // date, score, band, duration, areas, cause/note
-  const colW = [88, 40, 52, 44, 94, 181];
+  const cols = [0, 86, 126, 182, 226, 318]; // date, score, band, duration, areas, cause/note
+  const colW = [86, 40, 56, 44, 92, 181];
   const headerRow = [t("colDate"), t("colScore"), t("colBand"), t("colDuration"), t("colAreas"), t("colCause")];
   headerRow.forEach((h, i) => {
     page.drawText(safe(h), { x: ctx.left + cols[i], y: ctx.y, size: 7.5, font: bold, color: MUTED });

@@ -20,7 +20,23 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
     void getSetting<number>("pinCooldownUntil").then((v) => {
       if (v && v > Date.now()) setCooldownUntil(v);
     });
+    void getSetting<number>("pinAttempts").then((v) => {
+      attempts.current = v ?? 0;
+    });
   }, []);
+
+  // Keep the cooldown honest across reloads: re-check until expiry instead
+  // of relying on a setTimeout that dies with the mount.
+  useEffect(() => {
+    if (cooldownUntil <= Date.now()) return;
+    const iv = setInterval(() => {
+      if (Date.now() >= cooldownUntil) {
+        setCooldownUntil(0);
+        void setSetting("pinCooldownUntil", 0);
+      }
+    }, 1000);
+    return () => clearInterval(iv);
+  }, [cooldownUntil]);
 
   async function tryUnlock(value: string) {
     const stored = await getSetting<string>("passcode");
@@ -31,10 +47,12 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
       onUnlock();
     } else {
       attempts.current += 1;
+      void setSetting("pinAttempts", attempts.current);
       setError(true);
       setPin("");
       if (attempts.current >= MAX_ATTEMPTS) {
         attempts.current = 0;
+        void setSetting("pinAttempts", 0);
         const until = Date.now() + LOCKOUT_MS;
         setCooldownUntil(until);
         void setSetting("pinCooldownUntil", until);
@@ -74,6 +92,7 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
           className={`input text-center text-2xl tracking-[0.5em] w-40 ${error ? "border-red-500" : ""}`}
           aria-label={t("settings.unlock")}
         />
+        {error && <p className="text-xs text-red-700" role="alert">{t("settings.wrongPin")}</p>}
         {!confirmWipe ? (
           <button type="button" className="text-xs text-neutral-500 underline underline-offset-2" onClick={() => setConfirmWipe(true)}>
             {t("settings.forgotPin")}

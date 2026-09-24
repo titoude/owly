@@ -56,7 +56,7 @@ export default function Observe() {
     setSaving(true);
     const obs: Observation = {
       childId: active.id,
-      startedAt: customAt ? new Date(customAt).getTime() : Date.now() - minutesAgo * 60_000,
+      startedAt: customAt ? Math.min(new Date(customAt).getTime(), Date.now()) : Date.now() - minutesAgo * 60_000,
       recordedAt: Date.now(),
       scores: scores as FlaccScores,
       total,
@@ -149,7 +149,7 @@ export default function Observe() {
                 className="input text-sm w-full"
                 value={customAt}
                 max={toLocalInput(new Date())}
-                onChange={(e) => setCustomAt(e.target.value)}
+                onChange={(e) => setCustomAt(e.target.value === "" ? null : e.target.value)}
               />
             )}
           </div>
