@@ -156,7 +156,7 @@ export function downloadPdf(bytes: Uint8Array, filename: string) {
   a.href = url;
   a.download = filename;
   a.click();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
 
 export const INTERVENTION_LABEL = new Map(INTERVENTION_TYPES.map((t) => [t, t]));

@@ -14,13 +14,58 @@ import LockScreen from "./pages/LockScreen";
 import { getSetting } from "./db";
 import { useEffect, useState } from "react";
 
+const stroke = {
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.7,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+};
+
+const IconHome = () => (
+  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
+    <path d="M3.5 10.5 12 3.5l8.5 7" />
+    <path d="M5.5 9.5V20a.5.5 0 0 0 .5.5h12a.5.5 0 0 0 .5-.5V9.5" />
+    <path d="M9.5 20.5v-5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5" />
+  </svg>
+);
+const IconObserve = () => (
+  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 8v8M8 12h8" />
+  </svg>
+);
+const IconHistory = () => (
+  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
+    <path d="M8 6.5h12M8 12h12M8 17.5h12" />
+    <path d="M4 6.5h.01M4 12h.01M4 17.5h.01" strokeWidth={2.6} />
+  </svg>
+);
+const IconPatterns = () => (
+  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
+    <path d="M4 19.5V10M9.5 19.5V4.5M15 19.5v-8M20.5 19.5V8" />
+  </svg>
+);
+const IconReport = () => (
+  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
+    <path d="M6.5 3.5h7L19 8.5v11a1 1 0 0 1-1 1H6.5a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1Z" />
+    <path d="M13.5 3.5V9H19M9 13h6.5M9 16.5h4" />
+  </svg>
+);
+const IconSettings = () => (
+  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
+    <circle cx="12" cy="12" r="3.2" />
+    <path d="M12 3.8v2.2M12 18v2.2M3.8 12H6M18 12h2.2M6.2 6.2l1.5 1.5M16.3 16.3l1.5 1.5M17.8 6.2l-1.5 1.5M7.7 16.3l-1.5 1.5" />
+  </svg>
+);
+
 const NAV = [
-  { to: "/", icon: "⌂", label: "nav.home" },
-  { to: "/observe", icon: "✚", label: "nav.observe" },
-  { to: "/history", icon: "≣", label: "nav.history" },
-  { to: "/patterns", icon: "◔", label: "nav.patterns" },
-  { to: "/report", icon: "⎙", label: "nav.report" },
-  { to: "/settings", icon: "⚙", label: "nav.settings" },
+  { to: "/", Icon: IconHome, label: "nav.home" },
+  { to: "/observe", Icon: IconObserve, label: "nav.observe" },
+  { to: "/history", Icon: IconHistory, label: "nav.history" },
+  { to: "/patterns", Icon: IconPatterns, label: "nav.patterns" },
+  { to: "/report", Icon: IconReport, label: "nav.report" },
+  { to: "/settings", Icon: IconSettings, label: "nav.settings" },
 ];
 
 function Shell() {
@@ -40,7 +85,7 @@ function Shell() {
 
   if (loading || !lockChecked) {
     return (
-      <div className="min-h-dvh grid place-items-center text-slate-500">
+      <div className="min-h-dvh grid place-items-center text-neutral-500">
         {t("common.loading")}
       </div>
     );
@@ -82,8 +127,8 @@ function Shell() {
           <Route path="/child/:id/edit" element={<ChildForm />} />
         </Routes>
       </main>
-      <nav className="fixed bottom-0 inset-x-0 bg-slate-950/95 border-t border-slate-800 backdrop-blur z-40">
-        <div className="mx-auto max-w-lg grid grid-cols-6">
+      <nav className="fixed bottom-0 inset-x-0 z-40 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-2 px-4">
+        <div className="mx-auto max-w-lg grid grid-cols-6 rounded-[1.75rem] border border-white/[0.07] bg-neutral-900/85 backdrop-blur-xl shadow-[0_12px_32px_-8px_rgba(0,0,0,0.65)]">
           {NAV.map((n) => {
             const selected = loc.pathname === n.to;
             return (
@@ -91,10 +136,10 @@ function Shell() {
                 key={n.to}
                 onClick={() => void nav(n.to)}
                 aria-current={selected ? "page" : undefined}
-                className={`flex flex-col items-center gap-0.5 py-2.5 text-[11px] touch-target
-                  ${selected ? "text-teal-400" : "text-slate-500 hover:text-slate-300"}`}
+                className={`flex flex-col items-center gap-1 py-2.5 text-[10.5px] font-medium touch-target transition-colors duration-150
+                  ${selected ? "text-teal-300" : "text-neutral-500 hover:text-neutral-300"}`}
               >
-                <span aria-hidden className="text-lg leading-none">{n.icon}</span>
+                <span aria-hidden className="leading-none"><n.Icon /></span>
                 {t(n.label)}
               </button>
             );

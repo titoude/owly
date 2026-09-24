@@ -50,7 +50,7 @@ export function BodyMap({ selected, onToggle }: Props) {
               rx={z.rx}
               onClick={() => onToggle(z.id)}
               className={`cursor-pointer transition-colors stroke-2
-                ${sel ? "fill-orange-500/70 stroke-orange-400" : "fill-slate-800 stroke-slate-600 hover:fill-slate-700"}`}
+                ${sel ? "fill-orange-500/70 stroke-orange-400" : "fill-white/[0.05] stroke-neutral-600 hover:fill-white/[0.12]"}`}
             >
               <title>{t(`zones.${z.id}`)}</title>
             </rect>
@@ -67,7 +67,7 @@ export function BodyMap({ selected, onToggle }: Props) {
               onClick={() => onToggle(z.id)}
               aria-pressed={sel}
               className={`rounded-lg px-2.5 py-2 text-xs text-left transition
-                ${sel ? "bg-orange-500/20 text-orange-300 border border-orange-500/50" : "bg-slate-800 text-slate-400 border border-slate-700"}`}
+                ${sel ? "bg-orange-500/20 text-orange-300 border border-orange-500/50" : "bg-white/[0.05] text-neutral-400 border border-white/10"}`}
             >
               {t(`zones.${z.id}`)}
             </button>

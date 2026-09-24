@@ -49,8 +49,13 @@ export default function Report() {
   if (!ready) {
     return (
       <div className="text-center space-y-4 pt-20">
-        <div className="text-5xl">📋</div>
-        <p className="text-slate-400">{t("report.empty")}</p>
+        <div className="mx-auto grid place-items-center size-16 rounded-3xl bg-white/[0.05] border border-white/[0.07]">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-500" aria-hidden>
+            <path d="M6.5 3.5h7L19 8.5v11a1 1 0 0 1-1 1H6.5a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1Z" />
+            <path d="M13.5 3.5V9H19M9 13h6.5M9 16.5h4" />
+          </svg>
+        </div>
+        <p className="text-neutral-400">{t("report.empty")}</p>
         <Link to="/observe" className="btn-primary inline-block">{t("observe.start")}</Link>
       </div>
     );
@@ -60,7 +65,7 @@ export default function Report() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-bold">{t("report.title")}</h1>
-        <p className="text-sm text-slate-400">{t("report.subtitle")}</p>
+        <p className="text-sm text-neutral-400">{t("report.subtitle")}</p>
       </div>
 
       <div>
@@ -71,15 +76,17 @@ export default function Report() {
               key={d ?? "all"}
               type="button"
               onClick={() => setPeriod(d)}
-              className={`touch-target rounded-xl text-sm font-medium ${
-                period === d ? "bg-teal-500 text-slate-950" : "bg-slate-800 text-slate-300"
+              className={`touch-target rounded-xl text-sm font-medium transition-all duration-150 ${
+                period === d
+                  ? "bg-teal-400 text-neutral-950 font-semibold shadow-[0_4px_14px_-4px_rgba(45,212,191,0.5)]"
+                  : "bg-white/[0.06] text-neutral-300 hover:bg-white/[0.1]"
               }`}
             >
               {d == null ? t("report.all") : t("report.days", { n: d })}
             </button>
           ))}
         </div>
-        <p className="mt-2 text-xs text-slate-500">
+        <p className="mt-2 text-xs text-neutral-500">
           {episodeCount} {t("report.included")}
         </p>
       </div>
@@ -101,13 +108,13 @@ export default function Report() {
       </div>
 
       <div className="card p-4 space-y-2">
-        <h3 className="text-sm font-semibold text-slate-400">{t("report.previewTitle")}</h3>
-        <ul className="text-xs text-slate-400 space-y-1">
+        <h3 className="text-sm font-semibold text-neutral-400">{t("report.previewTitle")}</h3>
+        <ul className="text-xs text-neutral-400 space-y-1">
           {(t("report.includes", { returnObjects: true }) as string[]).map((s, i) => (
             <li key={i}>• {s}</li>
           ))}
         </ul>
-        <p className="text-xs text-slate-500 pt-1">
+        <p className="text-xs text-neutral-500 pt-1">
           {t("report.range")}: {fmtD(Date.now() - (period ?? 9999) * 864e5)} → {fmtD(Date.now())}
         </p>
       </div>
@@ -115,7 +122,7 @@ export default function Report() {
       <button type="button" className="btn-primary w-full" disabled={busy || episodeCount === 0} onClick={() => void generate()}>
         {busy ? t("common.loading") : t("report.generate")}
       </button>
-      <p className="text-xs text-slate-500 text-center">{t("report.localNote")}</p>
+      <p className="text-xs text-neutral-500 text-center">{t("report.localNote")}</p>
     </div>
   );
 }

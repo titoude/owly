@@ -30,8 +30,8 @@ export default function History() {
   if (obs.length === 0) {
     return (
       <div className="text-center space-y-4 pt-20">
-        <div className="text-5xl">🦉</div>
-        <p className="text-slate-400">{t("history.empty")}</p>
+        <img src="/icon.svg" alt="" className="mx-auto size-16 rounded-2xl opacity-70" />
+        <p className="text-neutral-400">{t("history.empty")}</p>
         <Link to="/observe" className="btn-primary inline-block">
           {t("history.emptyCta")}
         </Link>
@@ -53,7 +53,7 @@ export default function History() {
                   <span className="ml-2 text-xs text-emerald-400">· {t("history.baseline")}</span>
                 )}
               </div>
-              <div className="text-xs text-slate-500">
+              <div className="text-xs text-neutral-500">
                 {o.durationMinutes ? `${o.durationMinutes} min` : ""}
                 {o.bodyZones.length > 0 && ` · ${o.bodyZones.map((z) => t(`zones.${z}`)).join(", ")}`}
                 {o.suspectedCause && ` · ${o.suspectedCause}`}
@@ -62,12 +62,12 @@ export default function History() {
             <ScoreBadge total={o.total} />
           </div>
           {o.interventions.length > 0 && (
-            <div className="text-xs text-slate-400">
+            <div className="text-xs text-neutral-400">
               {o.interventions.map((i) => t(`interventions.${i.type}`)).join(", ")}
               {o.interventions.some((i) => i.helped === "yes") && " ✓"}
             </div>
           )}
-          {o.note && <div className="text-sm text-slate-300 italic">“{o.note}”</div>}
+          {o.note && <div className="text-sm text-neutral-300 italic">“{o.note}”</div>}
           {confirmId === o.id ? (
             <div className="flex items-center gap-2">
               <button
@@ -80,7 +80,7 @@ export default function History() {
               <button
                 type="button"
                 onClick={() => setConfirmId(null)}
-                className="text-xs text-slate-500"
+                className="text-xs text-neutral-500"
               >
                 {t("common.cancel")}
               </button>
@@ -89,7 +89,7 @@ export default function History() {
             <button
               type="button"
               onClick={() => setConfirmId(o.id ?? null)}
-              className="text-xs text-slate-600 hover:text-red-400"
+              className="text-xs text-neutral-600 hover:text-red-400"
             >
               {t("common.delete")}
             </button>

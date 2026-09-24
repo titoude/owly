@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Inter", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
 }
 
 html {
@@ -9,8 +10,18 @@ html {
 }
 
 body {
-  @apply bg-slate-950 text-slate-100 antialiased;
+  @apply bg-neutral-950 text-neutral-100 antialiased;
   min-height: 100dvh;
+  letter-spacing: -0.011em;
+  font-feature-settings: "cv02", "cv11", "ss01";
+}
+
+h1, h2, h3 {
+  letter-spacing: -0.022em;
+}
+
+::selection {
+  @apply bg-teal-500/30 text-teal-100;
 }
 
 /* 3 a.m. design: everything big enough to hit with a thumb while holding a child */
@@ -18,27 +29,54 @@ body {
   @apply min-h-12 min-w-12;
 }
 
+/* Elevated surface — soft hairline border, inner light, ambient shadow */
 .card {
-  @apply rounded-2xl bg-slate-900/80 border border-slate-800;
+  @apply rounded-3xl border border-white/[0.06] bg-white/[0.035];
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.05) inset,
+    0 8px 24px -12px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
 }
 
 .btn-primary {
-  @apply rounded-2xl bg-teal-500 text-slate-950 font-semibold px-5 py-3.5 min-h-12
-    active:scale-[0.98] transition disabled:opacity-40 disabled:cursor-not-allowed
-    hover:bg-teal-400 focus-visible:outline-2 focus-visible:outline-teal-300;
+  @apply rounded-2xl bg-teal-400 text-neutral-950 font-semibold px-5 py-3.5 min-h-12
+    active:scale-[0.975] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed
+    hover:bg-teal-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-300;
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.4),
+    0 8px 20px -8px rgba(45, 212, 191, 0.45);
 }
 
 .btn-ghost {
-  @apply rounded-2xl bg-slate-800 text-slate-200 px-4 py-3 min-h-12
-    active:scale-[0.98] transition hover:bg-slate-700
-    focus-visible:outline-2 focus-visible:outline-slate-400;
+  @apply rounded-2xl bg-white/[0.06] text-neutral-200 px-4 py-3 min-h-12
+    active:scale-[0.975] transition-all duration-150 hover:bg-white/[0.1]
+    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-400;
 }
 
 .input {
-  @apply w-full rounded-xl bg-slate-800 border border-slate-700 px-4 py-3 text-slate-100
-    placeholder:text-slate-500 focus:outline-2 focus:outline-teal-500 focus:border-transparent;
+  @apply w-full rounded-2xl bg-white/[0.05] border border-white/[0.08] px-4 py-3 text-neutral-100
+    placeholder:text-neutral-500 focus:outline-none focus:border-teal-400/60
+    focus:ring-4 focus:ring-teal-400/15 transition;
 }
 
 .label {
-  @apply block text-sm font-medium text-slate-400 mb-1.5;
+  @apply block text-[13px] font-medium text-neutral-400 mb-1.5 tracking-tight;
+}
+
+/* Score badge chip */
+.badge {
+  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+}
+
+/* Smooth step transitions in the wizard */
+@keyframes owly-step {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.step-in {
+  animation: owly-step 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step-in { animation: none; }
 }
