@@ -16,9 +16,9 @@ export function FlaccPicker({ category, child, value, onChange }: Props) {
 
   return (
     <fieldset className="space-y-2">
-      <legend className="text-lg font-semibold text-neutral-100">{t(`flacc.${category}`)}</legend>
+      <legend className="text-lg font-semibold text-neutral-900">{t(`flacc.${category}`)}</legend>
       {custom ? (
-        <p className="text-sm text-teal-300/90 italic">
+        <p className="text-sm text-teal-700 italic">
           {t("observe.theirs", { name: child.name })} {custom}
         </p>
       ) : null}
@@ -34,13 +34,13 @@ export function FlaccPicker({ category, child, value, onChange }: Props) {
               onClick={() => onChange(score)}
               className={`w-full text-left rounded-2xl border px-4 py-3.5 min-h-12 transition-all duration-150
                 ${sel
-                  ? "border-teal-400/70 bg-teal-400/[0.13] text-neutral-50 shadow-[0_0_0_3px_rgba(45,212,191,0.15)]"
-                  : "border-white/[0.07] bg-white/[0.04] text-neutral-300 hover:border-white/20 hover:bg-white/[0.07]"}`}
+                  ? "border-teal-600 bg-teal-50 text-neutral-900 shadow-[0_0_0_3px_rgba(45,212,191,0.15)]"
+                  : "border-neutral-200 bg-white text-neutral-500 hover:border-neutral-300 hover:bg-neutral-100"}`}
             >
               <span className="flex items-center gap-3">
                 <span
                   className={`shrink-0 grid place-items-center size-8 rounded-full font-bold text-sm
-                  ${sel ? "bg-teal-400 text-neutral-950" : "bg-white/[0.08] text-neutral-400"}`}
+                  ${sel ? "bg-teal-600 text-white" : "bg-neutral-200 text-neutral-500"}`}
                 >
                   {score}
                 </span>

@@ -128,7 +128,7 @@ function Shell() {
         </Routes>
       </main>
       <nav className="fixed bottom-0 inset-x-0 z-40 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-2 px-4">
-        <div className="mx-auto max-w-lg grid grid-cols-6 rounded-[1.75rem] border border-white/[0.07] bg-neutral-900/85 backdrop-blur-xl shadow-[0_12px_32px_-8px_rgba(0,0,0,0.65)]">
+        <div className="mx-auto max-w-lg grid grid-cols-6 rounded-[1.75rem] border border-neutral-200 bg-white/85 backdrop-blur-xl shadow-[0_12px_32px_-8px_rgba(0,0,0,0.65)]">
           {NAV.map((n) => {
             const selected = loc.pathname === n.to;
             return (
@@ -137,7 +137,7 @@ function Shell() {
                 onClick={() => void nav(n.to)}
                 aria-current={selected ? "page" : undefined}
                 className={`flex flex-col items-center gap-1 py-2.5 text-[10.5px] font-medium touch-target transition-colors duration-150
-                  ${selected ? "text-teal-300" : "text-neutral-500 hover:text-neutral-300"}`}
+                  ${selected ? "text-teal-700" : "text-neutral-500 hover:text-neutral-500"}`}
               >
                 <span aria-hidden className="leading-none"><n.Icon /></span>
                 {t(n.label)}

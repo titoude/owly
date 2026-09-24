@@ -15,8 +15,8 @@ export default defineConfig({
         short_name: "Owly",
         description:
           "A private, on-device pain observation journal (FLACC) for children who can't self-report pain.",
-        theme_color: "#0f172a",
-        background_color: "#0f172a",
+        theme_color: "#f5f5f7",
+        background_color: "#f5f5f7",
         display: "standalone",
         start_url: "/",
         icons: [

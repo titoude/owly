@@ -21,7 +21,7 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
     <div className="min-h-dvh grid place-items-center">
       <div className="space-y-6 text-center">
         <img src="/icon.svg" alt="" className="mx-auto size-20 rounded-3xl" />
-        <p className="text-neutral-400">{t("settings.unlock")}</p>
+        <p className="text-neutral-500">{t("settings.unlock")}</p>
         <input
           type="password"
           inputMode="numeric"

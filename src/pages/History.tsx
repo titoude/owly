@@ -31,7 +31,7 @@ export default function History() {
     return (
       <div className="text-center space-y-4 pt-20">
         <img src="/icon.svg" alt="" className="mx-auto size-16 rounded-2xl opacity-70" />
-        <p className="text-neutral-400">{t("history.empty")}</p>
+        <p className="text-neutral-500">{t("history.empty")}</p>
         <Link to="/observe" className="btn-primary inline-block">
           {t("history.emptyCta")}
         </Link>
@@ -50,7 +50,7 @@ export default function History() {
                 {new Date(o.startedAt).toLocaleDateString()}{" "}
                 {new Date(o.startedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                 {o.baseline && (
-                  <span className="ml-2 text-xs text-emerald-400">· {t("history.baseline")}</span>
+                  <span className="ml-2 text-xs text-emerald-600">· {t("history.baseline")}</span>
                 )}
               </div>
               <div className="text-xs text-neutral-500">
@@ -62,18 +62,18 @@ export default function History() {
             <ScoreBadge total={o.total} />
           </div>
           {o.interventions.length > 0 && (
-            <div className="text-xs text-neutral-400">
+            <div className="text-xs text-neutral-500">
               {o.interventions.map((i) => t(`interventions.${i.type}`)).join(", ")}
               {o.interventions.some((i) => i.helped === "yes") && " ✓"}
             </div>
           )}
-          {o.note && <div className="text-sm text-neutral-300 italic">“{o.note}”</div>}
+          {o.note && <div className="text-sm text-neutral-500 italic">“{o.note}”</div>}
           {confirmId === o.id ? (
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => o.id && void remove(o.id)}
-                className="text-xs font-semibold text-red-400"
+                className="text-xs font-semibold text-red-600"
               >
                 {t("history.deleteConfirm")}
               </button>
@@ -89,7 +89,7 @@ export default function History() {
             <button
               type="button"
               onClick={() => setConfirmId(o.id ?? null)}
-              className="text-xs text-neutral-600 hover:text-red-400"
+              className="text-xs text-neutral-500 hover:text-red-600"
             >
               {t("common.delete")}
             </button>

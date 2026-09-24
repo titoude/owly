@@ -94,17 +94,17 @@ export default function Settings() {
       <h1 className="text-xl font-bold">{t("settings.title")}</h1>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-400">{t("settings.children")}</h2>
+        <h2 className="text-sm font-semibold text-neutral-500">{t("settings.children")}</h2>
         {children.map((c) => (
           <div key={c.id} className="flex items-center justify-between">
             <button
               type="button"
               onClick={() => void setActive(c.id!)}
-              className={`text-left ${c.id === active?.id ? "font-semibold text-teal-400" : "text-neutral-300"}`}
+              className={`text-left ${c.id === active?.id ? "font-semibold text-teal-600" : "text-neutral-500"}`}
             >
               {c.name}{" "}
               {c.isDemo ? (
-                <span className="ml-1 rounded-full bg-teal-400/15 text-teal-300 border border-teal-400/25 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+                <span className="ml-1 rounded-full bg-teal-50 text-teal-700 border border-teal-300 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
                   demo
                 </span>
               ) : null}
@@ -116,7 +116,7 @@ export default function Settings() {
       </section>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-400">{t("settings.language")}</h2>
+        <h2 className="text-sm font-semibold text-neutral-500">{t("settings.language")}</h2>
         <div className="grid grid-cols-2 gap-2">
           {(["en", "fr"] as const).map((l) => (
             <button
@@ -125,8 +125,8 @@ export default function Settings() {
               onClick={() => void changeLang(l)}
               className={`touch-target rounded-xl font-medium transition-all duration-150 ${
                 i18n.language === l
-                  ? "bg-teal-400 text-neutral-950 font-semibold shadow-[0_4px_14px_-4px_rgba(45,212,191,0.5)]"
-                  : "bg-white/[0.06] text-neutral-300 hover:bg-white/[0.1]"
+                  ? "bg-teal-600 text-white font-semibold shadow-[0_4px_14px_-4px_rgba(45,212,191,0.5)]"
+                  : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200/70"
               }`}
             >
               {l === "en" ? "English" : "Français"}
@@ -136,7 +136,7 @@ export default function Settings() {
       </section>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-400">{t("settings.pin")}</h2>
+        <h2 className="text-sm font-semibold text-neutral-500">{t("settings.pin")}</h2>
         <p className="text-xs text-neutral-500">{t("settings.pinBody")}</p>
         {pinSet ? (
           <button type="button" className="btn-ghost w-full" onClick={() => void clearPasscode()}>{t("settings.pinRemove")}</button>
@@ -160,15 +160,15 @@ export default function Settings() {
       </section>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-400">{t("settings.data")}</h2>
+        <h2 className="text-sm font-semibold text-neutral-500">{t("settings.data")}</h2>
         <button type="button" className="btn-ghost w-full" onClick={() => void doExport()}>{t("settings.export")}</button>
         <button type="button" className="btn-ghost w-full" onClick={() => fileRef.current?.click()}>{t("settings.import")}</button>
         <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={(e) => e.target.files?.[0] && void doImport(e.target.files[0])} />
         {!confirmDel ? (
-          <button type="button" className="btn-ghost w-full text-red-400" onClick={() => setConfirmDel(true)}>{t("settings.deleteAll")}</button>
+          <button type="button" className="btn-ghost w-full text-red-600" onClick={() => setConfirmDel(true)}>{t("settings.deleteAll")}</button>
         ) : (
           <div className="rounded-xl border border-red-500/50 p-3 space-y-2">
-            <p className="text-sm text-red-300">{t("settings.deleteConfirm")}</p>
+            <p className="text-sm text-red-600">{t("settings.deleteConfirm")}</p>
             <div className="flex gap-2">
               <button type="button" className="btn-ghost flex-1" onClick={() => setConfirmDel(false)}>{t("common.cancel")}</button>
               <button type="button" className="flex-1 rounded-xl bg-red-500/90 py-2 font-semibold text-white" onClick={() => void wipe()}>
@@ -180,7 +180,7 @@ export default function Settings() {
       </section>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-400">{t("settings.demo")}</h2>
+        <h2 className="text-sm font-semibold text-neutral-500">{t("settings.demo")}</h2>
         <p className="text-xs text-neutral-500">{t("settings.demoBody")}</p>
         {hasDemo ? (
           !confirmDemoClear ? (
@@ -203,12 +203,12 @@ export default function Settings() {
       </section>
 
       <section className="card p-4 space-y-2">
-        <h2 className="text-sm font-semibold text-neutral-400">{t("settings.about")}</h2>
-        <p className="text-xs text-neutral-400 leading-relaxed">{t("settings.privacy")}</p>
+        <h2 className="text-sm font-semibold text-neutral-500">{t("settings.about")}</h2>
+        <p className="text-xs text-neutral-500 leading-relaxed">{t("settings.privacy")}</p>
         <p className="text-xs text-neutral-500">{t("settings.license")}</p>
       </section>
 
-      {msg && <p className="text-center text-sm text-teal-400">{msg}</p>}
+      {msg && <p className="text-center text-sm text-teal-600">{msg}</p>}
     </div>
   );
 }

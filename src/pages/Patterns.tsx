@@ -67,12 +67,12 @@ export default function Patterns() {
   if (episodes.length < 2) {
     return (
       <div className="text-center space-y-4 pt-20">
-        <div className="mx-auto grid place-items-center size-16 rounded-3xl bg-white/[0.05] border border-white/[0.07]">
+        <div className="mx-auto grid place-items-center size-16 rounded-3xl bg-neutral-100 border border-neutral-200">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" className="text-neutral-500" aria-hidden>
             <path d="M4 19.5V10M9.5 19.5V4.5M15 19.5v-8M20.5 19.5V8" />
           </svg>
         </div>
-        <p className="text-neutral-400">{t("patterns.empty")}</p>
+        <p className="text-neutral-500">{t("patterns.empty")}</p>
         <Link to="/observe" className="btn-primary inline-block">{t("observe.start")}</Link>
       </div>
     );
@@ -85,22 +85,22 @@ export default function Patterns() {
     <div className="space-y-6">
       <div className="flex items-baseline justify-between">
         <h1 className="text-xl font-bold">{t("patterns.title")}</h1>
-        <span className="text-sm text-neutral-400">
+        <span className="text-sm text-neutral-500">
           {episodes.length} {t("patterns.episodes")} · {t("patterns.avgScore")} {avg.toFixed(1)}
         </span>
       </div>
 
       {insights.length > 0 && (
-        <div className="card p-4 !border-teal-400/30 !bg-teal-400/[0.06] space-y-1.5">
-          <h2 className="text-sm font-semibold text-teal-300">{t("patterns.insight")}</h2>
+        <div className="card p-4 !border-teal-200 !bg-teal-50 space-y-1.5">
+          <h2 className="text-sm font-semibold text-teal-700">{t("patterns.insight")}</h2>
           {insights.map((s, i) => (
-            <p key={i} className="text-sm text-neutral-300">• {s}</p>
+            <p key={i} className="text-sm text-neutral-500">• {s}</p>
           ))}
         </div>
       )}
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-400">{t("patterns.scoreOverTime")}</h2>
+        <h2 className="text-sm font-semibold text-neutral-500">{t("patterns.scoreOverTime")}</h2>
         <div className="flex items-end gap-1 h-24">
           {episodes.slice(-30).map((o) => (
             <div
@@ -111,25 +111,25 @@ export default function Patterns() {
             />
           ))}
         </div>
-        <div className="flex justify-between text-[10px] text-neutral-600">
+        <div className="flex justify-between text-[10px] text-neutral-500">
           <span>{episodes.length > 0 && new Date(episodes[Math.max(0, episodes.length - 30)].startedAt).toLocaleDateString()}</span>
           <span>{episodes.length > 0 && new Date(episodes[episodes.length - 1].startedAt).toLocaleDateString()}</span>
         </div>
       </section>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-400">{t("patterns.byTimeOfDay")}</h2>
+        <h2 className="text-sm font-semibold text-neutral-500">{t("patterns.byTimeOfDay")}</h2>
         <div className="space-y-2">
           {(["night", "morning", "afternoon", "evening"] as const).map((k) => (
             <div key={k} className="flex items-center gap-2 text-sm">
-              <span className="w-28 text-neutral-400">{t(`patterns.${k}`)}</span>
-              <div className="flex-1 h-4 rounded-full bg-white/[0.06] overflow-hidden">
+              <span className="w-28 text-neutral-500">{t(`patterns.${k}`)}</span>
+              <div className="flex-1 h-4 rounded-full bg-neutral-100 overflow-hidden">
                 <div
                   className="h-full bg-indigo-400 rounded-full"
                   style={{ width: `${episodes.length ? (byTime[k] / episodes.length) * 100 : 0}%` }}
                 />
               </div>
-              <span className="w-6 text-right text-neutral-300">{byTime[k]}</span>
+              <span className="w-6 text-right text-neutral-500">{byTime[k]}</span>
             </div>
           ))}
         </div>
@@ -137,10 +137,10 @@ export default function Patterns() {
 
       {zones.length > 0 && (
         <section className="card p-4 space-y-2">
-          <h2 className="text-sm font-semibold text-neutral-400">{t("patterns.zones")}</h2>
+          <h2 className="text-sm font-semibold text-neutral-500">{t("patterns.zones")}</h2>
           <div className="flex flex-wrap gap-2">
             {zones.map(([z, n]) => (
-              <span key={z} className="badge bg-orange-500/15 text-orange-300 border border-orange-400/20">
+              <span key={z} className="badge bg-orange-100 text-orange-800 border border-orange-200">
                 {t(`zones.${z}`)} ×{n}
               </span>
             ))}
@@ -150,11 +150,11 @@ export default function Patterns() {
 
       {helped.length > 0 && (
         <section className="card p-4 space-y-2">
-          <h2 className="text-sm font-semibold text-neutral-400">{t("patterns.worked")}</h2>
+          <h2 className="text-sm font-semibold text-neutral-500">{t("patterns.worked")}</h2>
           {helped.map(([type, v]) => (
             <div key={type} className="flex items-center justify-between text-sm">
-              <span className="text-neutral-300">{t(`interventions.${type}`)}</span>
-              <span className={v.yes / v.n >= 0.5 ? "text-emerald-400" : "text-neutral-500"}>
+              <span className="text-neutral-500">{t(`interventions.${type}`)}</span>
+              <span className={v.yes / v.n >= 0.5 ? "text-emerald-600" : "text-neutral-500"}>
                 {t("patterns.workedRate", { yes: v.yes, n: v.n })}
               </span>
             </div>

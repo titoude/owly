@@ -89,7 +89,7 @@ export default function ChildForm() {
 
       <div className="card p-4 space-y-3">
         <h2 className="font-semibold">{t("customDescriptors.title", { name: name || "…" })}</h2>
-        <p className="text-xs text-neutral-400">{t("customDescriptors.body")}</p>
+        <p className="text-xs text-neutral-500">{t("customDescriptors.body")}</p>
         {FLACC_CATEGORIES.map((c) => (
           <div key={c}>
             <label className="label text-xs" htmlFor={`d-${c}`}>{t(`flacc.${c}`)}</label>

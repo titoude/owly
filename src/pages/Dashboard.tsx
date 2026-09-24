@@ -32,11 +32,11 @@ export default function Dashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">{active.name}</h1>
-          <p className="text-sm text-neutral-400">
+          <p className="text-sm text-neutral-500">
             {count} {t("patterns.episodes")}
           </p>
         </div>
-        <Link to="/redflags" className="btn-ghost !bg-red-950/60 !text-red-300 text-sm">
+        <Link to="/redflags" className="btn-ghost !bg-red-50 !text-red-700 !border !border-red-200 text-sm">
           ⚠ {t("nav.redflags")}
         </Link>
       </div>
@@ -44,32 +44,32 @@ export default function Dashboard() {
       <button
         type="button"
         onClick={() => void nav("/observe")}
-        className="group w-full card p-6 text-left !border-teal-400/30 !bg-teal-400/[0.07] hover:!bg-teal-400/[0.12] hover:!border-teal-400/50 active:scale-[0.99] transition-all duration-150"
+        className="group w-full card p-6 text-left !border-teal-200 !bg-teal-50 hover:!bg-teal-100/70 hover:!border-teal-300 active:scale-[0.99] transition-all duration-150"
       >
         <div className="flex items-center gap-4">
-          <span className="grid place-items-center size-12 rounded-2xl bg-teal-400 text-neutral-950 shadow-[0_8px_20px_-6px_rgba(45,212,191,0.5)] transition-transform duration-150 group-active:scale-95">
+          <span className="grid place-items-center size-12 rounded-2xl bg-teal-600 text-white shadow-[0_8px_20px_-6px_rgba(45,212,191,0.5)] transition-transform duration-150 group-active:scale-95">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <circle cx="12" cy="12" r="8.5" />
               <path d="M12 8v8M8 12h8" />
             </svg>
           </span>
           <span>
-            <span className="block text-lg font-bold text-teal-200 tracking-tight">{t("observe.start")}</span>
-            <span className="block text-sm text-neutral-400">{t("observe.pickScore")} — 60 s</span>
+            <span className="block text-lg font-bold text-teal-800 tracking-tight">{t("observe.start")}</span>
+            <span className="block text-sm text-neutral-500">{t("observe.pickScore")} — 60 s</span>
           </span>
         </div>
       </button>
 
       {last ? (
         <section className="space-y-2">
-          <h2 className="text-sm font-semibold text-neutral-400">{t("history.title")}</h2>
+          <h2 className="text-sm font-semibold text-neutral-500">{t("history.title")}</h2>
           {recent.map((o) => (
             <div key={o.id} className="card p-3 flex items-center justify-between">
               <div>
                 <div className="text-sm font-medium">
                   {new Date(o.startedAt).toLocaleDateString()}{" "}
                   {new Date(o.startedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                  {o.baseline && <span className="ml-2 text-xs text-emerald-400">· {t("history.baseline")}</span>}
+                  {o.baseline && <span className="ml-2 text-xs text-emerald-600">· {t("history.baseline")}</span>}
                 </div>
                 <div className="text-xs text-neutral-500">
                   {o.bodyZones.map((z) => t(`zones.${z}`)).join(", ") || "—"}
@@ -78,7 +78,7 @@ export default function Dashboard() {
               <ScoreBadge total={o.total} />
             </div>
           ))}
-          <Link to="/history" className="block text-sm text-teal-400 pt-1">
+          <Link to="/history" className="block text-sm text-teal-600 pt-1">
             {t("history.title")} →
           </Link>
         </section>
