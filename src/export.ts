@@ -139,23 +139,24 @@ export async function importAll(json: string): Promise<void> {
   await db.transaction("rw", [db.children, db.observations, db.settings], async () => {
     await db.children.clear();
     await db.observations.clear();
+    // Drafts die inside the same transaction as the replace: restored
+    // children may reuse the same numeric ids, so a surviving draft would
+    // resurrect stale answers under a familiar-looking child — and a draft
+    // wipe that failed after commit would strand the restore. A rejected
+    // or cancelled import never reaches here and leaves drafts untouched.
+    await clearAllDrafts();
     await db.children.bulkAdd(children);
     await db.observations.bulkAdd(observations);
     // The previous active child id may not exist in the restored set.
     await db.settings.put({ key: "activeChildId", value: children[0]?.id ?? null });
   });
-  // Drafts die with the replace: restored children may reuse the same
-  // numeric ids, so a surviving draft would resurrect stale answers under
-  // a familiar-looking child. A rejected/cancelled import never reaches
-  // here and leaves drafts untouched.
-  clearAllDrafts();
 }
 
 export async function deleteAll(): Promise<void> {
+  // settings.clear() already wipes drafts — they are settings rows.
   await db.transaction("rw", [db.children, db.observations, db.settings], async () => {
     await db.children.clear();
     await db.observations.clear();
     await db.settings.clear();
   });
-  clearAllDrafts();
 }

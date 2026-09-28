@@ -3,7 +3,9 @@
     "name": "Owly",
     "tagline": "Quand ils ne peuvent pas dire où ça fait mal",
     "navLabel": "Navigation principale",
-    "demoBadge": "Démo — données fictives"
+    "demoBadge": "Démo — données fictives",
+    "storageErrorTitle": "Impossible d'accéder à la base locale",
+    "storageErrorBody": "Owly conserve tout sur cet appareil, et le stockage du navigateur est indisponible ou plein. Libérez de l'espace ou vérifiez les réglages de données de site, puis réessayez. Rien n'a été envoyé nulle part."
   },
   "nav": {
     "home": "Accueil",
@@ -94,7 +96,8 @@
     "draftPrompt": "Vous avez une observation non terminée. Reprenez là où vous étiez, ou supprimez-la.",
     "resume": "Reprendre",
     "discard": "Supprimer le brouillon",
-    "update": "Enregistrer"
+    "update": "Enregistrer",
+    "draftSaveFailed": "Impossible d'enregistrer le brouillon — le stockage de l'appareil est peut-être plein ou bloqué. Vos données enregistrées sont en sécurité ; terminez et enregistrez l'observation pour la conserver."
   },
   "interventions": {
     "comfort": "Réconfort (câlin, doudou, couverture)",
@@ -252,7 +255,8 @@
     "confirm": "Confirmer",
     "loading": "Chargement…",
     "of": "sur",
-    "edit": "Modifier"
+    "edit": "Modifier",
+    "retry": "Réessayer"
   },
   "flacc": {
     "face": "Visage",

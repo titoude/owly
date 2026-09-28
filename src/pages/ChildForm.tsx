@@ -68,11 +68,11 @@ export default function ChildForm() {
     if (!id) return;
     const childId = Number(id);
     const obsIds = (await db.observations.where("childId").equals(childId).primaryKeys()) as number[];
-    await db.transaction("rw", [db.children, db.observations], async () => {
+    await db.transaction("rw", [db.children, db.observations, db.settings], async () => {
       await db.observations.where("childId").equals(childId).delete();
       await db.children.delete(childId);
+      await clearChildDrafts(childId, obsIds);
     });
-    clearChildDrafts(childId, obsIds);
     await refresh();
     nav("/settings");
   }

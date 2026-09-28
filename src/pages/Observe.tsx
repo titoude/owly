@@ -40,14 +40,17 @@ export default function Observe() {
   // autosave stays off — we must not clobber it with an empty form.
   const [offer, setOffer] = useState<ObsDraft | null>(null);
   const [offerSeen, setOfferSeen] = useState(false); // true once resolved
+  const [draftFailed, setDraftFailed] = useState(false); // draft write rejected (quota/denied)
   const seeded = useRef<string>(""); // JSON of the seeded fields
+  const orig = useRef<Observation | null>(null); // edited record, for timestamp preservation
+  const seededWhen = useRef<string | null>(null); // customAt string the form was seeded with
   const stepHeading = useRef<HTMLDivElement>(null);
 
   const key = editId ? draftEditKey(editId) : active?.id ? draftKey(active.id) : null;
 
-  const fields = useMemo<ObsDraft>(() => ({
+  const fields = useMemo<Omit<ObsDraft, "startedAt">>(() => ({
     step, baseline, minutesAgo, customAt, scores, duration, zones, cause, interventions, note,
-    savedAt: Date.now(),
+    savedAt: 0,
   }), [step, baseline, minutesAgo, customAt, scores, duration, zones, cause, interventions, note]);
 
   // Seed from an existing record in edit mode (guard: it must belong to
@@ -61,9 +64,11 @@ export default function Observe() {
         const o = await db.observations.get(editId);
         if (cancelled) return;
         if (!o || o.childId !== active.id) { nav("/history"); return; }
+        orig.current = o;
+        seededWhen.current = toLocalInput(new Date(o.startedAt));
         setBaseline(o.baseline);
         setMinutesAgo(0);
-        setCustomAt(toLocalInput(new Date(o.startedAt)));
+        setCustomAt(seededWhen.current);
         setScores(o.scores);
         setDuration(o.durationMinutes);
         setZones(o.bodyZones);
@@ -71,12 +76,12 @@ export default function Observe() {
         setInterventions(o.interventions);
         setNote(o.note);
       }
-    })().then(() => {
       if (cancelled || !key) return;
-      const d = loadDraft(key);
+      const d = await loadDraft(key);
+      if (cancelled) return;
       if (d) setOffer(d);
       setOfferSeen(true);
-    });
+    })();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active?.id, editId]);
@@ -92,9 +97,14 @@ export default function Observe() {
   // form actually differs from what it was seeded with.
   useEffect(() => {
     if (!key || !offerSeen || offer) return;
-    if (JSON.stringify({ ...fields, savedAt: 0 }) === seeded.current) return;
-    saveDraft(key, fields);
-  }, [key, offerSeen, offer, fields]);
+    if (JSON.stringify(fields) === seeded.current) return;
+    // Pin the absolute instant the "when" selection refers to now, so
+    // resuming hours later cannot silently shift the episode's timing.
+    const startedAt = customAt ? new Date(customAt).getTime() : Date.now() - minutesAgo * 60_000;
+    saveDraft(key, { ...fields, startedAt: Number.isFinite(startedAt) ? startedAt : null, savedAt: Date.now() })
+      .then(() => setDraftFailed(false))
+      .catch(() => setDraftFailed(true));
+  }, [key, offerSeen, offer, fields, customAt, minutesAgo]);
 
   // Move focus to the step region on each step change so keyboard and
   // screen-reader users don't lose their place in the 8-step flow.
@@ -119,8 +129,12 @@ export default function Observe() {
     const obs: Observation = {
       ...(editId ? { id: editId } : {}),
       childId: active.id,
-      startedAt: customAt ? Math.min(new Date(customAt).getTime(), Date.now()) : Date.now() - minutesAgo * 60_000,
-      recordedAt: Date.now(),
+      // Edit mode: an untouched "when" keeps the original absolute
+      // timestamp — a note-only correction must not move the episode.
+      startedAt: editId && orig.current && customAt === seededWhen.current
+        ? orig.current.startedAt
+        : customAt ? Math.min(new Date(customAt).getTime(), Date.now()) : Date.now() - minutesAgo * 60_000,
+      recordedAt: editId && orig.current ? orig.current.recordedAt : Date.now(),
       scores: scores as FlaccScores,
       total,
       durationMinutes: duration,
@@ -131,9 +145,12 @@ export default function Observe() {
       baseline,
     };
     try {
-      if (editId) await db.observations.put(obs);
-      else await db.observations.add(obs);
-      if (key) clearDraft(key);
+      // The write and its draft cleanup commit or roll back together.
+      await db.transaction("rw", [db.observations, db.settings], async () => {
+        if (editId) await db.observations.put(obs);
+        else await db.observations.add(obs);
+        if (key) await clearDraft(key);
+      });
       nav("/history");
     } catch {
       setSaving(false);
@@ -145,21 +162,33 @@ export default function Observe() {
     if (!offer) return;
     setStep(offer.step);
     setBaseline(offer.baseline);
-    setMinutesAgo(offer.minutesAgo);
-    setCustomAt(offer.customAt);
+    // Restore the pinned absolute instant, not the relative "N minutes
+    // ago" that would re-anchor against resume time.
+    if (offer.startedAt != null) {
+      setCustomAt(toLocalInput(new Date(offer.startedAt)));
+      setMinutesAgo(0);
+    } else {
+      setMinutesAgo(offer.minutesAgo);
+      setCustomAt(offer.customAt);
+    }
     setScores(offer.scores);
     setDuration(offer.duration);
     setZones(offer.zones);
     setCause(offer.cause);
     setInterventions(offer.interventions as Intervention[]);
     setNote(offer.note);
-    // The resumed state becomes the new baseline for dirty-checking.
-    seeded.current = JSON.stringify({ ...offer, savedAt: 0 });
+    // The resumed state becomes the new baseline for dirty-checking —
+    // expressed in the fields' own shape (no startedAt, resolved when).
+    seeded.current = JSON.stringify({
+      ...offer, startedAt: undefined, savedAt: 0,
+      customAt: offer.startedAt != null ? toLocalInput(new Date(offer.startedAt)) : offer.customAt,
+      minutesAgo: offer.startedAt != null ? 0 : offer.minutesAgo,
+    });
     setOffer(null);
   }
 
   function discard() {
-    if (key) clearDraft(key);
+    if (key) void clearDraft(key).catch(() => setDraftFailed(true));
     setOffer(null);
   }
 
@@ -391,6 +420,7 @@ export default function Observe() {
           </button>
         )}
         {saveError && <p className="text-sm text-red-700 text-center w-full" role="alert">{saveError}</p>}
+        {draftFailed && <p className="text-sm text-red-700 text-center w-full" role="alert">{t("observe.draftSaveFailed")}</p>}
         {step < STEPS - 1 ? (
           <button
             type="button"

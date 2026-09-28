@@ -180,6 +180,53 @@ try {
     }
   }
 
+  // ── 10b. Wizard remounts across edit→new and edit→edit ──────
+  // Regression: same-component reconciliation carried edit state into a
+  // "new" wizard and autosaved it under the wrong draft key.
+  await page.goto(BASE + "/#/history");
+  await page.waitForTimeout(500);
+  const editLinks = page.locator("a", { hasText: /^edit$|^modifier$/i });
+  await editLinks.first().click();
+  await page.waitForTimeout(600);
+  ok("edit route opens edit mode", /edit observation|modifier l/i.test(await page.locator("h1").first().innerText()));
+  await page.locator("button", { hasText: /next|suivant/i }).first().click();
+  await page.waitForTimeout(400);
+  // A FLACC radio must be preselected from the stored record (face score).
+  const faceChecked = await page.locator("input[name='flacc-face']:checked").inputValue().catch(() => "none");
+  ok("edit preselects the stored score", faceChecked !== "none", `face=${faceChecked}`);
+  // Now jump to the NEW-observation nav — the wizard must fully reset.
+  await page.locator("nav.fixed button").nth(1).click();
+  await page.waitForTimeout(600);
+  const stepTxt = await page.locator("[role='status']").first().innerText().catch(() => "?");
+  const h1new = await page.locator("h1").first().innerText();
+  ok(
+    "edit → new fully remounts the wizard",
+    /new observation|nouvelle observation/i.test(h1new) && /1\/8/.test(stepTxt) &&
+      (await page.locator("#draft-title").count()) === 0,
+    `${h1new} / ${stepTxt}`,
+  );
+  // edit → edit on a different record must reseed, not leak.
+  await page.goto(BASE + "/#/history");
+  await page.waitForTimeout(500);
+  const links2 = page.locator("a", { hasText: /^edit$|^modifier$/i });
+  if ((await links2.count()) >= 2) {
+    await links2.nth(0).click();
+    await page.waitForTimeout(400);
+    await page.locator("button", { hasText: /next|suivant/i }).first().click();
+    await page.waitForTimeout(300);
+    const a = await page.locator("input[name='flacc-face']:checked").inputValue().catch(() => "none");
+    await page.goto(BASE + "/#/history");
+    await page.waitForTimeout(400);
+    await links2.nth(1).click();
+    await page.waitForTimeout(400);
+    await page.locator("button", { hasText: /next|suivant/i }).first().click();
+    await page.waitForTimeout(300);
+    const b = await page.locator("input[name='flacc-face']:checked").inputValue().catch(() => "none");
+    ok("edit → edit reseeds per record", a !== "none" && b !== "none", `record1 face=${a} record2 face=${b}`);
+  } else {
+    ok("edit → edit reseeds per record", false, "need ≥2 observations to compare");
+  }
+
   // ── 11. Export produces JSON download ──────────────────────
   await page.goto(BASE + "/#/settings");
   await page.waitForTimeout(400);

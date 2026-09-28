@@ -1,0 +1,30 @@
+{
+  "manifest": "scripts/a11y/manifest.json",
+  "audited": [
+    "route:/",
+    "route:/history",
+    "route:/patterns",
+    "route:/report",
+    "route:/settings",
+    "route:/redflags",
+    "route:/welcome",
+    "route:/child/new",
+    "observe-step0",
+    "observe-step1",
+    "observe-step2",
+    "observe-step3",
+    "observe-step4",
+    "observe-step5",
+    "observe-step6",
+    "observe-step7",
+    "delete-confirm",
+    "child-edit",
+    "import-preview",
+    "state:fr",
+    "state:rtl",
+    "empty-dashboard",
+    "empty-history",
+    "pin-locked",
+    "pin-error"
+  ]
+}

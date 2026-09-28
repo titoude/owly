@@ -62,13 +62,15 @@ export async function seedDemo(): Promise<void> {
 }
 
 export async function clearDemo(): Promise<void> {
-  const demos = await db.children.filter((c) => !!c.isDemo).toArray();
-  for (const d of demos) {
-    if (d.id) {
-      const obsIds = (await db.observations.where("childId").equals(d.id).primaryKeys()) as number[];
-      await db.observations.where("childId").equals(d.id).delete();
-      await db.children.delete(d.id);
-      clearChildDrafts(d.id, obsIds);
+  await db.transaction("rw", [db.children, db.observations, db.settings], async () => {
+    const demos = await db.children.filter((c) => !!c.isDemo).toArray();
+    for (const d of demos) {
+      if (d.id) {
+        const obsIds = (await db.observations.where("childId").equals(d.id).primaryKeys()) as number[];
+        await db.observations.where("childId").equals(d.id).delete();
+        await db.children.delete(d.id);
+        await clearChildDrafts(d.id, obsIds);
+      }
     }
-  }
+  });
 }

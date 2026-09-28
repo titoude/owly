@@ -53,8 +53,11 @@ function detected(): Lang {
   return (hit as Lang | undefined) ?? "en";
 }
 
-const saved = localStorage.getItem("owly-lang") as Lang | null;
-const initial: Lang = saved && (LANGS as readonly string[]).includes(saved) ? saved : detected();
+// localStorage may be denied (private mode, policy, quota) — language
+// persistence is optional; a thrown read must never block app boot.
+let saved: string | null = null;
+try { saved = localStorage.getItem("owly-lang"); } catch { /* denied */ }
+const initial: Lang = saved && (LANGS as readonly string[]).includes(saved) ? (saved as Lang) : detected();
 
 i18n.use(initReactI18next).init({
   resources: {
@@ -81,7 +84,7 @@ applyDir(i18n.language);
 i18n.on("languageChanged", applyDir);
 
 export function setLang(lang: Lang) {
-  localStorage.setItem("owly-lang", lang);
+  try { localStorage.setItem("owly-lang", lang); } catch { /* denied — session-only language */ }
   void i18n.changeLanguage(lang);
 }
 

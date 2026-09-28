@@ -33,6 +33,7 @@ export default function History() {
     return (
       <div className="text-center space-y-4 pt-20">
         <img src="/icon.svg" alt="" className="mx-auto size-16 rounded-2xl opacity-70" />
+        <h1 className="text-xl font-bold">{t("history.title")}</h1>
         <p className="text-neutral-600">{t("history.empty")}</p>
         <Link to="/observe" className="btn-primary inline-block">
           {t("history.emptyCta")}

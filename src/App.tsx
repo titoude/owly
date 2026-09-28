@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AppProvider, useApp } from "./appContext";
 import Onboarding from "./pages/Onboarding";
@@ -67,21 +67,33 @@ const NAV = [
   { to: "/settings", Icon: IconSettings, label: "nav.settings" },
 ];
 
+// The wizard must remount on every identity change — same-component
+// reconciliation otherwise carries fields/draft state between an edit and
+// a fresh observation, or between two children.
+function ObserveKeyed() {
+  const { active } = useApp();
+  const { id } = useParams();
+  return <Observe key={`${active?.id ?? "none"}:${id ?? "new"}`} />;
+}
+
 // Report is a destination, not a daily tab — reachable in the desktop rail
 // and from Dashboard/Patterns entry points on mobile.
 const REPORT_NAV = { to: "/report", Icon: IconReport, label: "nav.report" };
 
 function Shell() {
   const { t } = useTranslation();
-  const { children, active, loading } = useApp();
+  const { children, active, loading, error, refresh } = useApp();
   const nav = useNavigate();
   const loc = useLocation();
   const [locked, setLocked] = useState(false);
   const [lockChecked, setLockChecked] = useState(false);
 
   useEffect(() => {
-    void getSetting<string>("passcode").then((p) => {
+    getSetting<string>("passcode").then((p) => {
       setLocked(!!p);
+      setLockChecked(true);
+    }).catch(() => {
+      // DB unreachable — the provider's error state takes over the screen.
       setLockChecked(true);
     });
     const arm = () => setLocked(true);
@@ -93,6 +105,20 @@ function Shell() {
     return (
       <div className="min-h-dvh grid place-items-center text-neutral-600">
         {t("common.loading")}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-dvh grid place-items-center px-6">
+        <div className="max-w-sm text-center space-y-4" role="alert">
+          <h1 className="text-xl font-bold">{t("app.storageErrorTitle")}</h1>
+          <p className="text-sm text-neutral-600">{t("app.storageErrorBody")}</p>
+          <button type="button" className="btn-primary px-6" onClick={() => void refresh()}>
+            {t("common.retry")}
+          </button>
+        </div>
       </div>
     );
   }
@@ -164,19 +190,19 @@ function Shell() {
       </aside>
 
       <div className="md:pl-56 flex flex-col min-h-dvh">
-        {active?.isDemo && (
-          <div className="md:hidden px-4 pt-3">
-            <span className="badge bg-amber-100 text-amber-800 border border-amber-200">
-              {t("app.demoBadge")}
-            </span>
-          </div>
-        )}
         <main className="flex-1 mx-auto w-full max-w-lg md:max-w-2xl px-4 pb-28 md:pb-14 pt-6 md:pt-10">
+          {active?.isDemo && (
+            <div className="md:hidden mb-4">
+              <span className="badge bg-amber-100 text-amber-800 border border-amber-200">
+                {t("app.demoBadge")}
+              </span>
+            </div>
+          )}
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/welcome" element={<Onboarding />} />
-            <Route path="/observe" element={<Observe />} />
-            <Route path="/observe/:id/edit" element={<Observe />} />
+            <Route path="/observe" element={<ObserveKeyed />} />
+            <Route path="/observe/:id/edit" element={<ObserveKeyed />} />
             <Route path="/history" element={<History />} />
             <Route path="/patterns" element={<Patterns />} />
             <Route path="/report" element={<Report />} />

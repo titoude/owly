@@ -3,7 +3,9 @@
     "name": "Owly",
     "tagline": "当他们说不出哪里疼",
     "navLabel": "主导航",
-    "demoBadge": "演示 — 虚构数据"
+    "demoBadge": "演示 — 虚构数据",
+    "storageErrorTitle": "无法访问本地数据库",
+    "storageErrorBody": "Owly 将所有内容保存在此设备上，而浏览器存储不可用或已满。请释放一些空间或检查浏览器的站点数据设置，然后重试。没有发送任何内容。"
   },
   "nav": {
     "home": "主页",
@@ -94,7 +96,8 @@
     "draftPrompt": "您有一条未完成的观察记录。从上次的地方继续，或将其丢弃。",
     "resume": "继续草稿",
     "discard": "丢弃草稿",
-    "update": "保存更改"
+    "update": "保存更改",
+    "draftSaveFailed": "无法保存草稿——设备存储空间可能已满或被阻止。您已记录的数据是安全的；完成并保存观察记录即可保留。"
   },
   "interventions": {
     "comfort": "安抚（拥抱、抱着、毯子）",
@@ -250,7 +253,8 @@
     "confirm": "确认",
     "loading": "加载中…",
     "of": "/",
-    "edit": "编辑"
+    "edit": "编辑",
+    "retry": "重试"
   },
   "flacc": {
     "face": "Face",

@@ -3,7 +3,9 @@
     "name": "Owly",
     "tagline": "Quando non possono dire dove fa male",
     "navLabel": "Navigazione principale",
-    "demoBadge": "Demo — dati fittizi"
+    "demoBadge": "Demo — dati fittizi",
+    "storageErrorTitle": "Impossibile accedere al database locale",
+    "storageErrorBody": "Owly conserva tutto su questo dispositivo e lo spazio di archiviazione del browser non è disponibile o è pieno. Libera spazio o controlla le impostazioni dei dati dei siti, poi riprova. Nulla è stato inviato."
   },
   "nav": {
     "home": "Home",
@@ -94,7 +96,8 @@
     "draftPrompt": "Hai un'osservazione non completata. Riprendi da dove eri rimasto, o eliminala.",
     "resume": "Riprendi bozza",
     "discard": "Elimina bozza",
-    "update": "Salva modifiche"
+    "update": "Salva modifiche",
+    "draftSaveFailed": "Impossibile salvare la bozza: lo spazio sul dispositivo potrebbe essere pieno o bloccato. I dati registrati sono al sicuro; completa e salva l'osservazione per conservarla."
   },
   "interventions": {
     "comfort": "Conforto (abbraccio, tenerlo in braccio, coperta)",
@@ -252,7 +255,8 @@
     "confirm": "Conferma",
     "loading": "Caricamento…",
     "of": "di",
-    "edit": "Modifica"
+    "edit": "Modifica",
+    "retry": "Riprova"
   },
   "flacc": {
     "face": "Face",

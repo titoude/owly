@@ -3,7 +3,9 @@
     "name": "Owly",
     "tagline": "Quando não conseguem dizer onde dói",
     "navLabel": "Navegação principal",
-    "demoBadge": "Demonstração — dados fictícios"
+    "demoBadge": "Demonstração — dados fictícios",
+    "storageErrorTitle": "Não é possível aceder à base de dados local",
+    "storageErrorBody": "O Owly guarda tudo neste dispositivo e o armazenamento do navegador está indisponível ou cheio. Liberte espaço ou verifique as definições de dados do site e tente novamente. Nada foi enviado."
   },
   "nav": {
     "home": "Início",
@@ -94,7 +96,8 @@
     "draftPrompt": "Tem uma observação por terminar. Retome onde parou, ou descarte-a.",
     "resume": "Retomar rascunho",
     "discard": "Descartar rascunho",
-    "update": "Guardar alterações"
+    "update": "Guardar alterações",
+    "draftSaveFailed": "Não foi possível guardar o rascunho — o armazenamento do dispositivo pode estar cheio ou bloqueado. Os seus dados registados estão seguros; termine e guarde a observação para a conservar."
   },
   "interventions": {
     "comfort": "Conforto (abraço, colo, manta)",
@@ -252,7 +255,8 @@
     "confirm": "Confirmar",
     "loading": "A carregar…",
     "of": "de",
-    "edit": "Editar"
+    "edit": "Editar",
+    "retry": "Tentar novamente"
   },
   "flacc": {
     "face": "Face",

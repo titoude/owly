@@ -13,6 +13,9 @@ const ok = (name, pass, extra = "") => {
 const browser = await launchBrowser();
 const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
 const page = await context.newPage();
+// Listener before any navigation — an early boot error must be caught.
+const errs = [];
+page.on("pageerror", (e) => errs.push(e.message));
 
 try {
   // Seed demo data via the onboarding screen (no child exists yet).
@@ -49,8 +52,12 @@ try {
   const file = await dl;
   ok("first PDF generates fully offline", /\.pdf$/i.test(file.suggestedFilename()), file.suggestedFilename());
 
-  const errs = [];
-  page.on("pageerror", (e) => errs.push(e.message));
+  // Verify real PDF bytes, not just a filename: %PDF header, EOF trailer,
+  // and a plausible size for a font-embedded multi-page report.
+  const path = await file.path();
+  const { readFileSync } = await import("node:fs");
+  const bytes = readFileSync(path);
+  ok("download is a valid PDF", bytes.length > 50_000 && bytes.subarray(0, 5).toString() === "%PDF-" && bytes.includes("%%EOF"), `${bytes.length} bytes`);
   ok("no page errors offline", errs.length === 0, errs.slice(0, 2).join(" | "));
 } catch (e) {
   ok("offline suite crashed", false, String(e).slice(0, 240));

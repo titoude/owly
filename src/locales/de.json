@@ -3,7 +3,9 @@
     "name": "Owly",
     "tagline": "Wenn sie nicht sagen können, wo es wehtut",
     "navLabel": "Hauptnavigation",
-    "demoBadge": "Demo — fiktive Daten"
+    "demoBadge": "Demo — fiktive Daten",
+    "storageErrorTitle": "Lokale Datenbank nicht erreichbar",
+    "storageErrorBody": "Owly speichert alles auf diesem Gerät und der Browserspeicher ist nicht verfügbar oder voll. Geben Sie Speicher frei oder prüfen Sie die Website-Daten-Einstellungen und versuchen Sie es erneut. Es wurde nichts übertragen."
   },
   "nav": {
     "home": "Start",
@@ -94,7 +96,8 @@
     "draftPrompt": "Sie haben eine unvollendete Beobachtung. Fahren Sie dort fort, wo Sie aufgehört haben, oder verwerfen Sie sie.",
     "resume": "Entwurf fortsetzen",
     "discard": "Entwurf verwerfen",
-    "update": "Änderungen speichern"
+    "update": "Änderungen speichern",
+    "draftSaveFailed": "Der Entwurf konnte nicht gespeichert werden — der Gerätespeicher ist möglicherweise voll oder blockiert. Ihre aufgezeichneten Daten sind sicher; beenden Sie die Beobachtung und speichern Sie sie, um sie zu behalten."
   },
   "interventions": {
     "comfort": "Trösten (Umarmung, Halten, Decke)",
@@ -252,7 +255,8 @@
     "confirm": "Bestätigen",
     "loading": "Laden…",
     "of": "von",
-    "edit": "Bearbeiten"
+    "edit": "Bearbeiten",
+    "retry": "Erneut versuchen"
   },
   "flacc": {
     "face": "Face",
