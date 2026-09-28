@@ -147,7 +147,7 @@ export async function buildReport(child: Child, observations: Observation[], opt
 
   // Header
   line(ctx, t("title"), { font: bold, size: 15, color: INK, gap: 19 });
-  line(ctx, `${child.name}${child.birthYear ? ` · ${t("born")} ${child.birthYear}` : ""}${child.conditions ? ` · ${child.conditions}` : ""}`, { size: 10, color: MUTED, gap: 14 });
+  line(ctx, `${child.name}${child.isDemo ? ` (${t("demoTag")})` : ""}${child.birthYear ? ` · ${t("born")} ${child.birthYear}` : ""}${child.conditions ? ` · ${child.conditions}` : ""}`, { size: 10, color: MUTED, gap: 14 });
   line(ctx, t("prepared", { date: fmtDate(Date.now()), count: episodes.length }), { size: 8.5, color: MUTED, gap: 10 });
   ctx.page.drawLine({ start: { x: ctx.left, y: ctx.y }, end: { x: ctx.left + ctx.width, y: ctx.y }, thickness: 1.4, color: ACCENT });
   ctx.y -= 12;
@@ -265,6 +265,14 @@ export async function buildReport(child: Child, observations: Observation[], opt
     ctx.page.drawText(safe(l), { x: ctx.left, y: fy, size: 7, font, color: MUTED });
     fy -= 9;
   }
+
+  // Every page (incl. continuation pages) gets a running stamp: child identity
+  // + page number, plus a demo tag when the report was built from demo data.
+  const pages = doc.getPages();
+  const stamp = `${safe(child.name)}${child.isDemo ? ` (${t("demoTag")})` : ""} — p. `;
+  pages.forEach((p, i) => {
+    p.drawText(`${stamp}${i + 1}/${pages.length}`, { x: ctx.left, y: 20, size: 7, font, color: MUTED });
+  });
 
   return doc.save();
 }

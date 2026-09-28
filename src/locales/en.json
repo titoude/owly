@@ -2,7 +2,8 @@
   "app": {
     "name": "Owly",
     "tagline": "When they can't say where it hurts",
-    "navLabel": "Main navigation"
+    "navLabel": "Main navigation",
+    "demoBadge": "Demo — fictional data"
   },
   "nav": {
     "home": "Home",
@@ -180,9 +181,12 @@
       "continued": "continued",
       "episodesLine_one": "{{count}} episode, average FLACC {{avg}}/10 (max {{max}})",
       "episodesLine_other": "{{count}} episodes, average FLACC {{avg}}/10 (max {{max}})",
-      "nightLine": "{{night}}/{{count}} occurred at night (22:00–06:00)"
+      "nightLine": "{{night}}/{{count}} occurred at night (22:00–06:00)",
+      "demoTag": "demo"
     },
-    "allTime": "All recorded episodes"
+    "allTime": "All recorded episodes",
+    "entryTitle": "Prepare the report",
+    "entryDesc": "Pick the period and what to include, then generate the clinician PDF."
   },
   "settings": {
     "title": "Settings",
@@ -228,7 +232,8 @@
     "importPreviewTitle": "Replace current data?",
     "importPreview": "This backup from {{date}} holds {{children}} profile(s) and {{observations}} observation(s). Importing it permanently replaces the {{curChildren}} profile(s) and {{curObs}} observation(s) now on this device.",
     "importConfirm": "Replace with this backup",
-    "wrongPin": "Wrong code"
+    "wrongPin": "Wrong code",
+    "privacyBody": "Everything you record stays on this device (IndexedDB) — no account, no cloud, no analytics. The PIN is only a screen lock: it does not encrypt data, and anyone with access to this device could open the journal with device tools. Backups are unencrypted JSON files: store them like the journal itself. Deleting the app or site data erases everything unless you exported a backup."
   },
   "common": {
     "back": "Back",

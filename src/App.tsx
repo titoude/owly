@@ -129,7 +129,12 @@ function Shell() {
       <aside className="hidden md:flex md:flex-col fixed inset-y-0 left-0 w-56 z-40 border-r border-neutral-200 bg-white/75 backdrop-blur-xl px-3 py-6">
         <div className="px-2 pb-5">
           <span className="text-lg font-bold tracking-tight">Owly</span>
-          <p className="text-[11px] text-neutral-500">{t("app.tagline")}</p>
+          <p className="text-xs text-neutral-600">{t("app.tagline")}</p>
+          {active?.isDemo && (
+            <span className="badge bg-amber-100 text-amber-800 border border-amber-200 mt-2">
+              {t("app.demoBadge")}
+            </span>
+          )}
         </div>
         <nav className="flex-1 space-y-0.5" aria-label={t("app.navLabel")}>
           {railItems.map((n) => {
@@ -159,6 +164,13 @@ function Shell() {
       </aside>
 
       <div className="md:pl-56 flex flex-col min-h-dvh">
+        {active?.isDemo && (
+          <div className="md:hidden px-4 pt-3">
+            <span className="badge bg-amber-100 text-amber-800 border border-amber-200">
+              {t("app.demoBadge")}
+            </span>
+          </div>
+        )}
         <main className="flex-1 mx-auto w-full max-w-lg md:max-w-2xl px-4 pb-28 md:pb-14 pt-6 md:pt-10">
           <Routes>
             <Route path="/" element={<Dashboard />} />
@@ -175,9 +187,9 @@ function Shell() {
         </main>
       </div>
 
-      {/* Mobile: 5 calm tabs */}
-      <nav className="fixed bottom-0 inset-x-0 z-40 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-2 px-4 md:hidden" aria-label={t("app.navLabel")}>
-        <div className="mx-auto max-w-lg grid grid-cols-5 rounded-3xl border border-neutral-200 bg-white/90 backdrop-blur-xl shadow-[0_8px_24px_-12px_rgba(0,0,0,0.25)]">
+      {/* Mobile: 5 calm tabs — flat bottom bar, no floating pill */}
+      <nav className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-neutral-200 pb-[env(safe-area-inset-bottom)] md:hidden" aria-label={t("app.navLabel")}>
+        <div className="mx-auto max-w-lg grid grid-cols-5">
           {NAV.map((n) => {
             const selected = loc.pathname === n.to;
             return (
@@ -185,8 +197,8 @@ function Shell() {
                 key={n.to}
                 onClick={() => void nav(n.to)}
                 aria-current={selected ? "page" : undefined}
-                className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium touch-target transition-colors duration-150 rounded-3xl
-                  ${selected ? "text-teal-700" : "text-neutral-600 hover:text-neutral-900"}`}
+                className={`flex flex-col items-center gap-1 py-2 text-[13px] font-medium touch-target transition-colors duration-150 border-t-2 -mt-px
+                  ${selected ? "text-teal-700 border-teal-700" : "text-neutral-600 border-transparent hover:text-neutral-900"}`}
               >
                 <span aria-hidden className="leading-none"><n.Icon /></span>
                 {t(n.label)}

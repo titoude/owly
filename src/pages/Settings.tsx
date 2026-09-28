@@ -35,8 +35,13 @@ export default function Settings() {
 
   useEffect(() => {
     void getSetting<string>("passcode").then((p) => setPinSet(!!p));
-    void db.observations.count().then(setObsCount);
   }, []);
+
+  // Refresh the "current" counts shown in the replacement preview whenever
+  // children change (import, demo load/clear, wipe) — never trust a stale mount value.
+  useEffect(() => {
+    void db.observations.count().then(setObsCount);
+  }, [children]);
 
   // ?demo=1 auto-seed (from onboarding)
   useEffect(() => {
@@ -242,10 +247,13 @@ export default function Settings() {
         )}
       </section>
 
-      <section className="card p-4 space-y-2">
+      <section className="card p-4 space-y-3">
         <h2 className="text-sm font-semibold text-neutral-600">{t("settings.about")}</h2>
-        <p className="text-xs text-neutral-600 leading-relaxed">{t("settings.privacy")}</p>
-        <p className="text-xs text-neutral-600">{t("settings.license")}</p>
+        <div>
+          <h3 className="text-sm font-semibold">{t("settings.privacy")}</h3>
+          <p className="text-sm text-neutral-600 leading-relaxed">{t("settings.privacyBody")}</p>
+        </div>
+        <p className="text-sm text-neutral-600">{t("settings.license")}</p>
       </section>
 
       {msg && <p className={`text-center text-sm ${msg.error ? "text-red-700" : "text-teal-700"}`} role={msg.error ? "alert" : "status"}>{msg.text}</p>}

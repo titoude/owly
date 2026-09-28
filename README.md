@@ -12,7 +12,9 @@ Built for [Opethon](https://opethon.com/) — Accessibility & Inclusion track.
 
 A child who can't speak still feels pain. Parents of nonverbal kids learn to read grimaces, rocking, sudden stillness — but when the doctor asks *"how often? how bad? what helps?"*, all they have is memory and worry. Pain in this population is documented to be **under-recognized and under-treated**: caregivers report distress behaviors clinicians can't interpret, and every appointment starts from zero.
 
-Commercial tools exist — but on the wrong side of the wall. PainChek®, the leading clinical product, is built (and priced) for institutions, and its children version isn't expected before ~2027. Families get nothing.
+Commercial tools exist, but they're built for institutions. PainChek® — the leading clinical product — is licensed to facilities and clinicians; it does offer a parent-facing app, but only for infants aged 1–12 months ([PainChek Infant](https://www.painchek.com/use-cases/infant-for-parents/)). For families of older nonverbal children, there is still no simple, private caregiver journal.
+
+Owly's difference is architectural, not clinical: local-first and offline, no account, no subscription, no data leaves the device — a journal for caregivers, not a diagnostic tool.
 
 ## What Owly does
 

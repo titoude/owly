@@ -81,7 +81,13 @@ describe("buildReport", () => {
     expect(doc.getPageCount()).toBeGreaterThan(1);
     // Every string actually rendered sits inside the printable area
     // (content stays above the footer zone; nothing below ~34pt or off-page).
-    expect(Math.min(...drawnY(calls))).toBeGreaterThanOrEqual(30);
+    // Content must stay in the printable zone (>= footer zone at ~34pt);
+    // the per-page identity stamp legitimately sits lower in the margin.
+    const contentYs = drawnY(calls.filter((c) => !/ — p\. \d+\/\d+$/.test(String(c[0]))));
+    expect(Math.min(...contentYs)).toBeGreaterThanOrEqual(30);
+    const stampYs = drawnY(calls.filter((c) => / — p\. \d+\/\d+$/.test(String(c[0]))));
+    expect(stampYs.length).toBe(doc.getPageCount());
+    expect(Math.min(...stampYs)).toBeGreaterThan(0);
     // The long field was rendered, not clipped away.
     expect(drawnText(calls)).toContain("Observation detaillee du comportement.");
     expect(drawnText(calls)).toContain("Is this pattern relevant?");
@@ -101,7 +107,13 @@ describe("buildReport", () => {
     for (let i = 0; i < 60; i++) {
       expect(all).toContain(`ep${String(i).padStart(2, "0")}marker`);
     }
-    expect(Math.min(...drawnY(calls))).toBeGreaterThanOrEqual(30);
+    // Content must stay in the printable zone (>= footer zone at ~34pt);
+    // the per-page identity stamp legitimately sits lower in the margin.
+    const contentYs = drawnY(calls.filter((c) => !/ — p\. \d+\/\d+$/.test(String(c[0]))));
+    expect(Math.min(...contentYs)).toBeGreaterThanOrEqual(30);
+    const stampYs = drawnY(calls.filter((c) => / — p\. \d+\/\d+$/.test(String(c[0]))));
+    expect(stampYs.length).toBe(doc.getPageCount());
+    expect(Math.min(...stampYs)).toBeGreaterThan(0);
   });
 
   it("splits an episode taller than a page across pages, repeating its identity", async () => {
@@ -119,7 +131,13 @@ describe("buildReport", () => {
     expect(doc.getPageCount()).toBeGreaterThan(2);
     const all = drawnText(calls);
     // Nothing drawn below the footer zone / off-page — every line is visible.
-    expect(Math.min(...drawnY(calls))).toBeGreaterThanOrEqual(30);
+    // Content must stay in the printable zone (>= footer zone at ~34pt);
+    // the per-page identity stamp legitimately sits lower in the margin.
+    const contentYs = drawnY(calls.filter((c) => !/ — p\. \d+\/\d+$/.test(String(c[0]))));
+    expect(Math.min(...contentYs)).toBeGreaterThanOrEqual(30);
+    const stampYs = drawnY(calls.filter((c) => / — p\. \d+\/\d+$/.test(String(c[0]))));
+    expect(stampYs.length).toBe(doc.getPageCount());
+    expect(Math.min(...stampYs)).toBeGreaterThan(0);
     // The whole note is rendered, first word to last — not truncated or capped.
     expect(all).toContain("EPISODE_MARKER_60");
     expect(all).toContain("END_OF_FINAL_NOTE");

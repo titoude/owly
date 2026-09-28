@@ -1,6 +1,6 @@
 // Exhaustive E2E — every user flow on the PRODUCTION build, with screenshots.
 // Usage: npm run build && npx vite preview --port 4173 && node e2e/full.mjs
-import { mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { launchBrowser } from "./browser.mjs";
 
 const BASE = process.env.BASE_URL || "http://localhost:4173";
@@ -188,6 +188,118 @@ try {
   await ex.click();
   const exDl = await dl2;
   ok("JSON backup downloads", /\.json$/.test(exDl.suggestedFilename()), exDl.suggestedFilename());
+  const backupPath = await exDl.path();
+
+  // ── 12. Import: real file chooser — preview → cancel → reject → replace ──
+  // Read the database straight from IndexedDB so assertions check persisted
+  // records, not just rendered text.
+  const idb = (store, mode = "count") =>
+    page.evaluate(
+      ([s, m]) =>
+        new Promise((res, rej) => {
+          const r = indexedDB.open("owly");
+          r.onerror = () => rej(r.error);
+          r.onsuccess = () => {
+            const os = r.result.transaction(s).objectStore(s);
+            const req = m === "count" ? os.count() : os.getAll();
+            req.onerror = () => rej(req.error);
+            req.onsuccess = () => res(req.result);
+          };
+        }),
+      [store, mode],
+    );
+  const obsCount = () => idb("observations");
+  const childNames = async () =>
+    (await idb("children", "getAll")).map((c) => c.name).sort();
+  const activeChildName = async () => {
+    const st = await idb("settings", "getAll");
+    const id = st.find((r) => r.key === "activeChildId")?.value;
+    const kids = await idb("children", "getAll");
+    return kids.find((c) => c.id === id)?.name ?? null;
+  };
+
+  const beforeObs = await obsCount();
+  const beforeKids = await childNames();
+
+  // 12a. Valid backup → preview → Cancel must leave every record untouched.
+  await page.locator("input[type='file']").setInputFiles(backupPath);
+  await page.waitForSelector("[role='alertdialog']", { timeout: 5000 });
+  const previewTxt = await page.locator("[role='alertdialog']").innerText();
+  ok("import preview summarizes incoming + current", /\d+/.test(previewTxt) && /replace|remplace/i.test(previewTxt));
+  await page.locator("[role='alertdialog'] button", { hasText: /cancel|annuler/i }).click();
+  await page.waitForTimeout(400);
+  ok(
+    "cancel import preserves all records",
+    (await obsCount()) === beforeObs && JSON.stringify(await childNames()) === JSON.stringify(beforeKids),
+  );
+
+  // 12b. A structurally invalid backup (nested object where text belongs)
+  // must be rejected before any data is touched.
+  const badPath = `${SHOTS}/bad-import.json`;
+  writeFileSync(
+    badPath,
+    JSON.stringify({
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      children: [
+        { name: "Bad", createdAt: Date.now(), customDescriptors: { face: { nested: true }, legs: "", activity: "", cry: "", consolability: "" } },
+      ],
+      observations: [],
+    }),
+  );
+  await page.locator("input[type='file']").setInputFiles(badPath);
+  await page.waitForTimeout(600);
+  ok("invalid backup rejected (no preview)", (await page.locator("[role='alertdialog']").count()) === 0);
+  ok("rejection shown to user", /couldn't read|impossible|error|erreur|invalide/i.test(await page.locator("body").innerText()));
+  ok(
+    "rejected import preserves all records",
+    (await obsCount()) === beforeObs && JSON.stringify(await childNames()) === JSON.stringify(beforeKids),
+  );
+
+  // 12c. Confirmed replacement swaps the data and refreshes the active child.
+  const okPath = `${SHOTS}/ok-import.json`;
+  const now = Date.now();
+  writeFileSync(
+    okPath,
+    JSON.stringify({
+      version: 1,
+      exportedAt: new Date(now).toISOString(),
+      children: [
+        {
+          id: 77,
+          name: "Restored Kid",
+          createdAt: now,
+          birthYear: 2018,
+          conditions: "test",
+          communicates: "points",
+          customDescriptors: { face: "frowns", legs: "", activity: "", cry: "", consolability: "" },
+        },
+      ],
+      observations: [
+        {
+          childId: 77,
+          startedAt: now - 3600000,
+          recordedAt: now - 3500000,
+          scores: { face: 1, legs: 0, activity: 1, cry: 0, consolability: 1 },
+          durationMinutes: 20,
+          bodyZones: ["head"],
+          suspectedCause: "test import",
+          interventions: [],
+          note: "import marker",
+          baseline: false,
+        },
+      ],
+    }),
+  );
+  await page.locator("input[type='file']").setInputFiles(okPath);
+  await page.waitForSelector("[role='alertdialog']", { timeout: 5000 });
+  await page.locator("[role='alertdialog'] button", { hasText: /replace with|remplacer/i }).click();
+  await page.waitForTimeout(800);
+  ok("confirmed import replaces records", (await obsCount()) === 1 && JSON.stringify(await childNames()) === '["Restored Kid"]');
+  ok("active profile refreshed to imported child", (await activeChildName()) === "Restored Kid");
+  await page.goto(BASE + "/#/");
+  await page.waitForTimeout(500);
+  ok("dashboard shows imported child", /Restored Kid/i.test(await page.locator("body").innerText()));
 } catch (e) {
   ok("suite completed", false, e.message.split("\n")[0]);
 }

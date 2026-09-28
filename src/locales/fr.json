@@ -2,7 +2,8 @@
   "app": {
     "name": "Owly",
     "tagline": "Quand ils ne peuvent pas dire où ça fait mal",
-    "navLabel": "Navigation principale"
+    "navLabel": "Navigation principale",
+    "demoBadge": "Démo — données fictives"
   },
   "nav": {
     "home": "Accueil",
@@ -180,9 +181,12 @@
       "continued": "suite",
       "episodesLine_one": "{{count}} épisode, FLACC moyen {{avg}}/10 (max {{max}})",
       "episodesLine_other": "{{count}} épisodes, FLACC moyen {{avg}}/10 (max {{max}})",
-      "nightLine": "{{night}}/{{count}} survenus la nuit (22h00–06h00)"
+      "nightLine": "{{night}}/{{count}} survenus la nuit (22h00–06h00)",
+      "demoTag": "démo"
     },
-    "allTime": "Tous les épisodes enregistrés"
+    "allTime": "Tous les épisodes enregistrés",
+    "entryTitle": "Préparer le rapport",
+    "entryDesc": "Choisissez la période et le contenu, puis générez le PDF pour le clinicien."
   },
   "settings": {
     "title": "Réglages",
@@ -228,7 +232,8 @@
     "importPreviewTitle": "Remplacer les données actuelles ?",
     "importPreview": "Cette sauvegarde du {{date}} contient {{children}} profil(s) et {{observations}} observation(s). L'import remplace définitivement les {{curChildren}} profil(s) et {{curObs}} observation(s) présents sur cet appareil.",
     "importConfirm": "Remplacer par cette sauvegarde",
-    "wrongPin": "Code incorrect"
+    "wrongPin": "Code incorrect",
+    "privacyBody": "Tout ce que vous notez reste sur cet appareil (IndexedDB) — aucun compte, aucun cloud, aucune analyse. Le code PIN n'est qu'un verrou d'écran : il ne chiffre pas les données, et toute personne ayant accès à l'appareil pourrait ouvrir le journal avec des outils techniques. Les sauvegardes sont des fichiers JSON non chiffrés : conservez-les comme le journal lui-même. Supprimer l'application ou les données du site efface tout si vous n'avez pas exporté de sauvegarde."
   },
   "common": {
     "back": "Retour",

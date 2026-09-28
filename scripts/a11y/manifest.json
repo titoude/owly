@@ -1,0 +1,19 @@
+{
+  "note": "Audited scope for scripts/a11y/audit.mjs. Every reachable screen is listed; scope.json in each audit report must match this.",
+  "routes": [
+    { "path": "/", "role": "dashboard", "precondition": "demo seed (Léo) loaded", "expects": "child header, primary observe action, recent history" },
+    { "path": "/observe", "role": "wizard", "precondition": "active child", "expects": "8-step flow, radio-style FLACC pickers, next/back" },
+    { "path": "/history", "role": "list", "precondition": "active child", "expects": "observation rows with delete + inline confirm" },
+    { "path": "/patterns", "role": "report", "precondition": "active child", "expects": "insight card, charts, report link" },
+    { "path": "/report", "role": "form", "precondition": "active child", "expects": "period picker, questions, PDF generate" },
+    { "path": "/settings", "role": "settings", "precondition": "none", "expects": "children, language, data, PIN sections" },
+    { "path": "/redflags", "role": "emergency", "precondition": "none", "expects": "static warning list" },
+    { "path": "/child/new", "role": "form", "precondition": "none", "expects": "child profile form" },
+    { "path": "/welcome", "role": "onboarding", "precondition": "none", "expects": "intro + CTA" }
+  ],
+  "states": [
+    { "id": "fr", "description": "settings page in French", "route": "/settings", "setup": "click Français button" },
+    { "id": "import-preview", "description": "replacement-preview alertdialog on settings", "route": "/settings", "setup": "inject pendingImport via file input upload of a valid backup" },
+    { "id": "observe-step5", "description": "deeper wizard step (body map / interventions)", "route": "/observe", "setup": "advance wizard with Next clicks" }
+  ]
+}

@@ -37,7 +37,7 @@ export default function Dashboard() {
             {count} {t("patterns.episodes")}
           </p>
         </div>
-        <Link to="/redflags" className="btn-ghost !bg-red-50 !text-red-700 !border !border-red-200 text-sm">
+        <Link to="/redflags" className="btn-ghost !bg-red-50 !text-red-700 !border !border-red-200 text-sm md:hidden">
           ⚠ {t("nav.redflags")}
         </Link>
       </div>
@@ -64,7 +64,7 @@ export default function Dashboard() {
       {last ? (
         <section className="space-y-2">
           <h2 className="text-sm font-semibold text-neutral-600">{t("history.title")}</h2>
-          <div className="space-y-2 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0">
+          <div className="space-y-2">
           {recent.map((o) => (
             <div key={o.id} className="card p-3 flex items-center justify-between">
               <div>
@@ -85,10 +85,17 @@ export default function Dashboard() {
             <Link to="/history" className="text-sm font-medium text-teal-700">
               {t("history.title")} →
             </Link>
-            <Link to="/report" className="text-sm font-medium text-teal-700">
-              {t("patterns.toReport")}
-            </Link>
           </div>
+          <Link
+            to="/report"
+            className="card p-4 flex items-center justify-between gap-3 min-h-12 hover:bg-teal-50/60 transition-colors"
+          >
+            <span>
+              <span className="block text-sm font-semibold text-teal-700">{t("report.entryTitle")}</span>
+              <span className="block text-sm text-neutral-600">{t("report.entryDesc")}</span>
+            </span>
+            <span aria-hidden className="text-teal-700">→</span>
+          </Link>
         </section>
       ) : (
         <p className="text-neutral-600 text-sm">{t("history.empty")}</p>

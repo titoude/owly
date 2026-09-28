@@ -99,15 +99,19 @@ export default function Patterns() {
           {insights.map((s, i) => (
             <p key={i} className="text-sm text-neutral-600">• {s}</p>
           ))}
-          <p className="text-xs text-neutral-500 pt-1">{t("patterns.note")}</p>
+          <p className="text-sm text-neutral-600 pt-1">{t("patterns.note")}</p>
         </div>
       )}
 
       <Link
         to="/report"
-        className="card p-4 flex items-center justify-between text-sm font-semibold text-teal-700 hover:bg-teal-50/60 transition-colors"
+        className="card p-4 flex items-center justify-between gap-3 min-h-12 hover:bg-teal-50/60 transition-colors"
       >
-        {t("patterns.toReport")}
+        <span>
+          <span className="block text-sm font-semibold text-teal-700">{t("report.entryTitle")}</span>
+          <span className="block text-sm text-neutral-600">{t("report.entryDesc")}</span>
+        </span>
+        <span aria-hidden className="text-teal-700">→</span>
       </Link>
 
       <div className="space-y-6 lg:grid lg:grid-cols-2 lg:gap-5 lg:space-y-0">
