@@ -1,0 +1,81 @@
+// Keyboard-only E2E — real key events against the production build.
+// Usage: npm run build && npx vite preview --port 4173 && node e2e/keyboard.mjs
+import { launchBrowser } from "./browser.mjs";
+
+const BASE = process.env.BASE_URL || "http://localhost:4173";
+const results = [];
+const ok = (name, pass, extra = "") => {
+  results.push({ name, pass });
+  console.log(`${pass ? "PASS" : "FAIL"} ${name}${extra ? " — " + extra : ""}`);
+};
+
+const browser = await launchBrowser();
+const page = await browser.newPage();
+const errors = [];
+page.on("pageerror", (e) => errors.push(e.message));
+
+const focused = () =>
+  page.evaluate(() => {
+    const el = document.activeElement;
+    return { tag: el?.tagName, type: el?.type, value: el?.value, checked: el?.checked };
+  });
+const checkedValue = () =>
+  page.evaluate(
+    () => document.querySelector("input[name='flacc-face']:checked")?.value ?? null,
+  );
+
+// ── Radio group: arrows, wrap, space, roving tab ─────────────
+// Seed demo data first (observe needs an active child)
+await page.goto(BASE + "/#/");
+await page.waitForSelector("body", { timeout: 8000 });
+await page.locator("button", { hasText: /demo|démo/i }).first().click();
+await page.waitForTimeout(1200);
+await page.goto(BASE + "/#/observe");
+await page.waitForSelector("text=/[0-9]\/[0-9]/", { timeout: 8000 });
+await page.locator("button", { hasText: /next|continuer|suivant/i }).last().click();
+await page.waitForSelector("input[name='flacc-face']", { timeout: 8000 });
+
+await page.locator("input[name='flacc-face'][value='0']").focus();
+let f = await focused();
+ok("radio 0 takes focus", f.type === "radio" && f.value === "0", JSON.stringify(f));
+ok("focus does not change selection", (await checkedValue()) === null || (await checkedValue()) === "0");
+
+await page.keyboard.press("ArrowDown");
+f = await focused();
+ok("ArrowDown moves focus+selection 0→1", f.value === "1" && f.checked === true, JSON.stringify(f));
+ok("selection persisted to radio group", (await checkedValue()) === "1");
+
+await page.keyboard.press("ArrowDown");
+ok("ArrowDown 1→2", (await focused()).value === "2" && (await checkedValue()) === "2");
+await page.keyboard.press("ArrowDown"); // →0 (wrap, 3 items)
+f = await focused();
+ok("ArrowDown wraps 2→0", f.value === "0" && f.checked === true, JSON.stringify(f));
+await page.keyboard.press("ArrowUp"); // wraps back up →2
+f = await focused();
+ok("ArrowUp wraps 0→2", f.value === "2" && f.checked === true, JSON.stringify(f));
+
+// Roving tab: unchecked radios are skipped in real tab order.
+// score 2 is currently checked; focus radio 0 then Tab — focus must
+// skip radios 1 AND leave the group (not land on value '1').
+await page.locator("input[name='flacc-face'][value='0']").focus();
+await page.keyboard.press("Tab");
+f = await focused();
+ok("Tab skips unchecked radios in the group", !(f.type === "radio" && f.value === "1"), JSON.stringify(f));
+// Tabbing backward from the next element returns to the CHECKED radio.
+await page.keyboard.press("Shift+Tab");
+f = await focused();
+ok("Shift+Tab re-enters group on checked radio (2)", f.type === "radio" && f.value === "2", JSON.stringify(f));
+
+// ── Bottom nav reachable by keyboard ─────────────────────────
+await page.evaluate(() => document.activeElement?.blur());
+for (let i = 0; i < 25 && !(await focused()).tag?.match(/A|BUTTON/); i++) {
+  await page.keyboard.press("Tab");
+}
+f = await focused();
+ok("Tab reaches an interactive element", /A|BUTTON/.test(f.tag ?? ""), JSON.stringify(f));
+
+await browser.close();
+const failed = results.filter((r) => !r.pass);
+if (errors.length) { console.log("JS errors:", errors); failed.push({ name: "no js errors", pass: false }); }
+console.log(`\n${results.length - failed.length}/${results.length} keyboard checks passed`);
+process.exit(failed.length ? 1 : 0);

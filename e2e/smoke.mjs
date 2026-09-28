@@ -36,9 +36,8 @@ try {
   await page.waitForSelector("text=/[0-9]\/[0-9]/", { timeout: 5000 });
   await nextBtn().click();
   for (let s = 0; s < 5; s++) {
-    await page.waitForSelector("[role='radio']", { timeout: 5000 });
-    const radios = page.locator("[role='radio']");
-    await radios.nth(2).click(); // score 2
+    await page.waitForSelector("input[type='radio']", { timeout: 5000 });
+    await page.locator("label:has(input[type='radio'])").nth(2).click(); // score 2
     await page.waitForFunction(() => {
       const b = [...document.querySelectorAll("button")].find((x) => /^(next|suivant)$/i.test(x.textContent.trim()));
       return b && !b.disabled;

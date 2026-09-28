@@ -60,8 +60,8 @@ try {
   await nextBtn().click();
   const scores = [1, 2, 0, 1, 2];
   for (let s = 0; s < 5; s++) {
-    await page.waitForSelector("[role='radio']", { timeout: 5000 });
-    await page.locator("[role='radio']").nth(scores[s]).click();
+    await page.waitForSelector("input[type='radio']", { timeout: 5000 });
+    await page.locator("label:has(input[type='radio'])").nth(scores[s]).click();
     if (s === 0) await shot("06-observe-flacc");
     await page.waitForFunction(() => {
       const b = [...document.querySelectorAll("button")].find((x) => /^(next|suivant)$/i.test(x.textContent.trim()));
