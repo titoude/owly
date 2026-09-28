@@ -145,3 +145,25 @@ describe("buildReport", () => {
     expect(all).toContain("continued");
   });
 });
+
+describe("unicode rendering", () => {
+  it("draws Arabic, Devanagari, CJK and mixed text without stripping", async () => {
+    const uni: Child = {
+      ...child,
+      name: "زين Léo 孩子",
+      communicates: "يشير إلى أذنه · कान पकड़ता है · 摸耳朵",
+      customDescriptors: { face: "يجعد وجهه", legs: "يركل", activity: "", cry: "", consolability: "" },
+    };
+    const note = "ملاحظة عربية · हिंदी नोट · 中文备注";
+    const spy = spyOnDraw();
+    await buildReport(uni, [{ ...mkObs(7, 1), note }], { periodDays: null, questions: ["ما سبب الألم؟"] });
+    const all = drawnText(spy.calls());
+    // Real scripts survive end-to-end (they may be reordered per bidi rules —
+    // assert script presence, not byte-exact substrings).
+    expect(all).toMatch(/[؀-ۿ]/);            // Arabic block present
+    expect(all).toMatch(/[ऀ-ॿ]/);            // Devanagari present
+    expect(all).toMatch(/[一-鿿]/);          // CJK present
+    expect(all).toContain("中文备注");
+    expect(all).toContain("Léo");
+  }, 30000);
+});

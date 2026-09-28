@@ -26,7 +26,10 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
+        // ttf/otf covers the vendored Noto faces the PDF report embeds;
+        // the SC subset (~4 MB) needs a raised per-file precache limit.
+        globPatterns: ["**/*.{js,css,html,svg,png,woff2,ttf,otf}"],
+        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
       },
     }),
   ],
@@ -35,5 +38,7 @@ export default defineConfig({
     globals: true,
     setupFiles: "./src/test/setup.ts",
     css: false,
+    // Embedding/subsetting multi-script fonts is CPU-heavy.
+    testTimeout: 30000,
   },
 } as never);

@@ -106,6 +106,12 @@ Owly ships the English wording only and does **not** claim the scale is public d
 
 **Owly is an observation journal, not a medical device.** It records what caregivers observe — it does not diagnose. The red-flags screen is there for a reason: when in doubt, call a doctor.
 
+## Third-party notices
+
+- **Noto fonts** (Noto Sans Regular/Bold, Noto Sans Arabic, Noto Sans Devanagari, Noto Sans SC subset): vendored in `src/assets/fonts/` under the SIL Open Font License 1.1 (full text: `src/assets/fonts/OFL.txt`). The SC file is a subset limited to the official 8 105-character GB 18030 / Table of General Standard Chinese Characters scope plus ASCII and CJK punctuation, used so the PDF report can render CJK offline.
+- The PDF report embeds these fonts so Arabic, Indic and CJK text render (shaped via fontkit) instead of being stripped. Emoji and scripts without a bundled face render as a replacement box rather than crashing — a known limitation.
+- Runtime libraries: pdf-lib (MIT), @pdf-lib/fontkit (MIT), bidi-js (MIT), React/Dexie/i18next and friends per their package licenses; dev-time libraries: axe-core (MPL-2.0), Playwright (Apache-2.0), regenerator-runtime (MIT, required by fontkit's Indic shaper).
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

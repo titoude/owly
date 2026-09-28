@@ -1,6 +1,16 @@
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+import fontkit from "@pdf-lib/fontkit";
+// fontkit's Indic shaper needs regeneratorRuntime in scope (UMD global) —
+// missing in browsers AND node without this tiny side-effect polyfill.
+import "regenerator-runtime/runtime.js";
+import bidiFactory from "bidi-js";
 import { bandFor, type Child, type Observation } from "./types";
 import i18n from "./i18n";
+import fontRegularUrl from "./assets/fonts/NotoSans-Regular.ttf?url";
+import fontBoldUrl from "./assets/fonts/NotoSans-Bold.ttf?url";
+import fontArabicUrl from "./assets/fonts/NotoSansArabic-Regular.ttf?url";
+import fontDevaUrl from "./assets/fonts/NotoSansDevanagari-Regular.ttf?url";
+import fontCjkUrl from "./assets/fonts/NotoSansSC-GB.otf?url";
 
 const INK = rgb(0.13, 0.15, 0.2);
 const MUTED = rgb(0.42, 0.45, 0.52);
@@ -19,41 +29,101 @@ const intervLabel = (id: string): string => i18n.t(`interventions.${id}`, { defa
 interface Ctx {
   doc: PDFDocument;
   page: PDFPage;
-  font: PDFFont;
-  bold: PDFFont;
+  font: PDFFont;   // regular face (Helvetica fallback, or Noto base)
+  bold: PDFFont;   // bold face
+  faces: Faces | null; // null = Helvetica-only fallback (font assets failed)
   y: number;
   left: number;
   width: number;
 }
 
-// StandardFonts (Helvetica) only encode WinAnsi — emoji, CJK, etc. throw
-// inside drawText. Strip them so an unusual name/note can never crash the PDF.
-// TODO(i18n): embed a Unicode font so non-Latin scripts render instead of
-// being stripped. Tracked as a known limitation — see NOTICE.
-function safe(s: string): string {
-  return s.replace(/[^\u0020-\u00FF\u0152\u0153\u0178\u2013\u2014\u2018\u2019\u201C\u201D\u2026]/g, "");
+// Script coverage: pick the embedded face that can render each codepoint.
+// WinAnsi-stripped Helvetica is only a fallback when font assets cannot load.
+type FaceKey = "base" | "bold" | "arabic" | "deva" | "cjk";
+interface Faces { base: PDFFont; bold: PDFFont; arabic: PDFFont; deva: PDFFont; cjk: PDFFont }
+
+const RE_ARABIC = /[\u0600-\u06FF\u0750-\u077F\u0870-\u089F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+const RE_DEVA = /[\u0900-\u097F]/;
+const RE_CJK = /[\u2E80-\u2EFF\u3000-\u303F\u3040-\u30FF\u3100-\u312F\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF00-\uFF9F]/;
+const RE_RTL = /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+
+function faceOf(ch: string): FaceKey {
+  if (RE_ARABIC.test(ch)) return "arabic";
+  if (RE_DEVA.test(ch)) return "deva";
+  if (RE_CJK.test(ch)) return "cjk";
+  return "base";
+}
+
+// Control/format chars are never drawable content — drop them only.
+function sanitize(s: string): string {
+  return s.replace(/[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/gu, "");
+}
+
+const bidi = bidiFactory();
+// A line containing RTL text must be visually reordered before sequential
+// left-to-right drawing (fontkit shapes each run but does not do bidi).
+function toVisual(s: string): string {
+  if (!RE_RTL.test(s)) return s;
+  return bidi.getReorderedString(s, bidi.getEmbeddingLevels(s));
+}
+
+function runs(s: string): { text: string; face: FaceKey }[] {
+  const v = toVisual(sanitize(s));
+  const out: { text: string; face: FaceKey }[] = [];
+  let cur = "";
+  let face: FaceKey | null = null;
+  for (const ch of v) {
+    const f = faceOf(ch);
+    if (f !== face && cur) out.push({ text: cur, face: face! });
+    if (f !== face) { cur = ""; face = f; }
+    cur += ch;
+  }
+  if (cur) out.push({ text: cur, face: face! });
+  return out;
+}
+
+function measure(faces: Faces, s: string, size: number): number {
+  return runs(s).reduce((w, r) => w + faces[r.face].widthOfTextAtSize(r.text, size), 0);
+}
+
+// Draw one logical string as face-segmented runs at an advancing x.
+function drawRuns(ctx: Ctx, s: string, x: number, y: number, o: { size: number; bold?: boolean; color: typeof INK }) {
+  if (!ctx.faces) { // degraded fallback: Helvetica + WinAnsi strip
+    const t = sanitize(s).replace(/[^\u0020-\u00FF\u0152\u0153\u0178\u2013\u2014\u2018\u2019\u201C\u201D\u2026]/g, "");
+    if (!t) return;
+    ctx.page.drawText(t, { x, y, size: o.size, font: o.bold ? ctx.bold : ctx.font, color: o.color });
+    return;
+  }
+  let cx = x;
+  for (const r of runs(s)) {
+    const f = o.bold && r.face === "base" ? ctx.faces.bold : ctx.faces[r.face];
+    ctx.page.drawText(r.text, { x: cx, y, size: o.size, font: f, color: o.color });
+    cx += f.widthOfTextAtSize(r.text, o.size);
+  }
 }
 
 function t(key: string, opts?: Record<string, unknown>): string {
   return i18n.t(`report.pdf.${key}`, opts);
 }
 
-function wrapText(text: string, size: number, font: PDFFont, maxWidth: number): string[] {
-  const words = safe(text).split(/\s+/).filter(Boolean);
+function wrapText(ctx: Ctx, text: string, size: number, maxWidth: number): string[] {
+  const width = (s: string) => (ctx.faces ? measure(ctx.faces, s, size) : ctx.font.widthOfTextAtSize(s, size));
+  const words = sanitize(text).split(/\s+/).filter(Boolean);
   const lines: string[] = [];
   let cur = "";
   for (const w of words) {
     const next = cur ? `${cur} ${w}` : w;
-    if (font.widthOfTextAtSize(next, size) <= maxWidth) {
+    if (width(next) <= maxWidth) {
       cur = next;
     } else {
       if (cur) lines.push(cur);
-      // A single word wider than the column: hard-cut it.
+      // A single word wider than the column: cut at codepoint boundaries
+      // (CJK text has no spaces; hyphenless so we never inject latin chars).
       let piece = w;
-      while (font.widthOfTextAtSize(piece, size) > maxWidth && piece.length > 1) {
+      while (width(piece) > maxWidth && piece.length > 1) {
         let cut = piece.length - 1;
-        while (cut > 1 && font.widthOfTextAtSize(piece.slice(0, cut) + "-", size) > maxWidth) cut--;
-        lines.push(piece.slice(0, cut) + "-");
+        while (cut > 1 && width(piece.slice(0, cut)) > maxWidth) cut--;
+        lines.push(piece.slice(0, cut));
         piece = piece.slice(cut);
       }
       cur = piece;
@@ -63,11 +133,12 @@ function wrapText(text: string, size: number, font: PDFFont, maxWidth: number): 
   return lines;
 }
 
-function truncToWidth(font: PDFFont, s: string, size: number, maxWidth: number): string {
-  const t2 = safe(s);
-  if (font.widthOfTextAtSize(t2, size) <= maxWidth) return t2;
+function truncToWidth(ctx: Ctx, s: string, size: number, maxWidth: number): string {
+  const t2 = sanitize(s);
+  const width = (x: string) => (ctx.faces ? measure(ctx.faces, x, size) : ctx.font.widthOfTextAtSize(x, size));
+  if (width(t2) <= maxWidth) return t2;
   let out = t2;
-  while (out.length > 1 && font.widthOfTextAtSize(out + "…", size) > maxWidth) out = out.slice(0, -1);
+  while (out.length > 1 && width(out + "…") > maxWidth) out = out.slice(0, -1);
   return out + "…";
 }
 
@@ -85,18 +156,11 @@ function ensureSpace(ctx: Ctx, needed: number): boolean {
   return false;
 }
 
-function line(ctx: Ctx, text: string, opts: { size?: number; font?: PDFFont; color?: typeof INK; gap?: number } = {}) {
+function line(ctx: Ctx, text: string, opts: { size?: number; bold?: boolean; color?: typeof INK; gap?: number } = {}) {
   const size = opts.size ?? 9.5;
-  const font = opts.font ?? ctx.font;
-  for (const l of wrapText(text, size, font, ctx.width)) {
+  for (const l of wrapText(ctx, text, size, ctx.width)) {
     ensureSpace(ctx, size + 4.5);
-    ctx.page.drawText(safe(l), {
-      x: ctx.left,
-      y: ctx.y,
-      size,
-      font,
-      color: opts.color ?? INK,
-    });
+    drawRuns(ctx, l, ctx.left, ctx.y, { size, bold: opts.bold, color: opts.color ?? INK });
     ctx.y -= size + 4.5;
   }
   ctx.y -= (opts.gap ?? size + 4.5) - (size + 4.5);
@@ -106,7 +170,7 @@ function heading(ctx: Ctx, text: string) {
   // Keep a heading attached to at least the first line of its section.
   ensureSpace(ctx, 46);
   ctx.y -= 6;
-  line(ctx, text.toUpperCase(), { font: ctx.bold, size: 8.5, color: ACCENT, gap: 11 });
+  line(ctx, text.toUpperCase(), { bold: true, size: 8.5, color: ACCENT, gap: 11 });
   ctx.page.drawLine({ start: { x: ctx.left, y: ctx.y + 4 }, end: { x: ctx.left + ctx.width, y: ctx.y + 4 }, thickness: 0.7, color: LINE });
 }
 
@@ -126,9 +190,51 @@ const COL_W = [86, 40, 56, 44, 92, 181];
 
 function drawTableHeader(ctx: Ctx, headerRow: string[]) {
   headerRow.forEach((h, i) => {
-    ctx.page.drawText(safe(h), { x: ctx.left + COLS[i], y: ctx.y, size: 7.5, font: ctx.bold, color: MUTED });
+    drawRuns(ctx, h, ctx.left + COLS[i], ctx.y, { size: 7.5, bold: true, color: MUTED });
   });
   ctx.y -= 10;
+}
+
+// Font bytes come from vendored OFL-licensed assets. fetch works in the
+// browser (precached by the service worker); fs is the node/vitest path.
+// Bytes are cached module-wide: a repeated report build must not re-download.
+const bytesCache = new Map<string, Promise<Uint8Array>>();
+function fontBytes(url: string): Promise<Uint8Array> {
+  let p = bytesCache.get(url);
+  if (!p) {
+    p = (async () => {
+      try {
+        const r = await fetch(url);
+        if (r.ok) return new Uint8Array(await r.arrayBuffer());
+      } catch { /* node test env: no server for relative asset URLs */ }
+      const { readFile } = await import(/* @vite-ignore */ "node:fs/promises");
+      return new Uint8Array(await readFile(process.cwd() + url));
+    })();
+    bytesCache.set(url, p);
+  }
+  return p;
+}
+
+async function loadFaces(doc: PDFDocument): Promise<Faces | null> {
+  try {
+    doc.registerFontkit(fontkit);
+    const [r, b, a, d, c] = await Promise.all(
+      [fontRegularUrl, fontBoldUrl, fontArabicUrl, fontDevaUrl, fontCjkUrl].map(fontBytes),
+    );
+    const subset = { subset: true } as const;
+    return {
+      base: await doc.embedFont(r, subset),
+      bold: await doc.embedFont(b, subset),
+      arabic: await doc.embedFont(a, subset),
+      deva: await doc.embedFont(d, subset),
+      // CFF-outline OTF: fontkit's CFF subsetter crashes — embed whole.
+      cjk: await doc.embedFont(c),
+    };
+  } catch {
+    // Font assets unavailable (e.g. old shell): keep generating the report
+    // with Helvetica rather than failing outright for the caregiver.
+    return null;
+  }
 }
 
 export async function buildReport(child: Child, observations: Observation[], opts: ReportOptions): Promise<Uint8Array> {
@@ -138,15 +244,16 @@ export async function buildReport(child: Child, observations: Observation[], opt
     .sort((a, b) => a.startedAt - b.startedAt);
 
   const doc = await PDFDocument.create();
-  doc.setTitle(`Owly pain report — ${safe(child.name)}`);
+  doc.setTitle(`Owly pain report — ${sanitize(child.name)}`);
   doc.setCreator("Owly (open-source pain observation journal)");
-  const font = await doc.embedFont(StandardFonts.Helvetica);
-  const bold = await doc.embedFont(StandardFonts.HelveticaBold);
-  const ctx: Ctx = { doc, page: undefined as unknown as PDFPage, font, bold, y: TOP_Y, left: 48, width: PAGE_W - 96 };
+  const faces = await loadFaces(doc);
+  const font = faces ? faces.base : await doc.embedFont(StandardFonts.Helvetica);
+  const bold = faces ? faces.bold : await doc.embedFont(StandardFonts.HelveticaBold);
+  const ctx: Ctx = { doc, page: undefined as unknown as PDFPage, font, bold, faces, y: TOP_Y, left: 48, width: PAGE_W - 96 };
   newPage(ctx);
 
   // Header
-  line(ctx, t("title"), { font: bold, size: 15, color: INK, gap: 19 });
+  line(ctx, t("title"), { bold: true, size: 15, color: INK, gap: 19 });
   line(ctx, `${child.name}${child.isDemo ? ` (${t("demoTag")})` : ""}${child.birthYear ? ` · ${t("born")} ${child.birthYear}` : ""}${child.conditions ? ` · ${child.conditions}` : ""}`, { size: 10, color: MUTED, gap: 14 });
   line(ctx, t("prepared", { date: fmtDate(Date.now()), count: episodes.length }), { size: 8.5, color: MUTED, gap: 10 });
   ctx.page.drawLine({ start: { x: ctx.left, y: ctx.y }, end: { x: ctx.left + ctx.width, y: ctx.y }, thickness: 1.4, color: ACCENT });
@@ -195,10 +302,11 @@ export async function buildReport(child: Child, observations: Observation[], opt
     for (const o of episodes) {
       const areas = o.bodyZones.map((z) => zoneLabel(z)).join(", ");
       const noteLines = wrapText(
+        ctx,
         [o.suspectedCause, o.note].filter(Boolean).join(" — "),
-        7.6, font, COL_W[5],
+        7.6, COL_W[5],
       );
-      const areaLines = wrapText(areas, 7.6, font, COL_W[4]);
+      const areaLines = wrapText(ctx, areas, 7.6, COL_W[4]);
       const rows = Math.max(1, noteLines.length, areaLines.length);
       if (ensureSpace(ctx, 12.5)) drawTableHeader(ctx, headerRow);
       const cells = [
@@ -208,7 +316,7 @@ export async function buildReport(child: Child, observations: Observation[], opt
         o.durationMinutes ? `${o.durationMinutes}m` : "—",
       ];
       cells.forEach((c, i) => {
-        ctx.page.drawText(truncToWidth(font, c, 7.6, COL_W[i]), { x: ctx.left + COLS[i], y: ctx.y, size: 7.6, font, color: INK });
+        drawRuns(ctx, truncToWidth(ctx, c, 7.6, COL_W[i]), ctx.left + COLS[i], ctx.y, { size: 7.6, color: INK });
       });
       // Draw line-by-line so a row taller than a page splits across pages.
       // ctx.y is the baseline of the current chunk's first line; a break
@@ -221,20 +329,14 @@ export async function buildReport(child: Child, observations: Observation[], opt
           chunk = 0;
           // Repeat the episode's date plus "(continued)" — identity survives
           // the page break even in the columns that are empty on continuation.
-          ctx.page.drawText(
-            truncToWidth(font, fmtDate(o.startedAt), 7.6, COL_W[0]),
-            { x: ctx.left + COLS[0], y: ctx.y, size: 7.6, font, color: MUTED },
-          );
-          ctx.page.drawText(
-            `(${t("continued")})`,
-            { x: ctx.left + COLS[2], y: ctx.y, size: 7.6, font, color: MUTED },
-          );
+          drawRuns(ctx, truncToWidth(ctx, fmtDate(o.startedAt), 7.6, COL_W[0]), ctx.left + COLS[0], ctx.y, { size: 7.6, color: MUTED });
+          drawRuns(ctx, `(${t("continued")})`, ctx.left + COLS[2], ctx.y, { size: 7.6, color: MUTED });
         }
         if (i < areaLines.length) {
-          ctx.page.drawText(truncToWidth(font, areaLines[i], 7.6, COL_W[4]), { x: ctx.left + COLS[4], y: ctx.y - chunk * 9, size: 7.6, font, color: INK });
+          drawRuns(ctx, truncToWidth(ctx, areaLines[i], 7.6, COL_W[4]), ctx.left + COLS[4], ctx.y - chunk * 9, { size: 7.6, color: INK });
         }
         if (i < noteLines.length) {
-          ctx.page.drawText(truncToWidth(font, noteLines[i], 7.6, COL_W[5]), { x: ctx.left + COLS[5], y: ctx.y - chunk * 9, size: 7.6, font, color: INK });
+          drawRuns(ctx, truncToWidth(ctx, noteLines[i], 7.6, COL_W[5]), ctx.left + COLS[5], ctx.y - chunk * 9, { size: 7.6, color: INK });
         }
         chunk++;
       }
@@ -258,21 +360,23 @@ export async function buildReport(child: Child, observations: Observation[], opt
   }
 
   // Footer — fixed position on the last page, above the page's lower edge.
-  const foot1 = wrapText(t("footer1"), 7, font, ctx.width);
-  const foot2 = wrapText(t("footer2"), 7, font, ctx.width);
+  const foot1 = wrapText(ctx, t("footer1"), 7, ctx.width);
+  const foot2 = wrapText(ctx, t("footer2"), 7, ctx.width);
   let fy = 46;
   for (const l of [...foot1, ...foot2]) {
-    ctx.page.drawText(safe(l), { x: ctx.left, y: fy, size: 7, font, color: MUTED });
+    drawRuns(ctx, l, ctx.left, fy, { size: 7, color: MUTED });
     fy -= 9;
   }
 
   // Every page (incl. continuation pages) gets a running stamp: child identity
   // + page number, plus a demo tag when the report was built from demo data.
   const pages = doc.getPages();
-  const stamp = `${safe(child.name)}${child.isDemo ? ` (${t("demoTag")})` : ""} — p. `;
+  const stamp = `${child.name}${child.isDemo ? ` (${t("demoTag")})` : ""} — p. `;
   pages.forEach((p, i) => {
-    p.drawText(`${stamp}${i + 1}/${pages.length}`, { x: ctx.left, y: 20, size: 7, font, color: MUTED });
+    ctx.page = p;
+    drawRuns(ctx, `${stamp}${i + 1}/${pages.length}`, ctx.left, 20, { size: 7, color: MUTED });
   });
+  ctx.page = pages[pages.length - 1];
 
   return doc.save();
 }
