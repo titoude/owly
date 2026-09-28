@@ -156,7 +156,7 @@ describe("unicode rendering", () => {
     };
     const note = "ملاحظة عربية · हिंदी नोट · 中文备注";
     const spy = spyOnDraw();
-    await buildReport(uni, [{ ...mkObs(7, 1), note }], { periodDays: null, questions: ["ما سبب الألم؟"] });
+    await buildReport(uni, [{ ...mkObs(7, 1), note }], { periodDays: null, questions: ["QA only — لا ألم — कृपया ध्यान दें — 中文"] });
     const calls = spy.calls(); // mockRestore clears history — capture once
     const all = drawnText(calls);
     // Real scripts survive end-to-end (they may be reordered per bidi rules —
@@ -170,6 +170,11 @@ describe("unicode rendering", () => {
     // visual glyph order itself. A pre-reversed string would appear as "ةراس".
     expect(calls.some((c) => String(c[0]).includes("سارة"))).toBe(true);
     expect(calls.some((c) => String(c[0]).includes("ةراس"))).toBe(false);
+    // Multiword RTL: "لا ألم" must reach drawText as ONE logical slice —
+    // face-splitting on the space would break word order.
+    expect(calls.some((c) => String(c[0]).includes("لا ألم"))).toBe(true);
+    expect(calls.some((c) => String(c[0]) === "لا")).toBe(false);
+    expect(calls.some((c) => String(c[0]) === "ألم")).toBe(false);
   }, 30000);
 
   it("keeps every horizontal rule clear of text baselines", async () => {
@@ -180,7 +185,7 @@ describe("unicode rendering", () => {
     await buildReport(multi, many, { periodDays: null, questions: ["q?"] });
     const byPage = (spy: ReturnType<typeof vi.spyOn>, pick: (c: unknown[]) => number) => {
       const m = new Map<PDFPage, number[]>();
-      spy.mock.calls.forEach((c, i) => {
+      spy.mock.calls.forEach((c: unknown[], i: number) => {
         const p = spy.mock.instances[i] as PDFPage;
         m.set(p, [...(m.get(p) ?? []), pick(c)]);
       });

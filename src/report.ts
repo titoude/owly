@@ -69,9 +69,9 @@ const bidi = bidiFactory();
 // Each returned slice is LOGICAL text — fontkit shapes RTL runs correctly
 // on its own; we only fix the ORDER of runs, never chars inside a run.
 // getReorderSegments gives [start,end] inclusive ranges to reverse (UAX L2).
-function visualRuns(s: string): string[] {
+function visualRuns(s: string): { text: string; dir: "ltr" | "rtl" }[] {
   const clean = sanitize(s);
-  if (!clean || !RE_RTL.test(clean)) return [clean];
+  if (!clean || !RE_RTL.test(clean)) return [{ text: clean, dir: "ltr" }];
   const levels = bidi.getEmbeddingLevels(clean);
   // bidi-js indexes by UTF-16 code unit (it pairs with string slicing).
   const perm: number[] = Array.from({ length: clean.length }, (_, i) => i);
@@ -79,7 +79,7 @@ function visualRuns(s: string): string[] {
     for (let i = a, j = e; i < j; i++, j--) [perm[i], perm[j]] = [perm[j], perm[i]];
   }
   const lv = levels.levels;
-  const out: string[] = [];
+  const out: { text: string; dir: "ltr" | "rtl" }[] = [];
   let lo = perm[0], hi = perm[0], dir = lv[perm[0]] % 2;
   for (let i = 1; i <= perm.length; i++) {
     const idx = perm[i];
@@ -88,11 +88,21 @@ function visualRuns(s: string): string[] {
     if (i < perm.length && d === dir && (idx === lo - 1 || idx === hi + 1)) {
       lo = Math.min(lo, idx); hi = Math.max(hi, idx);
     } else {
-      out.push(clean.slice(lo, hi + 1));
+      out.push({ text: clean.slice(lo, hi + 1), dir: dir === 1 ? "rtl" : "ltr" });
       lo = idx; hi = idx; dir = d;
     }
   }
   return out;
+}
+
+// First non-neutral char decides an RTL run's face: its real script chars are
+// one script family (Arabic-family here), and neutrals/digits ride inside it.
+function rtlFace(text: string): FaceKey {
+  for (const ch of text) {
+    const f = faceOf(ch);
+    if (f !== "base") return f;
+  }
+  return "arabic"; // pure-neutrals RTL run — Arabic face still covers them
 }
 
 function runs(s: string): { text: string; face: FaceKey }[] {
@@ -101,7 +111,13 @@ function runs(s: string): { text: string; face: FaceKey }[] {
   let face: FaceKey | null = null;
   const flush = () => { if (cur) { out.push({ text: cur, face: face! }); cur = ""; face = null; } };
   for (const seg of visualRuns(s)) {
-    for (const ch of seg) {
+    if (seg.dir === "rtl") {
+      // Never face-split an RTL run: a space/neutral inside would reorder
+      // its words. Emit the whole logical slice for fontkit to shape+order.
+      out.push({ text: seg.text, face: rtlFace(seg.text) });
+      continue;
+    }
+    for (const ch of seg.text) {
       const f = faceOf(ch);
       if (f !== face) { flush(); face = f; }
       cur += ch;

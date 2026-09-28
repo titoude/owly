@@ -23,6 +23,7 @@
     "e2e:full": "node e2e/full.mjs"
   },
   "dependencies": {
+    "@pdf-lib/fontkit": "1.1.1",
     "bidi-js": "1.1.0",
     "dexie": "^4.4.6",
     "i18next": "^26.4.2",
@@ -31,10 +32,10 @@
     "react-dom": "^19.2.8",
     "react-i18next": "^17.0.15",
     "react-router-dom": "^7.18.4",
+    "regenerator-runtime": "0.14.1",
     "vite-plugin-pwa": "^1.3.0"
   },
   "devDependencies": {
-    "@pdf-lib/fontkit": "^1.1.1",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
@@ -48,7 +49,6 @@
     "jsdom": "^29.1.1",
     "oxlint": "^1.81.0",
     "playwright": "^1.63.0",
-    "regenerator-runtime": "^0.14.1",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
     "vite": "^8.3.0",
