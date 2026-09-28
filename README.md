@@ -62,8 +62,9 @@ npm run preview    # serve the production build
 - Dexie (IndexedDB) — local-first storage
 - pdf-lib — on-device PDF generation
 - vite-plugin-pwa — offline, installable
-- Vitest + Testing Library + fake-indexeddb (25 unit/integration tests)
-- Playwright e2e against the production build: `npm run e2e` (9 golden-path scenarios), `npm run e2e:full` (29 scenarios: PDF download, PIN lock, import/export incl. cancel/reject paths, demo data…) and `npm run e2e:keys` (11 keyboard-nav checks)
+- Vitest + Testing Library + fake-indexeddb (34 unit/integration tests)
+- Playwright e2e against the production build: `npm run e2e` (9 golden-path scenarios), `npm run e2e:full` (33 scenarios: PDF download, PIN lock, import/export incl. cancel/reject paths, drafts, demo data…), `npm run e2e:keys` (11 keyboard-nav checks), `node e2e/offline.mjs` (offline cold reload + PDF bytes)
+- axe-core accessibility audit over the full route/state manifest: `node scripts/a11y/audit.mjs` — 32 scenarios, 0 violations
 - oxlint + `tsc -b` in CI
 - i18next — 9 languages: English, French, Spanish, Portuguese, German, Italian, Arabic (RTL), Hindi, Simplified Chinese
 
@@ -111,6 +112,15 @@ Owly ships the English wording in every locale **except French**, which carries 
 - **Noto fonts** (Noto Sans Regular/Bold, Noto Sans Arabic, Noto Sans Devanagari, Noto Sans SC subset): vendored in `src/assets/fonts/` under the SIL Open Font License 1.1 (full text: `src/assets/fonts/OFL.txt`). The SC file is a subset limited to the official 8 105-character GB 18030 / Table of General Standard Chinese Characters scope plus ASCII and CJK punctuation, used so the PDF report can render CJK offline.
 - The PDF report embeds these fonts so Arabic, Indic and CJK text render (shaped via fontkit) instead of being stripped. If a record contains a character no bundled font can draw (emoji, rare CJK extension-B…), generation aborts with a clear error naming the offending characters — the report is never produced with silent boxes, and the journal data is unaffected.
 - Runtime libraries: pdf-lib (MIT), @pdf-lib/fontkit (MIT), bidi-js (MIT), React/Dexie/i18next and friends per their package licenses; dev-time libraries: axe-core (MPL-2.0), Playwright (Apache-2.0), regenerator-runtime (MIT, required by fontkit's Indic shaper).
+
+## Docs
+
+- [docs/demo-script.md](docs/demo-script.md) — 3-minute walkthrough
+- [docs/privacy.md](docs/privacy.md) — what is stored where, honest limits
+- [docs/accessibility-statement.md](docs/accessibility-statement.md) + [docs/accessibility-evidence.md](docs/accessibility-evidence.md) — what's verified vs not
+- [docs/evidence-matrix.md](docs/evidence-matrix.md) — every claim mapped to its proof
+- [docs/i18n-review.md](docs/i18n-review.md) — translation review status
+- [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md)
 
 ## License
 
