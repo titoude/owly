@@ -1,14 +1,23 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db, getSetting, setSetting } from "../db";
 import { seedDemo, clearDemo } from "../demo";
+import { clearAllDrafts, draftEditKey, draftKey, loadDraft, saveDraft } from "../drafts";
 import { exportAll, importAll, deleteAll } from "../export";
 import { hashPin } from "../pin";
 import type { Observation } from "../types";
+
+const DRAFT = {
+  step: 3, baseline: false, minutesAgo: 0, customAt: null,
+  scores: { face: 1, legs: 1, activity: 1, cry: 1, consolability: 1 },
+  duration: 10, zones: [], cause: "draft cause",
+  interventions: [], note: "draft note", savedAt: 0,
+};
 
 beforeEach(async () => {
   await db.children.clear();
   await db.observations.clear();
   await db.settings.clear();
+  clearAllDrafts();
 });
 
 describe("demo seed", () => {
@@ -168,5 +177,63 @@ describe("observation integrity", () => {
     expect(got?.total).toBe(4);
     const byChild = await db.observations.where("childId").equals(childId as number).toArray();
     expect(byChild).toHaveLength(1);
+  });
+
+  it("never leaks one child's observations into another profile", async () => {
+    const a = (await db.children.add({ name: "A", createdAt: 0 } as never)) as number;
+    const b = (await db.children.add({ name: "B", createdAt: 0 } as never)) as number;
+    const mk = (childId: number): Observation => ({
+      childId, startedAt: 1, recordedAt: 2,
+      scores: { face: 0, legs: 0, activity: 0, cry: 0, consolability: 0 },
+      total: 0, durationMinutes: null, bodyZones: [], suspectedCause: "",
+      interventions: [], note: "", baseline: false,
+    });
+    await db.observations.bulkAdd([mk(a), mk(a), mk(b)]);
+    expect(await db.observations.where("childId").equals(a).count()).toBe(2);
+    expect(await db.observations.where("childId").equals(b).count()).toBe(1);
+  });
+});
+
+describe("drafts", () => {
+  it("a confirmed replace import wipes all drafts, even on colliding child ids", async () => {
+    await seedDemo();
+    const dump = await exportAll();
+    const demoId = JSON.parse(dump).children[0].id as number;
+    // Drafts keyed to the ids the restore will REUSE.
+    saveDraft(draftKey(demoId), DRAFT);
+    saveDraft(draftEditKey(1), DRAFT);
+    await importAll(dump);
+    expect(loadDraft(draftKey(demoId))).toBeNull();
+    expect(loadDraft(draftEditKey(1))).toBeNull();
+  });
+
+  it("a rejected import preserves drafts", async () => {
+    await seedDemo();
+    const k = draftKey(1);
+    saveDraft(k, DRAFT);
+    await expect(importAll("{}")).rejects.toThrow();
+    const d = loadDraft(k);
+    expect(d?.note).toBe("draft note");
+  });
+
+  it("deleteAll wipes drafts along with the database", async () => {
+    await seedDemo();
+    saveDraft(draftKey(1), DRAFT);
+    await deleteAll();
+    expect(loadDraft(draftKey(1))).toBeNull();
+  });
+
+  it("clearDemo removes drafts of the demo child (and its edit drafts)", async () => {
+    await seedDemo();
+    const demoId = (await db.children.toArray())[0].id!;
+    const obsId = (await db.observations.toArray())[0].id!;
+    const other = (await db.children.add({ name: "Real", createdAt: 0 } as never)) as number;
+    saveDraft(draftKey(demoId), DRAFT);
+    saveDraft(draftEditKey(obsId), DRAFT);
+    saveDraft(draftKey(other), { ...DRAFT, note: "keep me" });
+    await clearDemo();
+    expect(loadDraft(draftKey(demoId))).toBeNull();
+    expect(loadDraft(draftEditKey(obsId))).toBeNull();
+    expect(loadDraft(draftKey(other))?.note).toBe("keep me");
   });
 });

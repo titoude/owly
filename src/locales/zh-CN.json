@@ -89,7 +89,12 @@
     "summary": "摘要",
     "saveError": "无法保存——请重试。",
     "pickTime": "选择时间",
-    "scaleNote": "FLACC 量表描述以英文显示：这是已获许可的原始措辞，授权翻译仍在进行中。"
+    "scaleNote": "FLACC 量表描述以英文显示：这是该量表已发布的措辞；授权翻译尚未确认。",
+    "editTitle": "编辑观察记录",
+    "draftPrompt": "您有一条未完成的观察记录。从上次的地方继续，或将其丢弃。",
+    "resume": "继续草稿",
+    "discard": "丢弃草稿",
+    "update": "保存更改"
   },
   "interventions": {
     "comfort": "安抚（拥抱、抱着、毯子）",
@@ -158,7 +163,7 @@
     "pdf": {
       "title": "疼痛观察报告",
       "born": "出生于",
-      "prepared": "生成于 {{date}} · 共 {{count}} 次观察发作 · owly.app",
+      "prepared": "生成于 {{date}} · 共 {{count}} 次观察发作",
       "howTheySignal": "通常如何表达不适",
       "individualBehaviours": "个体化疼痛表现（rFLACC）",
       "whatShows": "观察显示",

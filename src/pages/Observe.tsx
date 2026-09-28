@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useApp } from "../appContext";
 import { db } from "../db";
+import { clearDraft, draftEditKey, draftKey, loadDraft, saveDraft, type ObsDraft } from "../drafts";
 import { INTERVENTION_TYPES, totalFlacc } from "../flacc";
 import { FLACC_CATEGORIES, type FlaccScores, type Intervention, type Observation } from "../types";
 import { FlaccPicker } from "../components/FlaccPicker";
@@ -20,6 +21,8 @@ export default function Observe() {
   const { t } = useTranslation();
   const { active } = useApp();
   const nav = useNavigate();
+  const { id } = useParams();
+  const editId = id ? Number(id) : null;
   const [step, setStep] = useState(0);
   const [baseline, setBaseline] = useState(false);
   const [minutesAgo, setMinutesAgo] = useState(0);
@@ -32,7 +35,66 @@ export default function Observe() {
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  // Draft prompt: a stored draft whose resume/discard the user hasn't
+  // decided yet. While it sits undecided the wizard stays at step 0 and
+  // autosave stays off — we must not clobber it with an empty form.
+  const [offer, setOffer] = useState<ObsDraft | null>(null);
+  const [offerSeen, setOfferSeen] = useState(false); // true once resolved
+  const seeded = useRef<string>(""); // JSON of the seeded fields
   const stepHeading = useRef<HTMLDivElement>(null);
+
+  const key = editId ? draftEditKey(editId) : active?.id ? draftKey(active.id) : null;
+
+  const fields = useMemo<ObsDraft>(() => ({
+    step, baseline, minutesAgo, customAt, scores, duration, zones, cause, interventions, note,
+    savedAt: Date.now(),
+  }), [step, baseline, minutesAgo, customAt, scores, duration, zones, cause, interventions, note]);
+
+  // Seed from an existing record in edit mode (guard: it must belong to
+  // the active child — observations never cross profiles), then offer any
+  // stored draft. New observations seed empty.
+  useEffect(() => {
+    if (!active?.id) return;
+    let cancelled = false;
+    void (async () => {
+      if (editId) {
+        const o = await db.observations.get(editId);
+        if (cancelled) return;
+        if (!o || o.childId !== active.id) { nav("/history"); return; }
+        setBaseline(o.baseline);
+        setMinutesAgo(0);
+        setCustomAt(toLocalInput(new Date(o.startedAt)));
+        setScores(o.scores);
+        setDuration(o.durationMinutes);
+        setZones(o.bodyZones);
+        setCause(o.suspectedCause);
+        setInterventions(o.interventions);
+        setNote(o.note);
+      }
+    })().then(() => {
+      if (cancelled || !key) return;
+      const d = loadDraft(key);
+      if (d) setOffer(d);
+      setOfferSeen(true);
+    });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active?.id, editId]);
+
+  // Capture the seeded baseline for the dirty check once the form is
+  // populated (edit mode) — autosave only kicks in on real changes.
+  useEffect(() => {
+    if (offerSeen && !seeded.current) seeded.current = JSON.stringify({ ...fields, savedAt: 0 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [offerSeen]);
+
+  // Autosave — only after any draft offer is resolved, and only when the
+  // form actually differs from what it was seeded with.
+  useEffect(() => {
+    if (!key || !offerSeen || offer) return;
+    if (JSON.stringify({ ...fields, savedAt: 0 }) === seeded.current) return;
+    saveDraft(key, fields);
+  }, [key, offerSeen, offer, fields]);
 
   // Move focus to the step region on each step change so keyboard and
   // screen-reader users don't lose their place in the 8-step flow.
@@ -55,6 +117,7 @@ export default function Observe() {
     if (!active?.id || total === null) return;
     setSaving(true);
     const obs: Observation = {
+      ...(editId ? { id: editId } : {}),
       childId: active.id,
       startedAt: customAt ? Math.min(new Date(customAt).getTime(), Date.now()) : Date.now() - minutesAgo * 60_000,
       recordedAt: Date.now(),
@@ -68,7 +131,9 @@ export default function Observe() {
       baseline,
     };
     try {
-      await db.observations.add(obs);
+      if (editId) await db.observations.put(obs);
+      else await db.observations.add(obs);
+      if (key) clearDraft(key);
       nav("/history");
     } catch {
       setSaving(false);
@@ -76,12 +141,34 @@ export default function Observe() {
     }
   }
 
+  function resume() {
+    if (!offer) return;
+    setStep(offer.step);
+    setBaseline(offer.baseline);
+    setMinutesAgo(offer.minutesAgo);
+    setCustomAt(offer.customAt);
+    setScores(offer.scores);
+    setDuration(offer.duration);
+    setZones(offer.zones);
+    setCause(offer.cause);
+    setInterventions(offer.interventions as Intervention[]);
+    setNote(offer.note);
+    // The resumed state becomes the new baseline for dirty-checking.
+    seeded.current = JSON.stringify({ ...offer, savedAt: 0 });
+    setOffer(null);
+  }
+
+  function discard() {
+    if (key) clearDraft(key);
+    setOffer(null);
+  }
+
   if (!active) return null;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between" ref={stepHeading} tabIndex={-1}>
-        <h1 className="text-xl font-bold">{t("observe.start")}</h1>
+        <h1 className="text-xl font-bold">{editId ? t("observe.editTitle") : t("observe.start")}</h1>
         <span className="text-xs text-neutral-600" role="status">
           {step + 1}/{STEPS}
         </span>
@@ -92,6 +179,16 @@ export default function Observe() {
           style={{ width: `${((step + 1) / STEPS) * 100}%` }}
         />
       </div>
+
+      {offer && (
+        <div className="card p-4 flex items-center justify-between gap-3" aria-labelledby="draft-title">
+          <p id="draft-title" className="text-sm font-medium text-neutral-700">{t("observe.draftPrompt")}</p>
+          <div className="flex gap-2">
+            <button type="button" className="btn-primary text-sm px-3 py-1.5" onClick={resume}>{t("observe.resume")}</button>
+            <button type="button" className="btn-ghost text-sm px-3 py-1.5" onClick={discard}>{t("observe.discard")}</button>
+          </div>
+        </div>
+      )}
 
       <div key={step} className="step-in space-y-6">
       {step === 0 && (
@@ -305,7 +402,7 @@ export default function Observe() {
           </button>
         ) : (
           <button type="button" className="btn-primary flex-1" disabled={saving} onClick={() => void save()}>
-            {saving ? t("common.loading") : t("observe.save")}
+            {saving ? t("common.loading") : editId ? t("observe.update") : t("observe.save")}
           </button>
         )}
       </div>

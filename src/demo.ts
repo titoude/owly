@@ -1,5 +1,6 @@
 import i18n from "./i18n";
 import { db, setSetting } from "./db";
+import { clearChildDrafts } from "./drafts";
 import type { Child, Observation } from "./types";
 
 // Demo child "Léo" — 9 y/o, non-verbal, autism.
@@ -64,8 +65,10 @@ export async function clearDemo(): Promise<void> {
   const demos = await db.children.filter((c) => !!c.isDemo).toArray();
   for (const d of demos) {
     if (d.id) {
+      const obsIds = (await db.observations.where("childId").equals(d.id).primaryKeys()) as number[];
       await db.observations.where("childId").equals(d.id).delete();
       await db.children.delete(d.id);
+      clearChildDrafts(d.id, obsIds);
     }
   }
 }

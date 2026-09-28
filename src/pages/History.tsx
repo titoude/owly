@@ -69,7 +69,7 @@ export default function History() {
               {o.interventions.some((i) => i.helped === "yes") && " ✓"}
             </div>
           )}
-          {o.note && <div className="text-sm text-neutral-600 italic break-words">“{o.note}”</div>}
+          {o.note && <div className="text-sm text-neutral-600 italic break-words" dir="auto">“{o.note}”</div>}
           {confirmId === o.id ? (
             <div className="flex items-center gap-2">
               <button
@@ -88,13 +88,18 @@ export default function History() {
               </button>
             </div>
           ) : (
-            <button
-              type="button"
-              onClick={() => setConfirmId(o.id ?? null)}
-              className="text-xs text-neutral-600 hover:text-red-700"
-            >
-              {t("common.delete")}
-            </button>
+            <div className="flex items-center gap-3">
+              <Link to={`/observe/${o.id}/edit`} className="text-xs text-neutral-600 underline hover:text-teal-700">
+                {t("common.edit")}
+              </Link>
+              <button
+                type="button"
+                onClick={() => setConfirmId(o.id ?? null)}
+                className="text-xs text-neutral-600 hover:text-red-700"
+              >
+                {t("common.delete")}
+              </button>
+            </div>
           )}
         </div>
       ))}

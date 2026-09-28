@@ -18,17 +18,17 @@ Owly's difference is architectural, not clinical: local-first and offline, no ac
 
 ## What Owly does
 
-- **60-second observations** — guided [FLACC](https://en.wikipedia.org/wiki/FLACC_scale) scoring (Face, Legs, Activity, Cry, Consolability), a validated clinical instrument designed exactly for patients who can't self-report
+- **Guided observations** — [FLACC](https://en.wikipedia.org/wiki/FLACC_scale) scoring (Face, Legs, Activity, Cry, Consolability), a validated clinical instrument designed exactly for patients who can't self-report
 - **Personalized to your child** — individualized rFLACC descriptors ("how *your* child shows pain") shown right inside each scoring step
 - **Baseline vs. episode** — record calm moments too, so "different from usual" is measurable
 - **Body map, interventions, notes** — where it might hurt, what you tried, whether it helped
 - **Pattern detection** — time-of-day clusters, recurring areas, which interventions actually work
-- **One-page doctor PDF** — a clinician-ready report: communication cues, episode timeline with scores, patterns, and your questions. Generated 100% on-device.
-- **Works offline, everywhere** — installable PWA, English & French
+- **Doctor report PDF** — a clinician-ready report: communication cues, episode timeline with scores, patterns, and your questions. Generated 100% on-device.
+- **Works offline, everywhere** — installable PWA, 9 languages (EN, FR, ES, PT, DE, IT, AR, HI, 中文)
 
 ## Privacy by architecture
 
-Owly is **local-first**: every observation lives in IndexedDB on your device. No account, no server, no analytics, no cloud. The app makes zero network requests at runtime — you can verify this in dev tools. Optional PIN lock, full JSON export/import, and one-tap total data deletion. For a health journal about a child, this seemed like the only acceptable design.
+Owly is **local-first**: every observation lives in IndexedDB on your device. No account, no server, no analytics, no cloud. All assets (including PDF fonts) are bundled and service-worker precached, so no data ever leaves the device — you can verify this in dev tools. Optional PIN lock, full JSON export/import, and one-tap total data deletion. For a health journal about a child, this seemed like the only acceptable design.
 
 ## Quick start
 
@@ -54,7 +54,7 @@ npm run preview    # serve the production build
 
 1. Load Léo's data → open **Patterns**: nearly all episodes cluster at night and point to the ears
 2. Open **Report** → generate the PDF → that's the page you'd hand the pediatrician
-3. Record a new observation yourself: ~40 seconds, five taps
+3. Record a new observation yourself through the guided wizard
 
 ## Tech
 
@@ -62,10 +62,10 @@ npm run preview    # serve the production build
 - Dexie (IndexedDB) — local-first storage
 - pdf-lib — on-device PDF generation
 - vite-plugin-pwa — offline, installable
-- Vitest + Testing Library + fake-indexeddb (13 unit/integration tests)
-- Playwright e2e against the production build: `npm run e2e` (9 golden-path scenarios) and `npm run e2e:full` (15 exhaustive scenarios: PDF download, PIN lock, FR/EN switch, JSON export…)
+- Vitest + Testing Library + fake-indexeddb (25 unit/integration tests)
+- Playwright e2e against the production build: `npm run e2e` (9 golden-path scenarios), `npm run e2e:full` (29 scenarios: PDF download, PIN lock, import/export incl. cancel/reject paths, demo data…) and `npm run e2e:keys` (11 keyboard-nav checks)
 - oxlint + `tsc -b` in CI
-- i18next — English & French
+- i18next — 9 languages: English, French, Spanish, Portuguese, German, Italian, Arabic (RTL), Hindi, Simplified Chinese
 
 ## Project layout
 
@@ -93,7 +93,7 @@ e2e/smoke.mjs      golden-path e2e (playwright + system chrome)
 
 ## Disclosure
 
-Built with AI assistance (Devin / Cognition) — scaffolding, i18n, tests and docs were AI-generated and human-reviewed. The English FLACC descriptors follow the published instrument (Merkel et al., 1997); the individualized descriptors follow rFLACC (Malviya et al., 2006). See below for instrument licensing.
+Built with AI assistance (Devin / Cognition) — scaffolding, i18n, tests and docs are AI-generated; review status is tracked in `docs/`. The English FLACC descriptors follow the published instrument (Merkel et al., 1997); the individualized descriptors follow rFLACC (Malviya et al., 2006). See below for instrument licensing.
 
 ## Instrument licensing
 
@@ -102,14 +102,14 @@ FLACC is a published clinical instrument. Redistribution and translation terms v
 - University of Michigan (instrument origin) describes commercial and authorized academic/research licenses, English-only official wording, licensee-managed translation: https://available-inventions.umich.edu/product/face-legs-activity-cry-consolability-observational-tool-as-a-measure-of-pain
 - PhenX Toolkit describes the protocol as freely available for use: https://phenxtoolkit.org/protocols/view/860403
 
-Owly ships the English wording only and does **not** claim the scale is public domain or that its translation is authorized. Whether a license already exists for this redistribution is being confirmed; machine-translated clinical wording is not shipped as a validated scale.
+Owly ships the English wording in every locale **except French**, which carries a pre-existing French translation whose provenance and validation status are unverified — it is marked `lang="fr"` on screen and flagged for review (see `docs/i18n-review.md`). We do **not** claim the scale is public domain or that its translation is authorized. Whether a license already exists for this redistribution is being confirmed; machine-translated clinical wording is not shipped as a validated scale.
 
 **Owly is an observation journal, not a medical device.** It records what caregivers observe — it does not diagnose. The red-flags screen is there for a reason: when in doubt, call a doctor.
 
 ## Third-party notices
 
 - **Noto fonts** (Noto Sans Regular/Bold, Noto Sans Arabic, Noto Sans Devanagari, Noto Sans SC subset): vendored in `src/assets/fonts/` under the SIL Open Font License 1.1 (full text: `src/assets/fonts/OFL.txt`). The SC file is a subset limited to the official 8 105-character GB 18030 / Table of General Standard Chinese Characters scope plus ASCII and CJK punctuation, used so the PDF report can render CJK offline.
-- The PDF report embeds these fonts so Arabic, Indic and CJK text render (shaped via fontkit) instead of being stripped. Emoji and scripts without a bundled face render as a replacement box rather than crashing — a known limitation.
+- The PDF report embeds these fonts so Arabic, Indic and CJK text render (shaped via fontkit) instead of being stripped. If a record contains a character no bundled font can draw (emoji, rare CJK extension-B…), generation aborts with a clear error naming the offending characters — the report is never produced with silent boxes, and the journal data is unaffected.
 - Runtime libraries: pdf-lib (MIT), @pdf-lib/fontkit (MIT), bidi-js (MIT), React/Dexie/i18next and friends per their package licenses; dev-time libraries: axe-core (MPL-2.0), Playwright (Apache-2.0), regenerator-runtime (MIT, required by fontkit's Indic shaper).
 
 ## License

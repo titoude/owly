@@ -89,7 +89,12 @@
     "summary": "Resumen",
     "saveError": "No se pudo guardar — inténtalo de nuevo.",
     "pickTime": "Elige una hora",
-    "scaleNote": "Las descripciones de la escala FLACC se muestran en inglés: es la redacción original con licencia, a la espera de traducciones autorizadas."
+    "scaleNote": "Las descripciones de la escala FLACC se muestran en inglés: es la redacción publicada del instrumento; las traducciones autorizadas no están confirmadas.",
+    "editTitle": "Editar observación",
+    "draftPrompt": "Tiene una observación sin terminar. Retómelo donde lo dejó, o descártelo.",
+    "resume": "Retomar borrador",
+    "discard": "Descartar borrador",
+    "update": "Guardar cambios"
   },
   "interventions": {
     "comfort": "Consuelo (abrazo, tener en brazos, manta)",
@@ -159,7 +164,7 @@
     "pdf": {
       "title": "INFORME DE OBSERVACIÓN DE DOLOR",
       "born": "nacido en",
-      "prepared": "Preparado el {{date}} · {{count}} episodio(s) observado(s) · owly.app",
+      "prepared": "Preparado el {{date}} · {{count}} episodio(s) observado(s)",
       "howTheySignal": "Cómo suele mostrar el malestar",
       "individualBehaviours": "Comportamientos individuales de dolor (rFLACC)",
       "whatShows": "Lo que muestran las observaciones",

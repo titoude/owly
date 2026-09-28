@@ -89,7 +89,12 @@
     "summary": "Résumé",
     "saveError": "Enregistrement impossible — réessayez.",
     "pickTime": "Choisir l'heure",
-    "scaleNote": "Les descriptions de l'échelle FLACC sont une traduction interne non validée — une version agréée est en attente."
+    "scaleNote": "Les descriptions de l'échelle FLACC sont une traduction interne non validée — une version agréée est en attente.",
+    "editTitle": "Modifier l'observation",
+    "draftPrompt": "Vous avez une observation non terminée. Reprenez là où vous étiez, ou supprimez-la.",
+    "resume": "Reprendre",
+    "discard": "Supprimer le brouillon",
+    "update": "Enregistrer"
   },
   "interventions": {
     "comfort": "Réconfort (câlin, doudou, couverture)",
@@ -159,7 +164,7 @@
     "pdf": {
       "title": "RAPPORT D'OBSERVATION DE LA DOULEUR",
       "born": "né(e) en",
-      "prepared": "Préparé le {{date}} · {{count}} épisode(s) observé(s) · owly.app",
+      "prepared": "Préparé le {{date}} · {{count}} épisode(s) observé(s)",
       "howTheySignal": "Comment l'enfant signale son inconfort",
       "individualBehaviours": "Comportements douloureux individuels (rFLACC)",
       "whatShows": "Ce que montrent les observations",

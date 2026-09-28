@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useApp } from "../appContext";
 import { db } from "../db";
+import { clearChildDrafts } from "../drafts";
 import { FLACC_CATEGORIES, type Child, type CustomDescriptors } from "../types";
 import { scaleLang } from "../i18n";
 
@@ -65,10 +66,13 @@ export default function ChildForm() {
 
   async function remove() {
     if (!id) return;
+    const childId = Number(id);
+    const obsIds = (await db.observations.where("childId").equals(childId).primaryKeys()) as number[];
     await db.transaction("rw", [db.children, db.observations], async () => {
-      await db.observations.where("childId").equals(Number(id)).delete();
-      await db.children.delete(Number(id));
+      await db.observations.where("childId").equals(childId).delete();
+      await db.children.delete(childId);
     });
+    clearChildDrafts(childId, obsIds);
     await refresh();
     nav("/settings");
   }
@@ -112,7 +116,7 @@ export default function ChildForm() {
         <p className="text-xs text-neutral-600">{t("customDescriptors.body")}</p>
         {FLACC_CATEGORIES.map((c) => (
           <div key={c}>
-            <label className="label text-xs" htmlFor={`d-${c}`} lang={scaleLang() !== i18n.language ? scaleLang() : undefined}>{t(`flacc.${c}`)}</label>
+            <label className="label text-xs" htmlFor={`d-${c}`} lang={scaleLang() !== i18n.language ? scaleLang() : undefined} dir={scaleLang() !== i18n.language ? "ltr" : undefined}>{t(`flacc.${c}`)}</label>
             <input
               id={`d-${c}`}
               className="input text-sm"

@@ -176,6 +176,7 @@ function Shell() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/welcome" element={<Onboarding />} />
             <Route path="/observe" element={<Observe />} />
+            <Route path="/observe/:id/edit" element={<Observe />} />
             <Route path="/history" element={<History />} />
             <Route path="/patterns" element={<Patterns />} />
             <Route path="/report" element={<Report />} />
@@ -201,7 +202,9 @@ function Shell() {
                   ${selected ? "text-teal-700 border-teal-700" : "text-neutral-600 border-transparent hover:text-neutral-900"}`}
               >
                 <span aria-hidden className="leading-none"><n.Icon /></span>
-                {t(n.label)}
+                {/* Wrapping + hyphenation keep long native labels (e.g. de
+                    "Einstellungen") fully visible at 320px instead of clipped. */}
+                <span className="w-full text-center leading-tight break-words hyphens-auto">{t(n.label)}</span>
               </button>
             );
           })}

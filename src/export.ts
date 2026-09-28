@@ -1,4 +1,5 @@
 import { db } from "./db";
+import { clearAllDrafts } from "./drafts";
 import { totalFlacc } from "./flacc";
 import { FLACC_CATEGORIES, type Child, type Intervention, type Observation } from "./types";
 
@@ -143,6 +144,11 @@ export async function importAll(json: string): Promise<void> {
     // The previous active child id may not exist in the restored set.
     await db.settings.put({ key: "activeChildId", value: children[0]?.id ?? null });
   });
+  // Drafts die with the replace: restored children may reuse the same
+  // numeric ids, so a surviving draft would resurrect stale answers under
+  // a familiar-looking child. A rejected/cancelled import never reaches
+  // here and leaves drafts untouched.
+  clearAllDrafts();
 }
 
 export async function deleteAll(): Promise<void> {
@@ -151,4 +157,5 @@ export async function deleteAll(): Promise<void> {
     await db.observations.clear();
     await db.settings.clear();
   });
+  clearAllDrafts();
 }

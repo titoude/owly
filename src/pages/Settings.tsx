@@ -7,7 +7,7 @@ import { clearDemo, seedDemo } from "../demo";
 import { deleteAll, exportAll, importAll, inspectBackup, type BackupSummary } from "../export";
 import { newPinRecord } from "../pin";
 import type { Child } from "../types";
-import { intlLocale, LANGS, LANG_LABEL, setLang, type Lang } from "../i18n";
+import { intlLocale, LANGS, LANG_LABEL, setLang, isRtl, type Lang } from "../i18n";
 
 function download(name: string, text: string, type = "application/json") {
   const a = document.createElement("a");
@@ -126,7 +126,7 @@ export default function Settings() {
               onClick={() => void setActive(c.id!)}
               className={`text-left ${c.id === active?.id ? "font-semibold text-teal-700" : "text-neutral-600"}`}
             >
-              {c.name}{" "}
+              <span dir="auto">{c.name}</span>{" "}
               {c.isDemo ? (
                 <span className="ml-1 rounded-full bg-teal-50 text-teal-700 border border-teal-300 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
                   demo
@@ -147,6 +147,7 @@ export default function Settings() {
               key={l}
               type="button"
               lang={l}
+              dir={isRtl(l) ? "rtl" : "ltr"}
               onClick={() => changeLang(l)}
               className={`touch-target rounded-xl font-medium transition-all duration-150 ${
                 i18n.language === l

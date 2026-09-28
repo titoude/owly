@@ -15,7 +15,7 @@ export function ScoreBadge({ total, big }: { total: number; big?: boolean }) {
         {total}
         <span className="text-neutral-600 text-sm font-normal">/10</span>
       </span>
-      <span className={`${big ? "text-base" : "text-xs"} font-medium ${BAND_TEXT[band]}`} lang={sl !== i18n.language ? sl : undefined}>
+      <span className={`${big ? "text-base" : "text-xs"} font-medium ${BAND_TEXT[band]}`} lang={sl !== i18n.language ? sl : undefined} dir={sl !== i18n.language ? "ltr" : undefined}>
         {t(`band.${band}`)}
       </span>
     </div>

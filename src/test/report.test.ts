@@ -205,6 +205,18 @@ describe("unicode rendering", () => {
     expect(bad).toEqual([]);
   }, 30000);
 
+  it("distinguishes same-day dates across years in the episode log", async () => {
+    // Regression: fmtDate used to omit the year — 18 Sept 2025 and
+    // 18 Sept 2026 produced the identical label "18 sept. 10:00".
+    const y25 = { ...mkObs(4, 1), startedAt: Date.UTC(2025, 8, 18, 8) };
+    const y26 = { ...mkObs(4, 1), startedAt: Date.UTC(2026, 8, 18, 8) };
+    const spy = spyOnDraw();
+    await buildReport(child, [y25, y26], { periodDays: null, questions: [] });
+    const all = drawnText(spy.calls());
+    expect(all).toContain("2025");
+    expect(all).toContain("2026");
+  }, 30000);
+
   it("refuses to produce a PDF with unrenderable characters", async () => {
     // 🦉 (emoji) and 𠮷 (CJK ext-B, outside the GB-table subset) have no
     // glyph in any embedded face — the report must FAIL, not emit boxes.

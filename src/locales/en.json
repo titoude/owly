@@ -89,7 +89,12 @@
     "summary": "Summary",
     "saveError": "Could not save — please try again.",
     "pickTime": "Pick a time",
-    "scaleNote": "The FLACC scale descriptions are shown in English: that is the licensed original wording, pending authorized translations."
+    "scaleNote": "The FLACC scale descriptions are shown in English — the instrument's published wording; authorized translations are not confirmed.",
+    "editTitle": "Edit observation",
+    "draftPrompt": "You left an unfinished observation. Pick up where you left off, or discard it.",
+    "resume": "Resume draft",
+    "discard": "Discard draft",
+    "update": "Save changes"
   },
   "interventions": {
     "comfort": "Comfort (hug, hold, blanket)",
@@ -159,7 +164,7 @@
     "pdf": {
       "title": "PAIN OBSERVATION REPORT",
       "born": "born",
-      "prepared": "Prepared {{date}} · {{count}} episode(s) observed · owly.app",
+      "prepared": "Prepared {{date}} · {{count}} episode(s) observed",
       "howTheySignal": "How they usually signal discomfort",
       "individualBehaviours": "Individual pain behaviours (rFLACC)",
       "whatShows": "What the observations show",

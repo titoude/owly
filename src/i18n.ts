@@ -41,6 +41,10 @@ export const INTL_LOCALE: Record<Lang, string> = {
 
 const RTL_LANGS: ReadonlySet<string> = new Set(["ar"]);
 
+export function isRtl(lang: string): boolean {
+  return RTL_LANGS.has(lang);
+}
+
 function detected(): Lang {
   const nav = navigator.language.toLowerCase();
   if (nav.startsWith("zh")) return "zh-CN"; // all zh → Simplified for now

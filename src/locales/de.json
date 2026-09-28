@@ -89,7 +89,12 @@
     "summary": "Zusammenfassung",
     "saveError": "Speichern nicht möglich — bitte erneut versuchen.",
     "pickTime": "Uhrzeit wählen",
-    "scaleNote": "Die FLACC-Beschreibungen werden auf Englisch angezeigt: das ist der lizenzierte Originaltext, autorisierte Übersetzungen stehen noch aus."
+    "scaleNote": "Die FLACC-Beschreibungen werden auf Englisch angezeigt: das ist der veröffentlichte Wortlaut des Instruments; autorisierte Übersetzungen sind nicht bestätigt.",
+    "editTitle": "Beobachtung bearbeiten",
+    "draftPrompt": "Sie haben eine unvollendete Beobachtung. Fahren Sie dort fort, wo Sie aufgehört haben, oder verwerfen Sie sie.",
+    "resume": "Entwurf fortsetzen",
+    "discard": "Entwurf verwerfen",
+    "update": "Änderungen speichern"
   },
   "interventions": {
     "comfort": "Trösten (Umarmung, Halten, Decke)",
@@ -159,7 +164,7 @@
     "pdf": {
       "title": "SCHMERZ-BEOBACHTUNGSBERICHT",
       "born": "geboren",
-      "prepared": "Erstellt am {{date}} · {{count}} beobachtete Episode(n) · owly.app",
+      "prepared": "Erstellt am {{date}} · {{count}} beobachtete Episode(n)",
       "howTheySignal": "Wie es Unbehagen gewöhnlich zeigt",
       "individualBehaviours": "Individuelle Schmerzverhaltensweisen (rFLACC)",
       "whatShows": "Was die Beobachtungen zeigen",

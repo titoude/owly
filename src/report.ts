@@ -110,18 +110,22 @@ interface Piece { text: string; face: FaceKey | null } // face null = unrenderab
 //   dash falling back to the base face inside an Arabic run) keeps pieces in
 //   correct visual order — words are never reordered.
 // - Chars no face can render are emitted face=null and reported via missing.
-function layout(faces: Faces, s: string): { pieces: Piece[]; missing: Set<string> } {
+function layout(faces: Faces, s: string): { pieces: Piece[]; missing: Set<string>; rtl: boolean } {
   const clean = sanitize(s);
   const missing = new Set<string>();
-  if (!clean) return { pieces: [], missing };
+  if (!clean) return { pieces: [], missing, rtl: false };
 
   // Visual order of code-unit indices + per-unit bidi level
-  // (identity order, no levels, for pure-LTR text).
+  // (identity order, no levels, for pure-LTR text). `rtl` is the
+  // paragraph embedding level — used to right-align RTL-anchored
+  // paragraphs (UAX P2/P3 equivalent via bidi-js).
   let seq: number[];
   let lv: Uint8Array | null = null;
+  let rtl = false;
   if (RE_RTL.test(clean)) {
     const levels = bidi.getEmbeddingLevels(clean);
     lv = levels.levels;
+    rtl = (levels.paragraphs[0]?.level ?? 0) === 1;
     seq = Array.from({ length: clean.length }, (_, i) => i);
     for (const [a, e] of bidi.getReorderSegments(clean, levels) as [number, number][]) {
       for (let i = a, j = e; i < j; i++, j--) [seq[i], seq[j]] = [seq[j], seq[i]];
@@ -153,7 +157,7 @@ function layout(faces: Faces, s: string): { pieces: Piece[]; missing: Set<string
       lo = idx; hi = idx; f = perUnit[idx];
     }
   }
-  return { pieces, missing };
+  return { pieces, missing, rtl };
 }
 
 function measure(faces: Faces, s: string, size: number): number {
@@ -163,9 +167,16 @@ function measure(faces: Faces, s: string, size: number): number {
 }
 
 // Draw one logical string as visual-order face pieces at advancing x.
-function drawRuns(ctx: Ctx, s: string, x: number, y: number, o: { size: number; bold?: boolean; color: typeof INK }) {
+// With `align: "auto"` + `avail` (paragraph width), an RTL-anchored
+// paragraph is right-aligned inside that width — Arabic user content
+// sits naturally against the right edge instead of floating left.
+function drawRuns(ctx: Ctx, s: string, x: number, y: number, o: { size: number; bold?: boolean; color: typeof INK; align?: "auto"; avail?: number }) {
+  const { pieces, missing, rtl } = layout(ctx.faces, s);
   let cx = x;
-  const { pieces, missing } = layout(ctx.faces, s);
+  if (o.align === "auto" && rtl && o.avail !== undefined) {
+    const w = pieces.reduce((acc, p) => acc + ctx.faces[p.face ?? "base"].widthOfTextAtSize(p.text, o.size), 0);
+    cx = x + Math.max(0, o.avail - w);
+  }
   for (const ch of missing) ctx.missing.add(ch);
   for (const p of pieces) {
     const f = o.bold && p.face === "base" ? ctx.faces.bold : ctx.faces[p.face ?? "base"];
@@ -252,7 +263,7 @@ function line(ctx: Ctx, text: string, opts: { size?: number; bold?: boolean; col
   const size = opts.size ?? 9.5;
   for (const l of wrapText(ctx, text, size, ctx.width)) {
     ensureSpace(ctx, size + 4.5);
-    drawRuns(ctx, l, ctx.left, ctx.y, { size, bold: opts.bold, color: opts.color ?? INK });
+    drawRuns(ctx, l, ctx.left, ctx.y, { size, bold: opts.bold, color: opts.color ?? INK, align: "auto", avail: ctx.width });
     ctx.y -= size + 4.5;
   }
   ctx.y -= (opts.gap ?? size + 4.5) - (size + 4.5);
@@ -268,7 +279,9 @@ function heading(ctx: Ctx, text: string) {
 
 function fmtDate(ms: number): string {
   const loc = intlLocale();
-  return new Date(ms).toLocaleDateString(loc, { day: "2-digit", month: "short" }) + " " +
+  // Year included: a journal spanning >12 months must not collapse two
+  // different years into the same label.
+  return new Date(ms).toLocaleDateString(loc, { day: "2-digit", month: "short", year: "numeric" }) + " " +
     new Date(ms).toLocaleTimeString(loc, { hour: "2-digit", minute: "2-digit" });
 }
 
@@ -400,16 +413,17 @@ export async function buildReport(child: Child, observations: Observation[], opt
         7.6, COL_W[5],
       );
       const areaLines = wrapText(ctx, areas, 7.6, COL_W[4]);
-      const rows = Math.max(1, noteLines.length, areaLines.length);
+      // The date column wraps rather than clips (dates now carry the year).
+      const dateLines = wrapText(ctx, fmtDate(o.startedAt), 7.6, COL_W[0]);
+      const rows = Math.max(1, noteLines.length, areaLines.length, dateLines.length);
       if (ensureSpace(ctx, 12.5)) drawTableHeader(ctx, headerRow);
       const cells = [
-        fmtDate(o.startedAt),
         `${o.total}/10`,
         i18n.t(`band.${bandFor(o.total)}`),
         o.durationMinutes ? `${o.durationMinutes}m` : "—",
       ];
       cells.forEach((c, i) => {
-        drawRuns(ctx, truncToWidth(ctx, c, 7.6, COL_W[i]), ctx.left + COLS[i], ctx.y, { size: 7.6, color: INK });
+        drawRuns(ctx, truncToWidth(ctx, c, 7.6, COL_W[i + 1]), ctx.left + COLS[i + 1], ctx.y, { size: 7.6, color: INK });
       });
       // Draw line-by-line so a row taller than a page splits across pages.
       // ctx.y is the baseline of the current chunk's first line; a break
@@ -422,8 +436,11 @@ export async function buildReport(child: Child, observations: Observation[], opt
           chunk = 0;
           // Repeat the episode's date plus "(continued)" — identity survives
           // the page break even in the columns that are empty on continuation.
-          drawRuns(ctx, truncToWidth(ctx, fmtDate(o.startedAt), 7.6, COL_W[0]), ctx.left + COLS[0], ctx.y, { size: 7.6, color: MUTED });
+          drawRuns(ctx, truncToWidth(ctx, dateLines[0] ?? fmtDate(o.startedAt), 7.6, COL_W[0]), ctx.left + COLS[0], ctx.y, { size: 7.6, color: MUTED });
           drawRuns(ctx, `(${t("continued")})`, ctx.left + COLS[2], ctx.y, { size: 7.6, color: MUTED });
+        }
+        if (i < dateLines.length) {
+          drawRuns(ctx, truncToWidth(ctx, dateLines[i], 7.6, COL_W[0]), ctx.left + COLS[0], ctx.y - chunk * 9, { size: 7.6, color: i === 0 ? INK : MUTED });
         }
         if (i < areaLines.length) {
           drawRuns(ctx, truncToWidth(ctx, areaLines[i], 7.6, COL_W[4]), ctx.left + COLS[4], ctx.y - chunk * 9, { size: 7.6, color: INK });

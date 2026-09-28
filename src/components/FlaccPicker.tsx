@@ -23,11 +23,11 @@ export function FlaccPicker({ category, child, value, onChange }: Props) {
 
   return (
     <fieldset className="space-y-2">
-      <legend className="text-lg font-semibold text-neutral-900" lang={sl !== i18n.language ? sl : undefined}>{t(`flacc.${category}`)}</legend>
+      <legend className="text-lg font-semibold text-neutral-900" lang={sl !== i18n.language ? sl : undefined} dir={sl !== i18n.language ? "ltr" : undefined}>{t(`flacc.${category}`)}</legend>
       {note ? <p className="text-xs text-neutral-500">{note}</p> : null}
       {custom ? (
         <p className="text-sm text-teal-700 italic">
-          {t("observe.theirs", { name: child.name })} {custom}
+          {t("observe.theirs", { name: child.name })} <span dir="auto">{custom}</span>
         </p>
       ) : null}
       <div className="space-y-2">
@@ -58,7 +58,7 @@ export function FlaccPicker({ category, child, value, onChange }: Props) {
                 >
                   {score}
                 </span>
-                <span className="text-sm leading-snug" lang={sl !== i18n.language ? sl : undefined}>
+                <span className="text-sm leading-snug" lang={sl !== i18n.language ? sl : undefined} dir={sl !== i18n.language ? "ltr" : undefined}>
                   {t(`flaccDesc.${category}.${score}`, d)}
                 </span>
               </span>

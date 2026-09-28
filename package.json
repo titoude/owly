@@ -20,7 +20,9 @@
     "test": "vitest run",
     "typecheck": "tsc -b",
     "e2e": "node e2e/smoke.mjs",
-    "e2e:full": "node e2e/full.mjs"
+    "e2e:full": "node e2e/full.mjs",
+    "e2e:keys": "node e2e/keyboard.mjs",
+    "i18n:check": "node scripts/i18n-parity.mjs"
   },
   "dependencies": {
     "@pdf-lib/fontkit": "1.1.1",
