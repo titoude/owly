@@ -12,7 +12,7 @@ best-practice tags, 32 scenarios — see `docs/accessibility-evidence.md`
 for the audited scope and the honest limits of what was verified).
 
 **Manual checks**: full keyboard traversal of the observation wizard is
-e2e-tested (`e2e/keyboard.mjs` — roving radio groups, wraparound, tab
+e2e-tested (`e2e/keyboard.mjs` — roving radio groups, wraparound, skip link, dialog focus, tab
 order); nav labels are verified unclipped at 320 px in all 9 locales;
 focus is moved to each wizard step heading on transition.
 

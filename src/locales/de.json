@@ -165,6 +165,8 @@
     "localNote": "Vollständig auf diesem Gerät erstellt — nichts wird hochgeladen.",
     "empty": "Erfasse zuerst mindestens eine Schmerzepisode — der Bericht braucht Beobachtungen.",
     "error": "PDF konnte nicht erstellt werden — bitte erneut versuchen.",
+    "loadFailed": "Der Bericht konnte nicht geladen werden — ein Neuladen löst das Problem meist. Ihr Journal und die Fragen bleiben erhalten.",
+    "reloadRetry": "Neu laden und erneut versuchen",
     "pdf": {
       "title": "SCHMERZ-BEOBACHTUNGSBERICHT",
       "born": "geboren",

@@ -153,6 +153,14 @@ function Shell() {
     <div className="min-h-dvh">
       <a
         href="#main"
+        onClick={(e) => {
+          // HashRouter owns location.hash — a native #main jump would replace
+          // the route. Move focus programmatically instead.
+          e.preventDefault();
+          const m = document.getElementById("main");
+          m?.focus();
+          m?.scrollIntoView({ block: "start" });
+        }}
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-xl focus:bg-teal-700 focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lg"
       >
         {t("app.skipToContent")}

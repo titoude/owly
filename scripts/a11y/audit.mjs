@@ -23,7 +23,9 @@ let pass = 0, fail = 0, unverified = 0;
 // A state audit only counts when its precondition element actually rendered.
 // Otherwise record UNVERIFIED — never silently PASS a state we didn't reach.
 async function req(page, selector, id, what) {
-  const found = (await page.locator(selector).first().count()) > 0;
+  // Wait, not instant-check: async preconditions (PIN verify, autosave) settle
+  // over hundreds of ms — a sync count() would fake-fail them.
+  const found = await page.locator(selector).first().waitFor({ timeout: 6000 }).then(() => true).catch(() => false);
   if (!found) { results.push({ id, status: "UNVERIFIED", error: `missing precondition: ${what}` }); unverified++; }
   return found;
 }
@@ -44,8 +46,10 @@ async function audit(page, id, description) {
         // rule that THREW (e.g. unparseable color) — that is never "no issues".
         incomplete: res.incomplete.map((v) => ({
           id: v.id, nodes: v.nodes.length,
-          error: v.error ? String(v.error).slice(0, 200) : undefined,
-          errorNode: v.nodes.find((n) => n.any?.some((c) => c.error))?.target?.join(" ") ?? undefined,
+          targets: v.nodes.slice(0, 6).map((n) => n.target.join(" ")),
+          error: v.error ? String(v.error.message ?? v.error).slice(0, 200) : undefined,
+          errorNode: ["any", "all", "none"].flatMap((g) => v.nodes.map((n) => ({ n, c: n[g]?.find((c) => c.error) }))).find((x) => x.c)?.n.target?.join(" ") ?? undefined,
+          checkError: ["any", "all", "none"].flatMap((g) => v.nodes.flatMap((n) => (n[g] ?? []).map((c) => c.error))).find(Boolean) ?? undefined,
         })),
         passes: res.passes.length,
       };
@@ -131,7 +135,7 @@ await go(page, "#/history");
 await go(page, "#/settings");
 {
   const edit = page.locator("a", { hasText: /edit|modifier/i }).first();
-  if (await edit.count()) { await edit.click(); if (await req(page, "form input", "child-edit", "edit form input")) await audit(page, "child-edit", "edit form for existing child"); await page.goBack(); }
+  if (await edit.count()) { await edit.click(); if (await req(page, "#name", "child-edit", "child name input")) await audit(page, "child-edit", "edit form for existing child"); await page.goBack(); }
   else { results.push({ id: "child-edit", status: "UNVERIFIED", error: "no edit link" }); unverified++; }
 }
 
@@ -185,7 +189,14 @@ await go(page, "#/settings");
     IDBObjectStore.prototype.put = function () { throw new DOMException("quota", "QuotaExceededError"); };
   });
   await go(page, "#/observe");
-  await page.locator('label:has(input[type="radio"])').first().click().catch(() => {});
+  await page.waitForSelector('[role="status"]', { timeout: 6000 });
+  // discard a leftover draft offer first, then change a real step-0 field —
+  // clicking at a radio that doesn't exist at step 0 is a false precondition.
+  if (await page.locator("#draft-title").count()) {
+    await page.locator("button", { hasText: /discard|ignorer/i }).first().click().catch(() => {});
+    await page.waitForTimeout(300);
+  }
+  await page.locator("button", { hasText: /15\s*min|il y a\s*15/i }).first().click().catch(() => {});
   await page.waitForTimeout(700);
   if (await req(page, '[role="alert"]', "draft-save-error", "draft-save alert (quota fault)"))
     await audit(page, "draft-save-error", "autosave failure surfaced (quota/denied)");
@@ -307,19 +318,19 @@ await go(page, "#/settings");
   await page.evaluate(() => localStorage.setItem("owly-lang", "en"));
   await go(page, "#/settings");
   await page.waitForTimeout(400);
-  const pinInput = page.locator('input[type="password"], input[inputmode="numeric"]').first();
+  const pinInput = page.locator('main input[type="password"], main input[inputmode="numeric"]').first();
   if (await pinInput.count()) {
     await pinInput.fill("1234");
-    await page.locator("button", { hasText: /set|définir|enable|activer/i }).last().click();
+    // scoped to <main>: the nav "Settings" buttons also match /set/i
+    await page.locator("main button", { hasText: /set pin|définir le pin/i }).first().click();
     await page.waitForTimeout(400);
     await page.reload();
     await page.waitForTimeout(500);
-    if (await req(page, 'input[inputmode="numeric"], input[type="password"]', "pin-locked", "lock input after PIN set"))
+    if (await req(page, '#lock-heading, h1:has-text("Enter passcode")', "pin-locked", "lock screen heading"))
       await audit(page, "pin-locked", "lock screen after PIN set");
-    // wrong PIN
+    // wrong PIN — verifyPin is async; req() waits for the alert
     const lockInput = page.locator("input").first();
     await lockInput.fill("9999");
-    await page.waitForTimeout(600);
     if (await req(page, '[role="alert"]', "pin-error", "wrong-PIN alert"))
       await audit(page, "pin-error", "lock screen wrong-PIN error");
     // unlock with correct PIN to restore

@@ -165,6 +165,8 @@
     "localNote": "Generated entirely on this device — nothing is uploaded.",
     "empty": "Record at least one pain episode first — the report needs observations.",
     "error": "Could not generate the PDF — please try again.",
+    "loadFailed": "The report couldn't load — a reload usually fixes this. Your journal and the questions below are kept.",
+    "reloadRetry": "Reload and retry",
     "pdf": {
       "title": "PAIN OBSERVATION REPORT",
       "born": "born",

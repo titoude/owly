@@ -130,11 +130,27 @@ try {
     await p2.goto(BASE + "/#/report");
     const genBtn2 = p2.locator("button.btn-primary.w-full").first(); // label swaps to "Loading…" while busy — use a stable selector
     await genBtn2.waitFor({ timeout: 8000 });
+    // an unsaved question must survive the reload recovery
+    await p2.locator("input.input").first().fill("kept question");
     await genBtn2.click();
     await p2.locator('[role="alert"]').waitFor({ timeout: 8000 }).catch(() => {});
     const alerts = await p2.locator('[role="alert"]').count();
     const enabled = await genBtn2.isEnabled(); // re-enabled ⇒ busy reset ⇒ not wedged
-    ok("aborted report chunk → alert + button recovers", alerts > 0 && enabled, `alerts=${alerts} enabled=${enabled} pageerrors=${perr.length}`);
+    const reloadBtn = p2.locator("button", { hasText: /reload|recharger/i }).first();
+    const reloadShown = await reloadBtn.count();
+    ok("aborted report chunk → alert + reload offered", alerts > 0 && enabled && reloadShown > 0, `alerts=${alerts} enabled=${enabled} reload=${reloadShown} pageerrors=${perr.length}`);
+    // reload recovery: after the aborted route is cleared, reload → preserved
+    // unsaved input → generate succeeds.
+    await p2.unroute("**/assets/report-*.js");
+    await reloadBtn.click();
+    await p2.waitForLoadState("domcontentloaded");
+    await p2.waitForSelector("button.btn-primary.w-full", { timeout: 10000 });
+    const kept = await p2.locator("input.input").first().inputValue();
+    const genBtn3 = p2.locator("button.btn-primary.w-full").first();
+    const dlP = p2.waitForEvent("download", { timeout: 20000 });
+    await genBtn3.click();
+    const dl2 = await dlP.catch(() => null);
+    ok("reload recovers generation, unsaved input kept", kept === "kept question" && dl2 !== null && /\.pdf$/.test(dl2.suggestedFilename()), `kept="${kept}" dl=${dl2?.suggestedFilename()}`);
     await ctx2.close();
   }
 
@@ -294,6 +310,29 @@ try {
   const d2 = (await draftRow())?.value?.startedAt ?? null;
   ok("elapsed time cannot drift the pinned instant", d1 !== null && d1 === d2, `${d1} → ${d2}`);
 
+  // default "Now" (no when-touch): the draft must pin the wizard-open
+  // instant, not null — the common path that used to stay unpinned.
+  await page.goto(BASE + "/#/history");
+  await page.waitForTimeout(400);
+  await page.goto(BASE + "/#/observe");
+  await page.waitForSelector('[role="status"]');
+  if (await page.locator("#draft-title").count()) {
+    await page.locator("button", { hasText: /discard|ignorer/i }).first().click();
+    await page.waitForTimeout(300);
+  }
+  const openAt = await page.evaluate(() => Date.now());
+  await nextBtn().click(); // step 1 — never touched the when field
+  await page.waitForTimeout(400);
+  await page.locator("label:has(input[type='radio'])").nth(0).click(); // face 0 → autosave
+  await page.waitForTimeout(600);
+  const d3 = (await draftRow())?.value?.startedAt ?? null;
+  ok("default-Now draft pins the wizard-open instant", typeof d3 === "number" && Math.abs(d3 - openAt) < 5000, `open≈${openAt} startedAt=${d3}`);
+  await page.clock.fastForward(2 * 60 * 60 * 1000); // +2h more
+  await page.locator("label:has(input[type='radio'])").nth(1).click(); // face 1 → autosave again
+  await page.waitForTimeout(600);
+  const d4 = (await draftRow())?.value?.startedAt ?? null;
+  ok("default-Now instant survives elapsed time", d3 !== null && d4 === d3, `${d3} → ${d4}`);
+
   // resumed draft keeps the exact pinned ms through save (no
   // datetime-local minute truncation)
   const pinned = (await page.evaluate(() => Date.now())) - 91_234;
@@ -309,8 +348,11 @@ try {
       tx.oncomplete = res; tx.onerror = () => rej(tx.error);
     });
   }, [pinned, demoId]);
+  // leave + return so ObserveKeyed remounts and re-checks for a draft
+  await page.goto(BASE + "/#/history");
+  await page.waitForTimeout(400);
   await page.goto(BASE + "/#/observe");
-  await page.waitForTimeout(500);
+  await page.waitForSelector("#draft-title", { timeout: 5000 });
   await page.locator("button", { hasText: /resume|reprendre/i }).first().click();
   await page.waitForTimeout(400);
   await page.locator("button", { hasText: /save observation|enregistrer/i }).last().click();
@@ -330,7 +372,7 @@ try {
   for (let i = 0; i < 7; i++) { await nextBtn().click(); await page.waitForTimeout(200); }
   const noteArea = page.locator("textarea").last();
   await noteArea.fill("note-only edit");
-  await page.locator("button", { hasText: /save observation|enregistrer/i }).last().click();
+  await page.locator("button", { hasText: /save|enregistrer/i }).last().click(); // edit mode: "Save changes"
   await page.waitForTimeout(700);
   const afterEdit = (await idb("observations", "getAll")).find((o) => o.id === editObsId);
   ok(

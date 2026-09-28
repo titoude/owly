@@ -1,7 +1,9 @@
 // Keyboard-only E2E — real key events against the production build.
 // Usage: npm run build && npx vite preview --port 4173 && node e2e/keyboard.mjs
 import { launchBrowser } from "./browser.mjs";
-import { writeFileSync } from "node:fs";
+import { writeFileSync, mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 const BASE = process.env.BASE_URL || "http://localhost:4173";
 const results = [];
@@ -77,9 +79,11 @@ ok("Tab reaches an interactive element", /A|BUTTON/.test(f.tag ?? ""), JSON.stri
 
 // ── Skip-to-content link ───────────────────────────────────
 // Full reload (not a hash change): sequential focus starts at document top,
-// which is what a real keyboard user's first Tab sees.
-await page.goto(BASE);
-await page.waitForSelector("nav", { timeout: 8000 });
+// which is what a real keyboard user's first Tab sees. Route must survive —
+// HashRouter owns location.hash, so the link must focus main without touching it.
+await page.goto(BASE + "/#/settings");
+await page.reload(); // hash-only goto doesn't reload: focus must start at document top
+await page.waitForSelector("main h1", { timeout: 8000 });
 await page.keyboard.press("Tab");
 const fSkip = await page.evaluate(() => ({
   tag: document.activeElement?.tagName,
@@ -88,12 +92,17 @@ const fSkip = await page.evaluate(() => ({
 }));
 ok("first Tab stop is the skip link", fSkip.tag === "A" && fSkip.href === "#main", JSON.stringify(fSkip));
 await page.keyboard.press("Enter");
-const fMain = await page.evaluate(() => document.activeElement?.id);
-ok("skip link moves focus to main content", fMain === "main", `active=${fMain}`);
+const afterSkip = await page.evaluate(() => ({
+  id: document.activeElement?.id,
+  hash: location.hash,
+  heading: document.querySelector("main h1")?.textContent?.trim() ?? "",
+}));
+ok("skip link focuses main without changing route", afterSkip.id === "main" && afterSkip.hash === "#/settings" && afterSkip.heading.length > 0, JSON.stringify(afterSkip));
 
 // ── Import preview dialog: focus entry / containment / Escape / restore ──
+const importFixture = join(mkdtempSync(join(tmpdir(), "owly-kb-")), "import.json");
 writeFileSync(
-  "/tmp/owly-kb-import.json",
+  importFixture,
   JSON.stringify({
     version: 1,
     children: [{ id: 7, name: "KB Test", createdAt: 1700000000000, birthYear: 2020, conditions: "", communicates: "", customDescriptors: {} }],
@@ -104,7 +113,7 @@ await page.goto(BASE + "/#/settings");
 await page.waitForSelector('input[type="file"]', { state: "attached", timeout: 8000 });
 const importBtn = page.locator("button", { hasText: /import|importer/i }).first();
 await importBtn.click(); // focuses the trigger (dialog restores here)
-await page.locator('input[type="file"]').setInputFiles("/tmp/owly-kb-import.json");
+await page.locator('input[type="file"]').setInputFiles(importFixture);
 await page.waitForSelector("dialog[open]", { timeout: 8000 });
 const inDlg = await page.evaluate(() => {
   const dlg = document.querySelector("dialog[open]");

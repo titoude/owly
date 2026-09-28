@@ -224,7 +224,7 @@ export default function Settings() {
             </p>
             <div className="flex gap-2">
               <button type="button" className="btn-ghost flex-1 text-sm" onClick={() => setPendingImport(null)}>{t("common.cancel")}</button>
-              <button type="button" className="flex-1 rounded-xl bg-amber-600 py-2 text-sm font-semibold text-white" onClick={() => void doImport()}>
+              <button type="button" className="flex-1 rounded-xl bg-amber-800 py-2 text-sm font-semibold text-white" onClick={() => void doImport()}>
                 {t("settings.importConfirm")}
               </button>
             </div>

@@ -165,6 +165,8 @@
     "localNote": "Generado íntegramente en este dispositivo — nada se sube.",
     "empty": "Registra al menos un episodio de dolor primero — el informe necesita observaciones.",
     "error": "No se pudo generar el PDF — inténtalo de nuevo.",
+    "loadFailed": "No se pudo cargar el informe — recargar suele solucionarlo. Su diario y las preguntas se conservan.",
+    "reloadRetry": "Recargar y reintentar",
     "pdf": {
       "title": "INFORME DE OBSERVACIÓN DE DOLOR",
       "born": "nacido en",

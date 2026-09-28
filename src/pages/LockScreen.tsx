@@ -70,12 +70,12 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
   }
 
   return (
-    <div className="min-h-dvh grid place-items-center">
+    <main className="min-h-dvh grid place-items-center" aria-labelledby="lock-heading">
       <div className="space-y-6 text-center">
         <img src="/icon.svg" alt="" className="mx-auto size-20 rounded-3xl" />
-        <p className="text-neutral-600">
+        <h1 id="lock-heading" className="text-xl font-semibold text-neutral-800">
           {coolingDown ? t("settings.unlockWait") : t("settings.unlock")}
-        </p>
+        </h1>
         <input
           type="password"
           inputMode="numeric"
@@ -94,7 +94,7 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
         />
         {error && <p className="text-xs text-red-700" role="alert">{t("settings.wrongPin")}</p>}
         {!confirmWipe ? (
-          <button type="button" className="text-xs text-neutral-500 underline underline-offset-2" onClick={() => setConfirmWipe(true)}>
+          <button type="button" className="text-xs text-neutral-700 underline underline-offset-2" onClick={() => setConfirmWipe(true)}>
             {t("settings.forgotPin")}
           </button>
         ) : (
@@ -116,6 +116,6 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }

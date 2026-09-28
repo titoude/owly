@@ -63,7 +63,7 @@ npm run preview    # serve the production build
 - pdf-lib — on-device PDF generation
 - vite-plugin-pwa — offline, installable
 - Vitest + Testing Library + fake-indexeddb (34 unit/integration tests)
-- Playwright e2e against the production build: `npm run e2e` (9 golden-path scenarios), `npm run e2e:full` (33 scenarios: PDF download, PIN lock, import/export incl. cancel/reject paths, drafts, demo data…), `npm run e2e:keys` (11 keyboard-nav checks), `node e2e/offline.mjs` (offline cold reload + PDF bytes)
+- Playwright e2e against the production build: `npm run e2e` (9 golden-path scenarios), `npm run e2e:full` (41 scenarios: PDF download incl. chunk-failure recovery, PIN lock, import/export incl. cancel/reject paths, drafts, demo data…), `npm run e2e:keys` (17 keyboard checks: radio groups, skip link, dialog focus), `node e2e/offline.mjs` (offline cold reload + PDF bytes)
 - axe-core accessibility audit over the full route/state manifest: `node scripts/a11y/audit.mjs` — 32 scenarios, 0 violations
 - oxlint + `tsc -b` in CI
 - i18next — 9 languages: English, French, Spanish, Portuguese, German, Italian, Arabic (RTL), Hindi, Simplified Chinese

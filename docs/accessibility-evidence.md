@@ -5,7 +5,7 @@ machine-checked and what still needs a human with a screen reader.
 
 ## What was checked, and how
 
-Automated audit: `scripts/a11y/audit.mjs` (axe-core 4.10 + Playwright/Chromium,
+Automated audit: `scripts/a11y/audit.mjs` (axe-core 4.13.0 + Playwright/Chromium,
 tags `wcag2a wcag2aa wcag21a wcag21aa wcag22aa best-practice`) against the
 production build (`vite preview`). The audited scope is fixed by
 `scripts/a11y/manifest.json` — every reachable route plus the interactive
@@ -26,22 +26,31 @@ Coverage (32 scenarios, all PASS — 0 violations):
   IndexedDB+localStorage denied (recovery screen), boot with only
   localStorage denied (app still loads).
 
-Keyboard: `e2e/keyboard.mjs` — 11 assertions on the FLACC radio groups
-(focus without selection, ArrowDown/Up changes selection+focus, wraparound,
-Tab exits the group at the checked item, Shift+Tab re-enters on it, Tab
-reaches an interactive element). Follows the CUA radio-group contract.
+Keyboard: `e2e/keyboard.mjs` — 17 assertions covering the FLACC radio
+groups (CUA contract: focus without selection, Arrow keys change
+selection+focus, wraparound, Tab exits at the checked item), the
+skip-to-content link (first Tab stop after a fresh load; activates
+without disturbing the HashRouter route and focuses `<main>`), and the
+import-preview dialog (focus enters on open, Tab is contained, Escape
+dismisses and restores focus to the trigger).
 
 Reflow: nav labels verified unclipped at 320×800 in all 9 locales.
 
 ## Dispositions
 
-- `color-contrast` was `incomplete` on every page under axe-core 4.10.3
-  because the whole rule **threw** on Tailwind v4's `oklch(… 0 none)`
-  colors — `nodes:[]` meant "unevaluated", not "no issues". The harness
-  now pins axe-core 4.13.0 (the official release line that parses
-  oklch/oklab `none`) and surfaces each incomplete rule's error +
-  errorNode. The old baseline's contrast results are **noncomparable** —
-  contrast was never evaluated there; current runs evaluate it for real.
+- `color-contrast`: under axe ≤4.13 the whole rule **threw** on the
+  theme's `oklch(… 0 none)` neutral tokens — `nodes:[]` meant
+  "unevaluated", not "no issues" (verified on 4.10.3, 4.11.1, 4.13.0).
+  Rather than special-casing the audit, the production theme now pins the
+  neutral scale to equivalent sRGB hex values, so the rule evaluates the
+  built CSS for real. Result: the only remaining `incomplete` nodes are
+  genuine "needs manual review" cases — axe cannot resolve composite
+  backgrounds (backdrop-blur nav, dialog backdrop) — and the flagged
+  pairs measure ≥ 4.5:1 on inspection (teal-700/white ≈ 5.5:1,
+  amber-800/white ≈ 6.5:1). A real sub-AA failure this surfaced —
+  white-on-amber-600 (≈ 3.1:1) on the import confirmation — was raised to
+  amber-800. The pre-fix baseline's contrast results are **noncomparable**:
+  contrast was never evaluated there.
 - The FLACC scale wording renders in English on non-EN/FR locales (clinical
   wording authorization is unconfirmed — see `docs/i18n-review.md`); those
   spans carry `lang`/`dir` so assistive tech pronounces them correctly.

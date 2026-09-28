@@ -165,6 +165,8 @@
     "localNote": "Generato interamente su questo dispositivo — niente viene caricato.",
     "empty": "Registra prima almeno un episodio di dolore — il report ha bisogno di osservazioni.",
     "error": "Impossibile generare il PDF — riprova.",
+    "loadFailed": "Impossibile caricare il report — un ricaricamento di solito risolve. Il diario e le domande sono conservati.",
+    "reloadRetry": "Ricarica e riprova",
     "pdf": {
       "title": "REPORT DI OSSERVAZIONE DEL DOLORE",
       "born": "nato nel",

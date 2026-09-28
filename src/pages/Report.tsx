@@ -18,7 +18,20 @@ export default function Report() {
   const [questions, setQuestions] = useState<string[]>(["", ""]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [reloadNeeded, setReloadNeeded] = useState(false);
   const [ready, setReady] = useState(false);
+
+  // Restore questions/period stashed before a chunk-load-failure reload so a
+  // retried generate keeps the user's unsaved text.
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("owly-report-draft");
+      if (!raw) return;
+      const d = JSON.parse(raw) as { questions?: string[]; period?: number | null };
+      if (Array.isArray(d.questions)) setQuestions(d.questions);
+      if ("period" in d) setPeriod(d.period ?? null);
+    } catch { /* sessionStorage can be denied — restoration is best-effort */ }
+  }, []);
 
   useEffect(() => {
     if (!active?.id) return;
@@ -45,11 +58,19 @@ export default function Report() {
       const date = new Date().toISOString().slice(0, 10);
       mod.downloadPdf(bytes, `owly-report-${active.name.toLowerCase()}-${date}.pdf`);
     } catch (e) {
-      // Unsupported characters: name them so the user can fix or keep the
-      // journal + export a JSON backup instead. Never ship a misleading PDF.
       const chars = (e as { chars?: unknown }).chars;
       if (e instanceof Error && e.name === "UnsupportedCharsError" && Array.isArray(chars)) {
+        // Unsupported characters: name them so the user can fix or keep the
+        // journal + export a JSON backup instead. Never ship a misleading PDF.
         setError(t("report.unsupported", { chars: chars.join(" ") }));
+      } else if (e instanceof TypeError && /dynamically imported|import\(i?\)|fetch/i.test(e.message)) {
+        // A failed lazy-chunk fetch is cached by the browser — a plain retry
+        // cannot recover. Stash unsaved inputs, then offer an honest reload.
+        try {
+          sessionStorage.setItem("owly-report-draft", JSON.stringify({ questions, period }));
+        } catch { /* storage can be denied */ }
+        setError(t("report.loadFailed"));
+        setReloadNeeded(true);
       } else {
         setError(t("report.error"));
       }
@@ -140,6 +161,11 @@ export default function Report() {
         {busy ? t("common.loading") : t("report.generate")}
       </button>
       {error && <p className="text-sm text-red-700 text-center" role="alert">{error}</p>}
+      {reloadNeeded && (
+        <button type="button" className="btn-ghost w-full" onClick={() => window.location.reload()}>
+          {t("report.reloadRetry")}
+        </button>
+      )}
       <p className="text-xs text-neutral-600 text-center">{t("report.localNote")}</p>
     </div>
   );

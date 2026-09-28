@@ -46,17 +46,19 @@ export default function Observe() {
   const seededWhen = useRef<string | null>(null); // customAt string the form was seeded with
   // Absolute epoch-ms the "when" selection refers to. Written ONLY by an
   // explicit when interaction (chip click, custom-time edit, seed, resume)
-  // — never recomputed per keystroke or per autosave, so it cannot drift
-  // with wall-clock time while the user fills other fields.
-  const whenInstant = useRef<number | null>(null);
+  // plus the default-Now seed at mount — never recomputed per keystroke or
+  // per autosave, so it cannot drift with wall-clock time. It lives in
+  // draft state so a same-value reselection still dirties the draft.
+  const [startedAt, setStartedAt] = useState<number | null>(null);
   const stepHeading = useRef<HTMLDivElement>(null);
 
   const key = editId ? draftEditKey(editId) : active?.id ? draftKey(active.id) : null;
 
-  const fields = useMemo<Omit<ObsDraft, "startedAt">>(() => ({
+  const fields = useMemo<ObsDraft>(() => ({
     step, baseline, minutesAgo, customAt, scores, duration, zones, cause, interventions, note,
+    startedAt,
     savedAt: 0,
-  }), [step, baseline, minutesAgo, customAt, scores, duration, zones, cause, interventions, note]);
+  }), [step, baseline, minutesAgo, customAt, scores, duration, zones, cause, interventions, note, startedAt]);
 
   // Seed from an existing record in edit mode (guard: it must belong to
   // the active child — observations never cross profiles), then offer any
@@ -71,7 +73,7 @@ export default function Observe() {
         if (!o || o.childId !== active.id) { nav("/history"); return; }
         orig.current = o;
         seededWhen.current = toLocalInput(new Date(o.startedAt));
-        whenInstant.current = o.startedAt;
+        setStartedAt(o.startedAt);
         setBaseline(o.baseline);
         setMinutesAgo(0);
         setCustomAt(seededWhen.current);
@@ -81,6 +83,10 @@ export default function Observe() {
         setCause(o.suspectedCause);
         setInterventions(o.interventions);
         setNote(o.note);
+      } else {
+        // New observation: "Now" is the wizard-open instant, pinned here so
+        // autosave/save keep it even if the form sits open for hours.
+        setStartedAt(Date.now());
       }
       if (cancelled || !key) return;
       const d = await loadDraft(key);
@@ -106,7 +112,7 @@ export default function Observe() {
     if (JSON.stringify(fields) === seeded.current) return;
     // The draft records the instant pinned by the last explicit "when"
     // change — recomputing it here would let clock drift shift the episode.
-    saveDraft(key, { ...fields, startedAt: whenInstant.current, savedAt: Date.now() })
+    saveDraft(key, { ...fields, savedAt: Date.now() })
       .then(() => setDraftFailed(false))
       .catch(() => setDraftFailed(true));
   }, [key, offerSeen, offer, fields]);
@@ -138,7 +144,7 @@ export default function Observe() {
       // timestamp — a note-only correction must not move the episode.
       startedAt: editId && orig.current && customAt === seededWhen.current
         ? orig.current.startedAt
-        : whenInstant.current ?? (customAt ? Math.min(new Date(customAt).getTime(), Date.now()) : Date.now() - minutesAgo * 60_000),
+        : startedAt ?? (customAt ? Math.min(new Date(customAt).getTime(), Date.now()) : Date.now() - minutesAgo * 60_000),
       recordedAt: editId && orig.current ? orig.current.recordedAt : Date.now(),
       scores: scores as FlaccScores,
       total,
@@ -169,18 +175,20 @@ export default function Observe() {
     setBaseline(offer.baseline);
     // Restore the pinned absolute instant, not the relative "N minutes
     // ago" that would re-anchor against resume time.
+    let restored: number | null = null;
     if (offer.startedAt != null) {
       // datetime-local displays only minutes; the pinned instant keeps
       // the exact ms so a resumed save preserves it.
-      whenInstant.current = offer.startedAt;
+      restored = offer.startedAt;
       setCustomAt(toLocalInput(new Date(offer.startedAt)));
       setMinutesAgo(0);
     } else {
       const ms = offer.customAt ? new Date(offer.customAt).getTime() : NaN;
-      whenInstant.current = Number.isFinite(ms) ? ms : null;
+      restored = Number.isFinite(ms) ? ms : null;
       setMinutesAgo(offer.minutesAgo);
       setCustomAt(offer.customAt);
     }
+    setStartedAt(restored);
     setScores(offer.scores);
     setDuration(offer.duration);
     setZones(offer.zones);
@@ -190,7 +198,8 @@ export default function Observe() {
     // The resumed state becomes the new baseline for dirty-checking —
     // expressed in the fields' own shape (no startedAt, resolved when).
     seeded.current = JSON.stringify({
-      ...offer, startedAt: undefined, savedAt: 0,
+      ...offer, savedAt: 0,
+      startedAt: restored,
       customAt: offer.startedAt != null ? toLocalInput(new Date(offer.startedAt)) : offer.customAt,
       minutesAgo: offer.startedAt != null ? 0 : offer.minutesAgo,
     });
@@ -220,7 +229,7 @@ export default function Observe() {
       </div>
 
       {offer && (
-        <div className="card p-4 flex items-center justify-between gap-3" aria-labelledby="draft-title">
+        <div className="card p-4 flex items-center justify-between gap-3" role="group" aria-labelledby="draft-title">
           <p id="draft-title" className="text-sm font-medium text-neutral-700">{t("observe.draftPrompt")}</p>
           <div className="flex gap-2">
             <button type="button" className="btn-primary text-sm px-3 py-1.5" onClick={resume}>{t("observe.resume")}</button>
@@ -263,7 +272,7 @@ export default function Observe() {
                 <button
                   key={m}
                   type="button"
-                  onClick={() => { setMinutesAgo(m); setCustomAt(null); whenInstant.current = Date.now() - m * 60_000; }}
+                  onClick={() => { setMinutesAgo(m); setCustomAt(null); setStartedAt(Date.now() - m * 60_000); }}
                   aria-pressed={minutesAgo === m && customAt === null}
                   className={`btn-ghost text-sm ${minutesAgo === m && customAt === null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
                 >
@@ -272,7 +281,7 @@ export default function Observe() {
               ))}
               <button
                 type="button"
-                onClick={() => { if (customAt === null) { const now = Date.now(); setCustomAt(toLocalInput(new Date(now))); whenInstant.current = now; } }}
+                onClick={() => { if (customAt === null) { const now = Date.now(); setCustomAt(toLocalInput(new Date(now))); setStartedAt(now); } }}
                 aria-pressed={customAt !== null}
                 className={`btn-ghost text-sm ${customAt !== null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
               >
@@ -290,7 +299,7 @@ export default function Observe() {
                   const v = e.target.value === "" ? null : e.target.value;
                   setCustomAt(v);
                   const ms = v ? new Date(v).getTime() : NaN;
-                  whenInstant.current = Number.isFinite(ms) ? ms : null;
+                  setStartedAt(Number.isFinite(ms) ? ms : null);
                 }}
               />
             )}
