@@ -8,7 +8,7 @@
     "wcag22aa",
     "best-practice"
   ],
-  "when": "2026-09-28T10:55:10.477Z",
+  "when": "2026-09-28T11:01:28.968Z",
   "results": [
     {
       "id": "route:/",
@@ -258,6 +258,116 @@
       "passes": 35
     },
     {
+      "id": "draft-resume",
+      "description": "draft resume/discard offer on wizard entry",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "aria-prohibited-attr",
+          "nodes": 1
+        },
+        {
+          "id": "color-contrast",
+          "nodes": 0
+        }
+      ],
+      "passes": 30
+    },
+    {
+      "id": "observe-edit",
+      "description": "observation edit mode (preseeded)",
+      "status": "FAIL",
+      "violations": [
+        {
+          "id": "label",
+          "impact": "critical",
+          "help": "Form elements must have labels",
+          "nodes": [
+            {
+              "html": "<input class=\"input text-sm w-full\" max=\"2026-09-28T11:00\" type=\"datetime-local\" value=\"2026-09-27T02:00\">",
+              "target": [
+                "input"
+              ]
+            }
+          ]
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 0
+        }
+      ],
+      "passes": 31
+    },
+    {
+      "id": "draft-save-error",
+      "description": "autosave failure surfaced (quota/denied)",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 0
+        }
+      ],
+      "passes": 29
+    },
+    {
+      "id": "pdf-unsupported",
+      "description": "unsupported-character PDF error",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 0
+        }
+      ],
+      "passes": 32
+    },
+    {
+      "id": "storage-denied-boot",
+      "description": "boot with storage denied → recovery screen",
+      "status": "FAIL",
+      "violations": [
+        {
+          "id": "landmark-one-main",
+          "impact": "moderate",
+          "help": "Document should have one main landmark",
+          "nodes": [
+            {
+              "html": "<html lang=\"en\" dir=\"ltr\">",
+              "target": [
+                "html"
+              ]
+            }
+          ]
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 0
+        }
+      ],
+      "passes": 17
+    },
+    {
+      "id": "ls-denied-boot",
+      "description": "boot with only localStorage denied",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 0
+        }
+      ],
+      "passes": 28
+    },
+    {
       "id": "state:fr",
       "description": "settings in French",
       "status": "PASS",
@@ -308,6 +418,33 @@
         }
       ],
       "passes": 28
+    },
+    {
+      "id": "empty-patterns",
+      "description": "patterns with zero observations",
+      "status": "FAIL",
+      "violations": [
+        {
+          "id": "page-has-heading-one",
+          "impact": "moderate",
+          "help": "Page should contain a level-one heading",
+          "nodes": [
+            {
+              "html": "<html lang=\"en\" dir=\"ltr\">",
+              "target": [
+                "html"
+              ]
+            }
+          ]
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 0
+        }
+      ],
+      "passes": 22
     },
     {
       "id": "pin-locked",

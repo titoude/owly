@@ -20,10 +20,17 @@
     "delete-confirm",
     "child-edit",
     "import-preview",
+    "draft-resume",
+    "observe-edit",
+    "draft-save-error",
+    "pdf-unsupported",
+    "storage-denied-boot",
+    "ls-denied-boot",
     "state:fr",
     "state:rtl",
     "empty-dashboard",
     "empty-history",
+    "empty-patterns",
     "pin-locked",
     "pin-error"
   ]

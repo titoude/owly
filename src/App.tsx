@@ -111,7 +111,7 @@ function Shell() {
 
   if (error) {
     return (
-      <div className="min-h-dvh grid place-items-center px-6">
+      <main className="min-h-dvh grid place-items-center px-6">
         <div className="max-w-sm text-center space-y-4" role="alert">
           <h1 className="text-xl font-bold">{t("app.storageErrorTitle")}</h1>
           <p className="text-sm text-neutral-600">{t("app.storageErrorBody")}</p>
@@ -119,7 +119,7 @@ function Shell() {
             {t("common.retry")}
           </button>
         </div>
-      </div>
+      </main>
     );
   }
 

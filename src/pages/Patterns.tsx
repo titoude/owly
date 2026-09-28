@@ -76,6 +76,7 @@ export default function Patterns() {
             <path d="M4 19.5V10M9.5 19.5V4.5M15 19.5v-8M20.5 19.5V8" />
           </svg>
         </div>
+        <h1 className="text-xl font-bold">{t("patterns.title")}</h1>
         <p className="text-neutral-600">{t("patterns.empty")}</p>
         <Link to="/observe" className="btn-primary inline-block">{t("observe.start")}</Link>
       </div>

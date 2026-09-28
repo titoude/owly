@@ -130,6 +130,107 @@ await go(page, "#/settings");
   } else { results.push({ id: "import-preview", status: "UNVERIFIED", error: "no export download" }); unverified++; }
 }
 
+// draft-resume: the step audits above left an autosaved draft; re-enter /observe
+{
+  await go(page, "#/history");
+  await page.waitForTimeout(400);
+  await go(page, "#/observe");
+  const offer = page.locator("#draft-title");
+  await offer.waitFor({ timeout: 6000 }).catch(() => {});
+  if (await offer.count()) {
+    await audit(page, "draft-resume", "draft resume/discard offer on wizard entry");
+    await page.locator("button", { hasText: /discard|ignorer/i }).first().click().catch(() => {});
+    await page.waitForTimeout(300);
+  } else { results.push({ id: "draft-resume", status: "UNVERIFIED", error: "no draft offer after partial wizard" }); unverified++; }
+}
+
+// observe-edit: open an existing observation in edit mode
+{
+  await go(page, "#/history");
+  const editLink = page.locator("a", { hasText: /edit|modifier/i }).first();
+  await editLink.waitFor({ timeout: 6000 }).catch(() => {});
+  if (await editLink.count()) { await editLink.click(); await page.waitForTimeout(400); await audit(page, "observe-edit", "observation edit mode (preseeded)"); }
+  else { results.push({ id: "observe-edit", status: "UNVERIFIED", error: "no edit link on history row" }); unverified++; }
+}
+
+// draft-save-error: quota failure on draft autosave surfaces an alert
+{
+  await page.evaluate(() => {
+    window.__origPut = IDBObjectStore.prototype.put;
+    IDBObjectStore.prototype.put = function () { throw new DOMException("quota", "QuotaExceededError"); };
+  });
+  await go(page, "#/observe");
+  await page.locator('label:has(input[type="radio"])').first().click().catch(() => {});
+  await page.waitForTimeout(700);
+  await audit(page, "draft-save-error", "autosave failure surfaced (quota/denied)");
+  await page.evaluate(() => { IDBObjectStore.prototype.put = window.__origPut; });
+}
+
+// pdf-unsupported: a name containing an unrenderable char must surface an
+// accessible error instead of a PDF with replacement boxes
+{
+  await go(page, "#/settings");
+  const edit = page.locator("a", { hasText: /edit|modifier/i }).first();
+  await edit.waitFor({ timeout: 6000 }).catch(() => {});
+  if (await edit.count()) {
+    await edit.click();
+    await page.waitForTimeout(400);
+    const nameInput = page.locator("input").first();
+    await nameInput.fill("Léo \u{1F989}");
+    await page.locator("button[type='submit'], button", { hasText: /save|enregistrer/i }).last().click();
+    await page.waitForTimeout(500);
+    await go(page, "#/report");
+    await page.locator("button", { hasText: /generate|générer|prepare|préparer|download|télécharger/i }).last().click().catch(() => {});
+    await page.locator('[role="alert"]').waitFor({ timeout: 10000 }).catch(() => {});
+    await audit(page, "pdf-unsupported", "unsupported-character PDF error");
+    await go(page, "#/settings");
+    const editBack = page.locator("a", { hasText: /edit|modifier/i }).first();
+    await editBack.click().catch(() => {});
+    await page.waitForTimeout(400);
+    await page.locator("input").first().fill("Léo");
+    await page.locator("button[type='submit'], button", { hasText: /save|enregistrer/i }).last().click();
+    await page.waitForTimeout(400);
+  } else { results.push({ id: "pdf-unsupported", status: "UNVERIFIED", error: "no child edit link" }); unverified++; }
+}
+
+// storage-denied-boot: IndexedDB AND localStorage unavailable at startup
+// must reach a recovery screen (role=alert), not a permanent spinner
+{
+  const dctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  await dctx.addInitScript(() => {
+    const denied = () => { throw new DOMException("denied", "SecurityError"); };
+    try { Object.defineProperty(window, "localStorage", { configurable: true, get: denied }); } catch {}
+    try { Object.defineProperty(window, "indexedDB", { configurable: true, get: denied }); } catch {
+      window.indexedDB.open = denied;
+    }
+  });
+  const dp = await dctx.newPage();
+  await dp.goto(`${BASE}/`, { waitUntil: "domcontentloaded" });
+  await dp.waitForTimeout(1800);
+  await audit(dp, "storage-denied-boot", "boot with storage denied → recovery screen");
+  if (!(await dp.locator('[role="alert"]').count())) {
+    fail++;
+    results.push({ id: "storage-denied-boot-ui", status: "FAIL", violations: [{ id: "missing-recovery-ui", impact: "critical", help: "no role=alert recovery UI rendered", nodes: [] }], incomplete: [], passes: 0 });
+    console.log("FAIL storage-denied-boot-ui — no recovery UI");
+  }
+  await dctx.close();
+}
+
+// ls-denied-boot: only localStorage denied → app still boots (lang falls back)
+{
+  const lctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  await lctx.addInitScript(() => {
+    const denied = () => { throw new DOMException("denied", "SecurityError"); };
+    try { Object.defineProperty(window, "localStorage", { configurable: true, get: denied }); } catch {}
+  });
+  const lp = await lctx.newPage();
+  await lp.goto(`${BASE}/#/welcome`, { waitUntil: "domcontentloaded" });
+  await lp.waitForTimeout(1500);
+  if (await lp.locator("main, h1, nav").first().count()) await audit(lp, "ls-denied-boot", "boot with only localStorage denied");
+  else { fail++; results.push({ id: "ls-denied-boot", status: "FAIL", violations: [{ id: "no-boot", impact: "critical", help: "no UI rendered", nodes: [] }], incomplete: [], passes: 0 }); }
+  await lctx.close();
+}
+
 // fr state: switch to French
 await go(page, "#/settings");
 {
@@ -162,6 +263,8 @@ await go(page, "#/settings");
   await audit(p2, "empty-dashboard", "dashboard with child but zero observations");
   await go(p2, "#/history");
   await audit(p2, "empty-history", "history with zero observations");
+  await go(p2, "#/patterns");
+  await audit(p2, "empty-patterns", "patterns with zero observations");
   await p2.close();
 }
 

@@ -272,6 +272,7 @@ export default function Observe() {
             {customAt !== null && (
               <input
                 type="datetime-local"
+                aria-label={t("observe.pickTime")}
                 className="input text-sm w-full"
                 value={customAt}
                 max={toLocalInput(new Date())}
