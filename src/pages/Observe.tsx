@@ -487,10 +487,13 @@ export default function Observe() {
 
       {/* Stable action area: pinned above the mobile bottom nav on small
           screens so the step's primary action is reachable at any scroll
-          position. It stays in flow (its slot reserves the space), so fields
-          are never covered, and errors live inside the same bar so a late
-          save/draft failure can't be hidden offscreen. */}
-      <div className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] lg:bottom-4 z-30 -mx-2 space-y-2 border-t border-neutral-200 bg-white/95 px-2 pb-3 pt-4 backdrop-blur-sm">
+          position — while pinned it overlays the scroll region like a
+          footer (opaque bar plus an opaque fill down to the nav, so no
+          field or chip peeks through); its in-flow slot still reserves
+          clearance at the end of the form. Errors live inside the bar so
+          a late save/draft failure can't be hidden offscreen. */}
+      <div className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] lg:bottom-4 z-30 -mx-2 space-y-2 border-t border-neutral-200 bg-white px-2 pb-3 pt-4
+                      after:absolute after:inset-x-0 after:top-full after:h-[calc(4.5rem+env(safe-area-inset-bottom))] after:bg-white after:content-[''] lg:after:hidden">
         {(saveError || draftFailed) && (
           <div className="space-y-1">
             {saveError && <p className="text-sm text-red-700 text-center" role="alert">{saveError}</p>}
