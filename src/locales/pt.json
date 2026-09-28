@@ -187,7 +187,8 @@
     },
     "allTime": "Todos os episódios registados",
     "entryTitle": "Preparar o relatório",
-    "entryDesc": "Escolha o período e o que incluir, depois gere o PDF para o clínico."
+    "entryDesc": "Escolha o período e o que incluir, depois gere o PDF para o clínico.",
+    "unsupported": "Este relatório não consegue mostrar o/os carácter(es): {{chars}}. Corrija-os no diário, ou mantenha os dados e exporte uma cópia JSON — nada foi enviado."
   },
   "settings": {
     "title": "Definições",

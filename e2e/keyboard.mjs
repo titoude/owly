@@ -54,17 +54,17 @@ await page.keyboard.press("ArrowUp"); // wraps back up →2
 f = await focused();
 ok("ArrowUp wraps 0→2", f.value === "2" && f.checked === true, JSON.stringify(f));
 
-// Roving tab: unchecked radios are skipped in real tab order.
-// score 2 is currently checked; focus radio 0 then Tab — focus must
-// skip radios 1 AND leave the group (not land on value '1').
-await page.locator("input[name='flacc-face'][value='0']").focus();
+// Roving tab, real CUA path: focus is on the CHECKED radio (2) after the
+// wrap test. Tab must leave the whole group (not stop on radios 0/1);
+// Shift+Tab from the next control must return to the checked radio.
+f = await focused();
+ok("precondition: focus on checked radio 2", f.type === "radio" && f.value === "2" && f.checked === true, JSON.stringify(f));
 await page.keyboard.press("Tab");
 f = await focused();
-ok("Tab skips unchecked radios in the group", !(f.type === "radio" && f.value === "1"), JSON.stringify(f));
-// Tabbing backward from the next element returns to the CHECKED radio.
+ok("Tab exits the radio group", !(f.type === "radio" && ["0", "1", "2"].includes(f.value)), JSON.stringify(f));
 await page.keyboard.press("Shift+Tab");
 f = await focused();
-ok("Shift+Tab re-enters group on checked radio (2)", f.type === "radio" && f.value === "2", JSON.stringify(f));
+ok("Shift+Tab re-enters group on checked radio (2)", f.type === "radio" && f.value === "2" && f.checked === true, JSON.stringify(f));
 
 // ── Bottom nav reachable by keyboard ─────────────────────────
 await page.evaluate(() => document.activeElement?.blur());

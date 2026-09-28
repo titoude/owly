@@ -6,11 +6,12 @@ import { db } from "../db";
 // pdf-lib is heavy — report.ts is lazy-loaded on first Generate click
 // to keep the initial bundle small on low-end phones.
 import type { Observation } from "../types";
+import { intlLocale } from "../i18n";
 
 const PERIODS = [7, 14, 30, null] as const;
 
 export default function Report() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { active } = useApp();
   const [obs, setObs] = useState<Observation[]>([]);
   const [period, setPeriod] = useState<number | null>(30);
@@ -35,20 +36,26 @@ export default function Report() {
     if (!active) return;
     setBusy(true);
     setError(null);
+    const { buildReport, downloadPdf, UnsupportedCharsError } = await import("../report");
     try {
-      const { buildReport, downloadPdf } = await import("../report");
       const bytes = await buildReport(active, obs, { periodDays: period, questions });
       const date = new Date().toISOString().slice(0, 10);
       downloadPdf(bytes, `owly-report-${active.name.toLowerCase()}-${date}.pdf`);
-    } catch {
-      setError(t("report.error"));
+    } catch (e) {
+      // Unsupported characters: name them so the user can fix or keep the
+      // journal + export a JSON backup instead. Never ship a misleading PDF.
+      if (e instanceof UnsupportedCharsError) {
+        setError(t("report.unsupported", { chars: e.chars.join(" ") }));
+      } else {
+        setError(t("report.error"));
+      }
     } finally {
       setBusy(false);
     }
   }
 
   const fmtD = (ms: number) =>
-    new Date(ms).toLocaleDateString(i18n.language === "fr" ? "fr-FR" : "en-GB", { day: "numeric", month: "short" });
+    new Date(ms).toLocaleDateString(intlLocale(), { day: "numeric", month: "short" });
 
   if (!ready) {
     return (

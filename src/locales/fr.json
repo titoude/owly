@@ -88,7 +88,8 @@
     "score": "Score FLACC",
     "summary": "Résumé",
     "saveError": "Enregistrement impossible — réessayez.",
-    "pickTime": "Choisir l'heure"
+    "pickTime": "Choisir l'heure",
+    "scaleNote": "Les descriptions de l'échelle FLACC sont une traduction interne non validée — une version agréée est en attente."
   },
   "interventions": {
     "comfort": "Réconfort (câlin, doudou, couverture)",
@@ -186,7 +187,8 @@
     },
     "allTime": "Tous les épisodes enregistrés",
     "entryTitle": "Préparer le rapport",
-    "entryDesc": "Choisissez la période et le contenu, puis générez le PDF pour le clinicien."
+    "entryDesc": "Choisissez la période et le contenu, puis générez le PDF pour le clinicien.",
+    "unsupported": "Ce rapport ne peut pas afficher le ou les caractères : {{chars}}. Corrigez-les dans le journal, ou conservez les données et exportez une sauvegarde JSON — rien n'a été envoyé."
   },
   "settings": {
     "title": "Réglages",

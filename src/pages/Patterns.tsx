@@ -5,6 +5,7 @@ import { useApp } from "../appContext";
 import { db } from "../db";
 import { BAND_COLOR } from "../flacc";
 import { bandFor, type Observation } from "../types";
+import { intlLocale } from "../i18n";
 
 function bucket(hour: number): "night" | "morning" | "afternoon" | "evening" {
   if (hour >= 22 || hour < 6) return "night";
@@ -14,10 +15,10 @@ function bucket(hour: number): "night" | "morning" | "afternoon" | "evening" {
 }
 
 export default function Patterns() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { active } = useApp();
   const [obs, setObs] = useState<Observation[]>([]);
-  const loc = i18n.language === "fr" ? "fr-FR" : "en-GB";
+  const loc = intlLocale();
   const fmtD = (ms: number) => new Date(ms).toLocaleDateString(loc, { day: "numeric", month: "short" });
 
   useEffect(() => {

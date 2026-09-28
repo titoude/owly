@@ -88,7 +88,8 @@
     "score": "FLACC score",
     "summary": "Summary",
     "saveError": "Could not save — please try again.",
-    "pickTime": "Pick a time"
+    "pickTime": "Pick a time",
+    "scaleNote": "The FLACC scale descriptions are shown in English: that is the licensed original wording, pending authorized translations."
   },
   "interventions": {
     "comfort": "Comfort (hug, hold, blanket)",
@@ -186,7 +187,8 @@
     },
     "allTime": "All recorded episodes",
     "entryTitle": "Prepare the report",
-    "entryDesc": "Pick the period and what to include, then generate the clinician PDF."
+    "entryDesc": "Pick the period and what to include, then generate the clinician PDF.",
+    "unsupported": "This report can't display the character(s): {{chars}}. Edit or remove them in the journal, or keep the data and export a JSON backup instead — nothing was sent anywhere."
   },
   "settings": {
     "title": "Settings",

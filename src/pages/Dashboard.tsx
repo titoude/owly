@@ -5,10 +5,11 @@ import { useApp } from "../appContext";
 import { db } from "../db";
 import type { Observation } from "../types";
 import { ScoreBadge } from "../components/ScoreBadge";
+import { intlLocale } from "../i18n";
 
 export default function Dashboard() {
-  const { t, i18n } = useTranslation();
-  const loc = i18n.language === "fr" ? "fr-FR" : "en-GB";
+  const { t } = useTranslation();
+  const loc = intlLocale();
   const { active } = useApp();
   const nav = useNavigate();
   const [recent, setRecent] = useState<Observation[]>([]);

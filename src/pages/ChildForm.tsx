@@ -4,11 +4,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useApp } from "../appContext";
 import { db } from "../db";
 import { FLACC_CATEGORIES, type Child, type CustomDescriptors } from "../types";
+import { scaleLang } from "../i18n";
 
 const EMPTY_DESC: CustomDescriptors = { face: "", legs: "", activity: "", cry: "", consolability: "" };
 
 export default function ChildForm() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const nav = useNavigate();
   const { id } = useParams();
   const { refresh, setActive } = useApp();
@@ -111,7 +112,7 @@ export default function ChildForm() {
         <p className="text-xs text-neutral-600">{t("customDescriptors.body")}</p>
         {FLACC_CATEGORIES.map((c) => (
           <div key={c}>
-            <label className="label text-xs" htmlFor={`d-${c}`}>{t(`flacc.${c}`)}</label>
+            <label className="label text-xs" htmlFor={`d-${c}`} lang={scaleLang() !== i18n.language ? scaleLang() : undefined}>{t(`flacc.${c}`)}</label>
             <input
               id={`d-${c}`}
               className="input text-sm"

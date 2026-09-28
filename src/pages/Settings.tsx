@@ -7,6 +7,7 @@ import { clearDemo, seedDemo } from "../demo";
 import { deleteAll, exportAll, importAll, inspectBackup, type BackupSummary } from "../export";
 import { newPinRecord } from "../pin";
 import type { Child } from "../types";
+import { intlLocale, LANGS, LANG_LABEL, setLang, type Lang } from "../i18n";
 
 function download(name: string, text: string, type = "application/json") {
   const a = document.createElement("a");
@@ -49,9 +50,8 @@ export default function Settings() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
 
-  async function changeLang(l: string) {
-    await i18n.changeLanguage(l);
-    localStorage.setItem("owly-lang", l);
+  function changeLang(l: Lang) {
+    setLang(l);
   }
 
   async function setPasscode() {
@@ -141,19 +141,20 @@ export default function Settings() {
 
       <section className="card p-4 space-y-3">
         <h2 className="text-sm font-semibold text-neutral-600">{t("settings.language")}</h2>
-        <div className="grid grid-cols-2 gap-2">
-          {(["en", "fr"] as const).map((l) => (
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {LANGS.map((l) => (
             <button
               key={l}
               type="button"
-              onClick={() => void changeLang(l)}
+              lang={l}
+              onClick={() => changeLang(l)}
               className={`touch-target rounded-xl font-medium transition-all duration-150 ${
                 i18n.language === l
                   ? "bg-teal-700 text-white font-semibold shadow-[0_4px_14px_-4px_rgba(45,212,191,0.5)]"
                   : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200/70"
               }`}
             >
-              {l === "en" ? "English" : "Français"}
+              {LANG_LABEL[l]}
             </button>
           ))}
         </div>
@@ -196,7 +197,7 @@ export default function Settings() {
               {t("settings.importPreview", {
                 children: pendingImport.summary.children,
                 observations: pendingImport.summary.observations,
-                date: pendingImport.summary.exportedAt ? new Date(pendingImport.summary.exportedAt).toLocaleDateString(i18n.language === "fr" ? "fr-FR" : "en-GB") : "?",
+                date: pendingImport.summary.exportedAt ? new Date(pendingImport.summary.exportedAt).toLocaleDateString(intlLocale()) : "?",
                 curChildren: children.length,
                 curObs: obsCount,
               })}

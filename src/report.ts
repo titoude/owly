@@ -5,7 +5,7 @@ import fontkit from "@pdf-lib/fontkit";
 import "regenerator-runtime/runtime.js";
 import bidiFactory from "bidi-js";
 import { bandFor, type Child, type Observation } from "./types";
-import i18n from "./i18n";
+import i18n, { intlLocale } from "./i18n";
 import fontRegularUrl from "./assets/fonts/NotoSans-Regular.ttf?url";
 import fontBoldUrl from "./assets/fonts/NotoSans-Bold.ttf?url";
 import fontArabicUrl from "./assets/fonts/NotoSansArabic-Regular.ttf?url";
@@ -35,12 +35,29 @@ interface Ctx {
   y: number;
   left: number;
   width: number;
+  missing: Set<string>; // chars no embedded face can render
 }
 
 // Script coverage: pick the embedded face that can render each codepoint.
 // If font assets fail to load, buildReport throws — no silent text stripping.
 type FaceKey = "base" | "bold" | "arabic" | "deva" | "cjk";
-interface Faces { base: PDFFont; bold: PDFFont; arabic: PDFFont; deva: PDFFont; cjk: PDFFont }
+interface Faces {
+  base: PDFFont; bold: PDFFont; arabic: PDFFont; deva: PDFFont; cjk: PDFFont;
+  // Covered codepoints per face (from the source fonts) — used to refuse
+  // unrenderable characters instead of emitting .notdef boxes.
+  glyphs: Record<FaceKey, Set<number>>;
+}
+
+// Thrown when report content contains characters no embedded face can
+// render. The PDF is never produced; the journal and its data are untouched.
+export class UnsupportedCharsError extends Error {
+  readonly chars: string[];
+  constructor(chars: string[]) {
+    super(`Characters not coverable by the embedded fonts: ${chars.join(" ")}`);
+    this.name = "UnsupportedCharsError";
+    this.chars = chars;
+  }
+}
 
 const RE_ARABIC = /[\u0600-\u06FF\u0750-\u077F\u0870-\u089F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
 const RE_DEVA = /[\u0900-\u097F]/;
@@ -64,80 +81,102 @@ function sanitize(s: string): string {
     .replace(/\t/g, " ");
 }
 
-const bidi = bidiFactory();
-// Returns the text's directional runs in VISUAL (left-to-right) order.
-// Each returned slice is LOGICAL text — fontkit shapes RTL runs correctly
-// on its own; we only fix the ORDER of runs, never chars inside a run.
-// getReorderSegments gives [start,end] inclusive ranges to reverse (UAX L2).
-function visualRuns(s: string): { text: string; dir: "ltr" | "rtl" }[] {
-  const clean = sanitize(s);
-  if (!clean || !RE_RTL.test(clean)) return [{ text: clean, dir: "ltr" }];
-  const levels = bidi.getEmbeddingLevels(clean);
-  // bidi-js indexes by UTF-16 code unit (it pairs with string slicing).
-  const perm: number[] = Array.from({ length: clean.length }, (_, i) => i);
-  for (const [a, e] of bidi.getReorderSegments(clean, levels) as [number, number][]) {
-    for (let i = a, j = e; i < j; i++, j--) [perm[i], perm[j]] = [perm[j], perm[i]];
+// Face actually able to draw a char.
+// At RTL level we prefer the Arabic face first: spaces/digits/punctuation
+// inside an RTL run must ride the script face or face-splitting reorders
+// words. When the script face lacks the glyph (Noto Sans Arabic has no
+// "—"/"·"/"…") the char falls back to a covering face — the visual-order
+// piece split still keeps words correctly ordered. null = no face.
+function charFace(faces: Faces, ch: string, rtl: boolean): FaceKey | null {
+  const cp = ch.codePointAt(0)!;
+  const want = faceOf(ch);
+  const order: FaceKey[] = rtl
+    ? ["arabic", want, "base", "deva", "cjk"]
+    : [want, "base", "arabic", "deva", "cjk"];
+  for (const f of order) {
+    if (faces.glyphs[f].has(cp)) return f;
   }
-  const lv = levels.levels;
-  const out: { text: string; dir: "ltr" | "rtl" }[] = [];
-  let lo = perm[0], hi = perm[0], dir = lv[perm[0]] % 2;
-  for (let i = 1; i <= perm.length; i++) {
-    const idx = perm[i];
-    const d = i < perm.length ? lv[idx] % 2 : -1;
-    // extend a run while same direction class AND contiguous in the source
-    if (i < perm.length && d === dir && (idx === lo - 1 || idx === hi + 1)) {
+  return null;
+}
+
+const bidi = bidiFactory();
+interface Piece { text: string; face: FaceKey | null } // face null = unrenderable
+// Lays a logical string out as drawable pieces in VISUAL order.
+// - bidi.getReorderSegments gives [start,end] inclusive ranges to reverse
+//   (UAX L2) — applied to an index permutation (code-unit indexed).
+// - Pieces are maximal contiguous-logical same-face groups of the visual
+//   sequence; each piece's slice stays LOGICAL text, fontkit shapes+orders
+//   it. Splitting happens on the VISUAL sequence, so even a split (e.g. a
+//   dash falling back to the base face inside an Arabic run) keeps pieces in
+//   correct visual order — words are never reordered.
+// - Chars no face can render are emitted face=null and reported via missing.
+function layout(faces: Faces, s: string): { pieces: Piece[]; missing: Set<string> } {
+  const clean = sanitize(s);
+  const missing = new Set<string>();
+  if (!clean) return { pieces: [], missing };
+
+  // Visual order of code-unit indices + per-unit bidi level
+  // (identity order, no levels, for pure-LTR text).
+  let seq: number[];
+  let lv: Uint8Array | null = null;
+  if (RE_RTL.test(clean)) {
+    const levels = bidi.getEmbeddingLevels(clean);
+    lv = levels.levels;
+    seq = Array.from({ length: clean.length }, (_, i) => i);
+    for (const [a, e] of bidi.getReorderSegments(clean, levels) as [number, number][]) {
+      for (let i = a, j = e; i < j; i++, j--) [seq[i], seq[j]] = [seq[j], seq[i]];
+    }
+  } else {
+    seq = Array.from({ length: clean.length }, (_, i) => i);
+  }
+
+  // Per-code-unit face (surrogate pairs share one char's face).
+  const perUnit: (FaceKey | null)[] = new Array(clean.length);
+  for (let i = 0; i < clean.length; i++) {
+    const cu = clean.charCodeAt(i);
+    const ch = cu >= 0xd800 && cu <= 0xdbff && i + 1 < clean.length ? clean.slice(i, i + 2) : clean[i];
+    const f = charFace(faces, ch, lv !== null && lv[i] % 2 === 1);
+    perUnit[i] = f;
+    if (f === null) missing.add(ch);
+    if (ch.length === 2) { perUnit[i + 1] = f; i++; }
+  }
+
+  const pieces: Piece[] = [];
+  let lo = seq[0], hi = seq[0], f = perUnit[seq[0]];
+  for (let p = 1; p <= seq.length; p++) {
+    const idx = seq[p];
+    const same = p < seq.length && perUnit[idx] === f && (idx === lo - 1 || idx === hi + 1);
+    if (same) {
       lo = Math.min(lo, idx); hi = Math.max(hi, idx);
     } else {
-      out.push({ text: clean.slice(lo, hi + 1), dir: dir === 1 ? "rtl" : "ltr" });
-      lo = idx; hi = idx; dir = d;
+      pieces.push({ text: clean.slice(lo, hi + 1), face: f });
+      lo = idx; hi = idx; f = perUnit[idx];
     }
   }
-  return out;
-}
-
-// First non-neutral char decides an RTL run's face: its real script chars are
-// one script family (Arabic-family here), and neutrals/digits ride inside it.
-function rtlFace(text: string): FaceKey {
-  for (const ch of text) {
-    const f = faceOf(ch);
-    if (f !== "base") return f;
-  }
-  return "arabic"; // pure-neutrals RTL run — Arabic face still covers them
-}
-
-function runs(s: string): { text: string; face: FaceKey }[] {
-  const out: { text: string; face: FaceKey }[] = [];
-  let cur = "";
-  let face: FaceKey | null = null;
-  const flush = () => { if (cur) { out.push({ text: cur, face: face! }); cur = ""; face = null; } };
-  for (const seg of visualRuns(s)) {
-    if (seg.dir === "rtl") {
-      // Never face-split an RTL run: a space/neutral inside would reorder
-      // its words. Emit the whole logical slice for fontkit to shape+order.
-      out.push({ text: seg.text, face: rtlFace(seg.text) });
-      continue;
-    }
-    for (const ch of seg.text) {
-      const f = faceOf(ch);
-      if (f !== face) { flush(); face = f; }
-      cur += ch;
-    }
-    flush(); // never merge across directional runs
-  }
-  return out;
+  return { pieces, missing };
 }
 
 function measure(faces: Faces, s: string, size: number): number {
-  return runs(s).reduce((w, r) => w + faces[r.face].widthOfTextAtSize(r.text, size), 0);
+  // Unrenderable pieces still occupy width for layout (measured under base).
+  return layout(faces, s).pieces
+    .reduce((w, p) => w + faces[p.face ?? "base"].widthOfTextAtSize(p.text, size), 0);
 }
 
-// Draw one logical string as direction+face segmented runs at advancing x.
+// Draw one logical string as visual-order face pieces at advancing x.
 function drawRuns(ctx: Ctx, s: string, x: number, y: number, o: { size: number; bold?: boolean; color: typeof INK }) {
   let cx = x;
-  for (const r of runs(s)) {
-    const f = o.bold && r.face === "base" ? ctx.faces.bold : ctx.faces[r.face];
-    ctx.page.drawText(r.text, { x: cx, y, size: o.size, font: f, color: o.color });
-    cx += f.widthOfTextAtSize(r.text, o.size);
+  const { pieces, missing } = layout(ctx.faces, s);
+  for (const ch of missing) ctx.missing.add(ch);
+  for (const p of pieces) {
+    const f = o.bold && p.face === "base" ? ctx.faces.bold : ctx.faces[p.face ?? "base"];
+    if (p.face === null) {
+      // Recorded in ctx.missing — buildReport throws before save. Skip the
+      // draw so a discarded doc would still contain no .notdef boxes.
+      cx += f.widthOfTextAtSize(p.text, o.size);
+      continue;
+    }
+    ctx.page.drawText(p.text, { x: cx, y, size: o.size, font: f, color: o.color });
+    cx += f.widthOfTextAtSize(p.text, o.size);
   }
 }
 
@@ -228,7 +267,7 @@ function heading(ctx: Ctx, text: string) {
 }
 
 function fmtDate(ms: number): string {
-  const loc = i18n.language === "fr" ? "fr-FR" : "en-GB";
+  const loc = intlLocale();
   return new Date(ms).toLocaleDateString(loc, { day: "2-digit", month: "short" }) + " " +
     new Date(ms).toLocaleTimeString(loc, { hour: "2-digit", minute: "2-digit" });
 }
@@ -252,7 +291,8 @@ function drawTableHeader(ctx: Ctx, headerRow: string[]) {
 // browser (precached by the service worker); fs is the node/vitest path.
 // Bytes are cached module-wide: a repeated report build must not re-download.
 const bytesCache = new Map<string, Promise<Uint8Array>>();
-function fontBytes(url: string): Promise<Uint8Array> {
+// Exported for tests — internals only.
+export function fontBytes(url: string): Promise<Uint8Array> {
   let p = bytesCache.get(url);
   if (!p) {
     p = (async () => {
@@ -264,6 +304,9 @@ function fontBytes(url: string): Promise<Uint8Array> {
       return new Uint8Array(await readFile(process.cwd() + url));
     })();
     bytesCache.set(url, p);
+    // Cache only successes — a rejected promise must not be replayed forever
+    // (e.g. a transient network drop at first report generation).
+    p.catch(() => bytesCache.delete(url));
   }
   return p;
 }
@@ -274,6 +317,7 @@ async function loadFaces(doc: PDFDocument): Promise<Faces> {
     [fontRegularUrl, fontBoldUrl, fontArabicUrl, fontDevaUrl, fontCjkUrl].map(fontBytes),
   );
   const subset = { subset: true } as const;
+  const charset = (bytes: Uint8Array) => new Set<number>(fontkit.create(bytes).characterSet as number[]);
   return {
     base: await doc.embedFont(r, subset),
     bold: await doc.embedFont(b, subset),
@@ -281,6 +325,9 @@ async function loadFaces(doc: PDFDocument): Promise<Faces> {
     deva: await doc.embedFont(d, subset),
     // CFF-outline OTF: fontkit's CFF subsetter crashes — embed whole.
     cjk: await doc.embedFont(c),
+    glyphs: {
+      base: charset(r), bold: charset(b), arabic: charset(a), deva: charset(d), cjk: charset(c),
+    },
   };
   // Throws on failure — Report.tsx surfaces it; we never silently strip text.
 }
@@ -295,7 +342,7 @@ export async function buildReport(child: Child, observations: Observation[], opt
   doc.setTitle(`Owly pain report — ${sanitize(child.name)}`);
   doc.setCreator("Owly (open-source pain observation journal)");
   const faces = await loadFaces(doc);
-  const ctx: Ctx = { doc, page: undefined as unknown as PDFPage, font: faces.base, bold: faces.bold, faces, y: TOP_Y, left: 48, width: PAGE_W - 96 };
+  const ctx: Ctx = { doc, page: undefined as unknown as PDFPage, font: faces.base, bold: faces.bold, faces, y: TOP_Y, left: 48, width: PAGE_W - 96, missing: new Set() };
   newPage(ctx);
 
   // Header
@@ -423,6 +470,10 @@ export async function buildReport(child: Child, observations: Observation[], opt
     drawRuns(ctx, `${stamp}${i + 1}/${pages.length}`, ctx.left, 20, { size: 7, color: MUTED });
   });
   ctx.page = pages[pages.length - 1];
+
+  // Any character no embedded face could render was collected while drawing.
+  // Fail before saving rather than deliver a PDF with silent .notdef boxes.
+  if (ctx.missing.size) throw new UnsupportedCharsError([...ctx.missing]);
 
   return doc.save();
 }

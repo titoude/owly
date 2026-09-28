@@ -187,7 +187,8 @@
     },
     "allTime": "Todos los episodios registrados",
     "entryTitle": "Preparar el informe",
-    "entryDesc": "Elige el periodo y qué incluir, y luego genera el PDF para el clínico."
+    "entryDesc": "Elige el periodo y qué incluir, y luego genera el PDF para el clínico.",
+    "unsupported": "Este informe no puede mostrar el/los carácter(es): {{chars}}. Corrígelos en el diario, o conserva los datos y exporta una copia JSON — nada se ha enviado a ningún sitio."
   },
   "settings": {
     "title": "Ajustes",

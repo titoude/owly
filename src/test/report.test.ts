@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { PDFDocument, PDFPage } from "pdf-lib";
-import { buildReport } from "../report";
+import { buildReport, fontBytes, UnsupportedCharsError } from "../report";
 import type { Child, Observation } from "../types";
 
 // Intercept the real rendering boundary: every string the report actually
@@ -204,4 +204,32 @@ describe("unicode rendering", () => {
     }
     expect(bad).toEqual([]);
   }, 30000);
+
+  it("refuses to produce a PDF with unrenderable characters", async () => {
+    // 🦉 (emoji) and 𠮷 (CJK ext-B, outside the GB-table subset) have no
+    // glyph in any embedded face — the report must FAIL, not emit boxes.
+    const bad: Child = { ...child, name: "QA Alex 🦉 𠮷" };
+    const err = await buildReport(bad, [mkObs(5, 1)], { periodDays: null, questions: [] })
+      .then(() => null, (e: unknown) => e);
+    expect(err).toBeInstanceOf(UnsupportedCharsError);
+    expect((err as UnsupportedCharsError).chars).toEqual(
+      expect.arrayContaining(["🦉", "𠮷"]),
+    );
+  }, 30000);
+
+  it("retries a failed font fetch instead of caching the rejection", async () => {
+    const f = vi.fn()
+      .mockRejectedValueOnce(new TypeError("offline"))
+      .mockResolvedValueOnce(new Response(new Uint8Array([1, 2, 3])));
+    vi.stubGlobal("fetch", f);
+    try {
+      // First call: fetch fails AND the fs fallback fails (bogus path) → reject.
+      await expect(fontBytes("/no-such-font-xyz.ttf")).rejects.toThrow();
+      // A rejected promise must not be replayed: retry hits fetch again.
+      await expect(fontBytes("/no-such-font-xyz.ttf")).resolves.toEqual(new Uint8Array([1, 2, 3]));
+      expect(f).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
 });
