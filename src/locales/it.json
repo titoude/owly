@@ -6,7 +6,8 @@
     "navLabel": "Navigazione principale",
     "demoBadge": "Demo — dati fittizi",
     "storageErrorTitle": "Impossibile accedere al database locale",
-    "storageErrorBody": "Owly conserva tutto su questo dispositivo e lo spazio di archiviazione del browser non è disponibile o è pieno. Libera spazio o controlla le impostazioni dei dati dei siti, poi riprova. Nulla è stato inviato."
+    "storageErrorBody": "Owly conserva tutto su questo dispositivo e lo spazio di archiviazione del browser non è disponibile o è pieno. Libera spazio o controlla le impostazioni dei dati dei siti, poi riprova. Nulla è stato inviato.",
+    "changeChild": "Cambia"
   },
   "nav": {
     "home": "Home",
@@ -98,7 +99,14 @@
     "resume": "Riprendi bozza",
     "discard": "Elimina bozza",
     "update": "Salva modifiche",
-    "draftSaveFailed": "Impossibile salvare la bozza: lo spazio sul dispositivo potrebbe essere pieno o bloccato. I dati registrati sono al sicuro; completa e salva l'osservazione per conservarla."
+    "draftSaveFailed": "Impossibile salvare la bozza: lo spazio sul dispositivo potrebbe essere pieno o bloccato. I dati registrati sono al sicuro; completa e salva l'osservazione per conservarla.",
+    "stepOf": "passo {{n}} di {{total}}",
+    "stepNames": {
+      "when": "Quando",
+      "details": "Dettagli",
+      "tried": "Cura e note"
+    },
+    "stepsLabel": "Passaggi dell'osservazione"
   },
   "interventions": {
     "comfort": "Conforto (abbraccio, tenerlo in braccio, coperta)",
@@ -139,7 +147,8 @@
     "insightWorked": "«{{label}}» è stato registrato come utile in {{yes}} di {{n}} utilizzi.",
     "scoreChartLabel": "Grafico a barre: {{n}} episodi più recenti, media {{avg}}, massimo {{max}}",
     "insightZone_one": "«{{zone}}» è l'area più sospettata ({{n}} episodio).",
-    "insightZone_other": "«{{zone}}» è l'area più sospettata ({{n}} episodi)."
+    "insightZone_other": "«{{zone}}» è l'area più sospettata ({{n}} episodi).",
+    "entryDesc": "Quando si concentrano gli episodi e cosa ha aiutato."
   },
   "report": {
     "title": "Report per il medico",
@@ -260,7 +269,8 @@
     "loading": "Caricamento…",
     "of": "di",
     "edit": "Modifica",
-    "retry": "Riprova"
+    "retry": "Riprova",
+    "viewAll": "Vedi tutto"
   },
   "flacc": {
     "face": "Face",
@@ -321,5 +331,8 @@
       "Reassured by occasional touching, hugging or being talked to; distractible",
       "Difficult to console or comfort"
     ]
+  },
+  "dashboard": {
+    "recent": "Osservazioni recenti"
   }
 }

@@ -6,7 +6,8 @@
     "navLabel": "Navigation principale",
     "demoBadge": "Démo — données fictives",
     "storageErrorTitle": "Impossible d'accéder à la base locale",
-    "storageErrorBody": "Owly conserve tout sur cet appareil, et le stockage du navigateur est indisponible ou plein. Libérez de l'espace ou vérifiez les réglages de données de site, puis réessayez. Rien n'a été envoyé nulle part."
+    "storageErrorBody": "Owly conserve tout sur cet appareil, et le stockage du navigateur est indisponible ou plein. Libérez de l'espace ou vérifiez les réglages de données de site, puis réessayez. Rien n'a été envoyé nulle part.",
+    "changeChild": "Changer"
   },
   "nav": {
     "home": "Accueil",
@@ -98,7 +99,14 @@
     "resume": "Reprendre",
     "discard": "Supprimer le brouillon",
     "update": "Enregistrer",
-    "draftSaveFailed": "Impossible d'enregistrer le brouillon — le stockage de l'appareil est peut-être plein ou bloqué. Vos données enregistrées sont en sécurité ; terminez et enregistrez l'observation pour la conserver."
+    "draftSaveFailed": "Impossible d'enregistrer le brouillon — le stockage de l'appareil est peut-être plein ou bloqué. Vos données enregistrées sont en sécurité ; terminez et enregistrez l'observation pour la conserver.",
+    "stepOf": "étape {{n}} sur {{total}}",
+    "stepNames": {
+      "when": "Quand",
+      "details": "Détails",
+      "tried": "Soins et note"
+    },
+    "stepsLabel": "Étapes de l'observation"
   },
   "interventions": {
     "comfort": "Réconfort (câlin, doudou, couverture)",
@@ -139,7 +147,8 @@
     "insightZone_one": "« {{zone}} » est la zone la plus soupçonnée ({{n}} épisode).",
     "insightZone_other": "« {{zone}} » est la zone la plus soupçonnée ({{n}} épisodes).",
     "note": "Les motifs décrivent ce que vous avez noté — ils suggèrent quoi discuter avec le médecin, ils ne prouvent ni cause ni efficacité.",
-    "toReport": "Générer le rapport médecin →"
+    "toReport": "Générer le rapport médecin →",
+    "entryDesc": "Quand les épisodes se concentrent et ce qui a aidé."
   },
   "report": {
     "title": "Rapport médecin",
@@ -260,7 +269,8 @@
     "loading": "Chargement…",
     "of": "sur",
     "edit": "Modifier",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "viewAll": "Tout voir"
   },
   "flacc": {
     "face": "Visage",
@@ -321,5 +331,8 @@
       "Rassuré par un contact, un câlin ou la parole occasionnelle ; distrayable",
       "Difficile à consoler ou à réconforter"
     ]
+  },
+  "dashboard": {
+    "recent": "Observations récentes"
   }
 }

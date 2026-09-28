@@ -6,7 +6,8 @@
     "navLabel": "主导航",
     "demoBadge": "演示 — 虚构数据",
     "storageErrorTitle": "无法访问本地数据库",
-    "storageErrorBody": "Owly 将所有内容保存在此设备上，而浏览器存储不可用或已满。请释放一些空间或检查浏览器的站点数据设置，然后重试。没有发送任何内容。"
+    "storageErrorBody": "Owly 将所有内容保存在此设备上，而浏览器存储不可用或已满。请释放一些空间或检查浏览器的站点数据设置，然后重试。没有发送任何内容。",
+    "changeChild": "更换"
   },
   "nav": {
     "home": "主页",
@@ -98,7 +99,14 @@
     "resume": "继续草稿",
     "discard": "丢弃草稿",
     "update": "保存更改",
-    "draftSaveFailed": "无法保存草稿——设备存储空间可能已满或被阻止。您已记录的数据是安全的；完成并保存观察记录即可保留。"
+    "draftSaveFailed": "无法保存草稿——设备存储空间可能已满或被阻止。您已记录的数据是安全的；完成并保存观察记录即可保留。",
+    "stepOf": "第 {{n}} 步，共 {{total}} 步",
+    "stepNames": {
+      "when": "时间",
+      "details": "详情",
+      "tried": "照护与备注"
+    },
+    "stepsLabel": "观察步骤"
   },
   "interventions": {
     "comfort": "安抚（拥抱、抱着、毯子）",
@@ -138,7 +146,8 @@
     "insightNight": "大多数发作发生在夜间——值得向医生提及。",
     "insightWorked": "“{{label}}”在 {{n}} 次使用中 {{yes}} 次被记录为有效。",
     "scoreChartLabel": "柱状图：最近 {{n}} 次发作，平均 {{avg}}，最高 {{max}}",
-    "insightZone_other": "“{{zone}}”是最常怀疑的部位（{{n}} 次发作）。"
+    "insightZone_other": "“{{zone}}”是最常怀疑的部位（{{n}} 次发作）。",
+    "entryDesc": "查看发作集中的时段以及哪些安抚有效。"
   },
   "report": {
     "title": "医生报告",
@@ -258,7 +267,8 @@
     "loading": "加载中…",
     "of": "/",
     "edit": "编辑",
-    "retry": "重试"
+    "retry": "重试",
+    "viewAll": "查看全部"
   },
   "flacc": {
     "face": "Face",
@@ -319,5 +329,8 @@
       "Reassured by occasional touching, hugging or being talked to; distractible",
       "Difficult to console or comfort"
     ]
+  },
+  "dashboard": {
+    "recent": "最近记录"
   }
 }

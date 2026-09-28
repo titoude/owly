@@ -24,7 +24,7 @@ export function FlaccPicker({ category, child, value, onChange }: Props) {
   return (
     <fieldset className="space-y-2">
       <legend className="text-lg font-semibold text-neutral-900" lang={sl !== i18n.language ? sl : undefined} dir={sl !== i18n.language ? "ltr" : undefined}>{t(`flacc.${category}`)}</legend>
-      {note ? <p className="text-xs text-neutral-600">{note}</p> : null}
+      {note ? <p className="text-[13px] text-neutral-600">{note}</p> : null}
       {custom ? (
         <p className="text-sm text-teal-700 italic">
           {t("observe.theirs", { name: child.name })} <span dir="auto">{custom}</span>
@@ -46,11 +46,11 @@ export function FlaccPicker({ category, child, value, onChange }: Props) {
                 className="sr-only peer"
               />
               <span
-                className={`flex items-center gap-3 w-full text-left rounded-2xl border px-4 py-3.5 min-h-12 transition-all duration-150
+                className={`flex items-center gap-3 w-full text-left rounded-xl border px-4 py-3.5 min-h-12 transition-all duration-150
                   peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-teal-700
                   ${sel
                     ? "border-teal-700 bg-teal-50 text-neutral-900 shadow-[0_0_0_3px_rgba(45,212,191,0.15)]"
-                    : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300 hover:bg-neutral-100"}`}
+                    : "border-neutral-300 bg-[#fffdfa] text-neutral-700 hover:border-neutral-400 hover:bg-neutral-100"}`}
               >
                 <span
                   className={`shrink-0 grid place-items-center size-8 rounded-full font-bold text-sm
@@ -58,7 +58,7 @@ export function FlaccPicker({ category, child, value, onChange }: Props) {
                 >
                   {score}
                 </span>
-                <span className="text-sm leading-snug" lang={sl !== i18n.language ? sl : undefined} dir={sl !== i18n.language ? "ltr" : undefined}>
+                <span className="text-[15px] leading-snug" lang={sl !== i18n.language ? sl : undefined} dir={sl !== i18n.language ? "ltr" : undefined}>
                   {t(`flaccDesc.${category}.${score}`, d)}
                 </span>
               </span>

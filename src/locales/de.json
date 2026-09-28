@@ -6,7 +6,8 @@
     "navLabel": "Hauptnavigation",
     "demoBadge": "Demo — fiktive Daten",
     "storageErrorTitle": "Lokale Datenbank nicht erreichbar",
-    "storageErrorBody": "Owly speichert alles auf diesem Gerät und der Browserspeicher ist nicht verfügbar oder voll. Geben Sie Speicher frei oder prüfen Sie die Website-Daten-Einstellungen und versuchen Sie es erneut. Es wurde nichts übertragen."
+    "storageErrorBody": "Owly speichert alles auf diesem Gerät und der Browserspeicher ist nicht verfügbar oder voll. Geben Sie Speicher frei oder prüfen Sie die Website-Daten-Einstellungen und versuchen Sie es erneut. Es wurde nichts übertragen.",
+    "changeChild": "Wechseln"
   },
   "nav": {
     "home": "Start",
@@ -98,7 +99,14 @@
     "resume": "Entwurf fortsetzen",
     "discard": "Entwurf verwerfen",
     "update": "Änderungen speichern",
-    "draftSaveFailed": "Der Entwurf konnte nicht gespeichert werden — der Gerätespeicher ist möglicherweise voll oder blockiert. Ihre aufgezeichneten Daten sind sicher; beenden Sie die Beobachtung und speichern Sie sie, um sie zu behalten."
+    "draftSaveFailed": "Der Entwurf konnte nicht gespeichert werden — der Gerätespeicher ist möglicherweise voll oder blockiert. Ihre aufgezeichneten Daten sind sicher; beenden Sie die Beobachtung und speichern Sie sie, um sie zu behalten.",
+    "stepOf": "Schritt {{n}} von {{total}}",
+    "stepNames": {
+      "when": "Wann",
+      "details": "Details",
+      "tried": "Pflege & Notiz"
+    },
+    "stepsLabel": "Schritte der Beobachtung"
   },
   "interventions": {
     "comfort": "Trösten (Umarmung, Halten, Decke)",
@@ -139,7 +147,8 @@
     "insightWorked": "„{{label}}“ wurde bei {{yes}} von {{n}} Anwendungen als hilfreich notiert.",
     "scoreChartLabel": "Balkendiagramm: {{n}} neueste Episoden, Mittelwert {{avg}}, Maximum {{max}}",
     "insightZone_one": "„{{zone}}“ ist der am häufigsten vermutete Bereich ({{n}} Episode).",
-    "insightZone_other": "„{{zone}}“ ist der am häufigsten vermutete Bereich ({{n}} Episoden)."
+    "insightZone_other": "„{{zone}}“ ist der am häufigsten vermutete Bereich ({{n}} Episoden).",
+    "entryDesc": "Wann Episoden häufig sind und was geholfen hat."
   },
   "report": {
     "title": "Arztbericht",
@@ -260,7 +269,8 @@
     "loading": "Laden…",
     "of": "von",
     "edit": "Bearbeiten",
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "viewAll": "Alle anzeigen"
   },
   "flacc": {
     "face": "Face",
@@ -321,5 +331,8 @@
       "Reassured by occasional touching, hugging or being talked to; distractible",
       "Difficult to console or comfort"
     ]
+  },
+  "dashboard": {
+    "recent": "Letzte Beobachtungen"
   }
 }

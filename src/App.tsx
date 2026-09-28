@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AppProvider, useApp } from "./appContext";
 import Onboarding from "./pages/Onboarding";
@@ -149,6 +149,19 @@ function Shell() {
 
   const railItems = [...NAV.slice(0, 4), REPORT_NAV, NAV[4]];
 
+  // Routes where the active child's identity must stay visible — the
+  // dashboard keeps its own large name header, so it is excluded here.
+  const childBarRoutes = loc.pathname.startsWith("/observe") ||
+    ["/history", "/patterns", "/report", "/settings"].includes(loc.pathname);
+  const showChildBar = !!active && childBarRoutes;
+
+  // Data pages earn a wider content grid on desktop; focused flows
+  // (wizard, forms, report) stay a readable centered column.
+  const contentWidth = loc.pathname === "/" ? "lg:max-w-5xl"
+    : loc.pathname === "/patterns" ? "lg:max-w-4xl"
+    : loc.pathname.startsWith("/observe") ? "lg:max-w-3xl"
+    : "";
+
   return (
     <div className="min-h-dvh">
       <a
@@ -168,8 +181,11 @@ function Shell() {
       {/* Desktop / tablet: left rail */}
       <aside className="hidden md:flex md:flex-col fixed inset-y-0 left-0 w-56 z-40 border-r border-neutral-200 bg-white/75 backdrop-blur-xl px-3 py-6">
         <div className="px-2 pb-5">
-          <span className="text-lg font-bold tracking-tight">Owly</span>
-          <p className="text-xs text-neutral-600">{t("app.tagline")}</p>
+          <div className="flex items-center gap-2.5">
+            <img src="/icon.svg" alt="" className="size-9 rounded-[10px]" />
+            <span className="text-xl font-bold tracking-tight">Owly</span>
+          </div>
+          <p className="mt-1.5 text-xs text-neutral-600">{t("app.tagline")}</p>
           {active?.isDemo && (
             <span className="badge bg-amber-100 text-amber-800 border border-amber-200 mt-2">
               {t("app.demoBadge")}
@@ -204,12 +220,34 @@ function Shell() {
       </aside>
 
       <div className="md:pl-56 flex flex-col min-h-dvh">
-        <main id="main" tabIndex={-1} className="flex-1 mx-auto w-full max-w-lg md:max-w-2xl px-4 pb-28 md:pb-14 pt-6 md:pt-10 focus:outline-none">
+        <main id="main" tabIndex={-1} className={`flex-1 mx-auto w-full max-w-lg md:max-w-2xl ${contentWidth} px-4 pb-28 md:pb-14 pt-6 md:pt-10 focus:outline-none`}>
           {active?.isDemo && (
             <div className="md:hidden mb-4">
               <span className="badge bg-amber-100 text-amber-800 border border-amber-200">
                 {t("app.demoBadge")}
               </span>
+            </div>
+          )}
+          {showChildBar && (
+            <div className="mb-5 flex items-center justify-between gap-3 border-b border-neutral-200 pb-3">
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="truncate text-[15px] font-semibold" dir="auto">{active.name}</span>
+                {active.isDemo && (
+                  <span className="hidden md:inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                    {t("app.demoBadge")}
+                  </span>
+                )}
+              </div>
+              <div className="flex shrink-0 items-center gap-4">
+                <Link to="/redflags" className="md:hidden text-sm font-semibold text-red-700">
+                  ⚠ {t("nav.redflags")}
+                </Link>
+                {loc.pathname !== "/settings" && (
+                  <Link to="/settings" className="text-sm font-medium text-teal-700 hover:text-teal-800">
+                    {t("app.changeChild")}
+                  </Link>
+                )}
+              </div>
             </div>
           )}
           <Routes>

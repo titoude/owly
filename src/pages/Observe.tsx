@@ -11,6 +11,18 @@ import { BodyMap } from "../components/BodyMap";
 import { ScoreBadge } from "../components/ScoreBadge";
 
 const STEPS = 8;
+// Step names shown in the caption and desktop rail. FLACC categories reuse
+// their existing keys; the three non-category steps get dedicated names.
+const STEP_KEYS = [
+  "observe.stepNames.when",
+  "flacc.face",
+  "flacc.legs",
+  "flacc.activity",
+  "flacc.cry",
+  "flacc.consolability",
+  "observe.stepNames.details",
+  "observe.stepNames.tried",
+];
 
 function toLocalInput(d: Date): string {
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -214,14 +226,45 @@ export default function Observe() {
   if (!active) return null;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between" ref={stepHeading} tabIndex={-1}>
-        <h1 className="text-xl font-bold">{editId ? t("observe.editTitle") : t("observe.start")}</h1>
-        <span className="text-xs text-neutral-600" role="status">
-          {step + 1}/{STEPS}
-        </span>
+    <div className="lg:grid lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-10">
+      {/* Named step rail — progress you can read, not a bare fraction. */}
+      <nav aria-label={t("observe.stepsLabel")} className="hidden lg:block">
+        <ol className="sticky top-10 space-y-0.5">
+          {STEP_KEYS.map((k, i) => {
+            const done = i < step;
+            const current = i === step;
+            return (
+              <li
+                key={k}
+                aria-current={current ? "step" : undefined}
+                className={`flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm
+                  ${current ? "bg-teal-50 font-semibold text-teal-800" : done ? "text-neutral-700" : "text-neutral-600"}`}
+              >
+                <span
+                  aria-hidden
+                  className={`grid size-6 shrink-0 place-items-center rounded-full border text-xs font-semibold
+                    ${done ? "border-teal-700 bg-teal-700 text-white" : current ? "border-teal-700 text-teal-800" : "border-neutral-300 text-neutral-500"}`}
+                >
+                  {done ? "✓" : i + 1}
+                </span>
+                {t(k)}
+              </li>
+            );
+          })}
+        </ol>
+      </nav>
+
+      <div className="min-w-0 space-y-6">
+      <div ref={stepHeading} tabIndex={-1}>
+        <h1 className="page-title">{editId ? t("observe.editTitle") : t("observe.start")}</h1>
+        <p className="mt-1 text-[15px] font-medium text-neutral-600">
+          {t(STEP_KEYS[step])} ·{" "}
+          <span className="tabular-nums" role="status">
+            {step + 1}/{STEPS}
+          </span>
+        </p>
       </div>
-      <div className="h-1 rounded-full bg-neutral-100 overflow-hidden">
+      <div className="h-1 rounded-full bg-neutral-200 overflow-hidden">
         <div
           className="h-1 rounded-full bg-teal-700 transition-all duration-300 ease-out"
           style={{ width: `${((step + 1) / STEPS) * 100}%` }}
@@ -263,7 +306,7 @@ export default function Observe() {
                 {t("observe.baseline")}
               </button>
             </div>
-            {baseline && <p className="text-xs text-neutral-600">{t("observe.baselineHint")}</p>}
+            {baseline && <p className="text-[13px] text-neutral-600">{t("observe.baselineHint")}</p>}
           </div>
           <div className="space-y-2">
             <p className="label">{t("observe.when")}</p>
@@ -274,7 +317,7 @@ export default function Observe() {
                   type="button"
                   onClick={() => { setMinutesAgo(m); setCustomAt(null); setStartedAt(Date.now() - m * 60_000); }}
                   aria-pressed={minutesAgo === m && customAt === null}
-                  className={`btn-ghost text-sm ${minutesAgo === m && customAt === null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
+                  className={`btn-ghost text-[15px] ${minutesAgo === m && customAt === null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
                 >
                   {m === 0 ? t("observe.now") : t("observe.minutesAgo", { n: m })}
                 </button>
@@ -283,7 +326,7 @@ export default function Observe() {
                 type="button"
                 onClick={() => { if (customAt === null) { const now = Date.now(); setCustomAt(toLocalInput(new Date(now))); setStartedAt(now); } }}
                 aria-pressed={customAt !== null}
-                className={`btn-ghost text-sm ${customAt !== null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
+                className={`btn-ghost text-[15px] ${customAt !== null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
               >
                 {t("observe.pickTime")}
               </button>
@@ -331,7 +374,7 @@ export default function Observe() {
                   type="button"
                   onClick={() => setDuration(m)}
                   aria-pressed={duration === m}
-                  className={`btn-ghost text-sm ${duration === m ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
+                  className={`btn-ghost text-[15px] ${duration === m ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
                 >
                   {m} min
                 </button>
@@ -340,7 +383,7 @@ export default function Observe() {
                 type="button"
                 onClick={() => setDuration(null)}
                 aria-pressed={duration === null}
-                className={`btn-ghost text-sm ${duration === null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
+                className={`btn-ghost text-[15px] ${duration === null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
               >
                 {t("observe.durationUnknown")}
               </button>
@@ -369,7 +412,7 @@ export default function Observe() {
       {step === 7 && (
         <div className="space-y-5">
           <div className="space-y-2">
-            <p className="label">{t("observe.tried")}</p>
+            <p className="label">{t("observe.tried")} <span className="font-normal text-neutral-600">{t("observe.didHelp")}</span></p>
             {INTERVENTION_TYPES.map((type) => {
               const it = interventions.find((i) => i.type === type);
               return (
@@ -383,12 +426,12 @@ export default function Observe() {
                         )
                       }
                       aria-pressed={!!it}
-                      className={`flex-1 text-left text-sm ${it ? "text-teal-700" : "text-neutral-600"}`}
+                      className={`flex-1 text-left text-sm min-h-11 flex items-center py-2 ${it ? "text-teal-700 font-semibold" : "text-neutral-600"}`}
                     >
                       {it ? "✓ " : ""}{t(`interventions.${type}`)}
                     </button>
                     {it && (
-                      <div className="flex gap-1">
+                      <div className="flex gap-1.5">
                         {(["yes", "no", "unsure"] as const).map((h) => (
                           <button
                             key={h}
@@ -399,8 +442,8 @@ export default function Observe() {
                               )
                             }
                             aria-pressed={it.helped === h}
-                            className={`rounded-md px-2.5 py-1 text-xs
-                              ${it.helped === h ? "bg-teal-700 text-white font-semibold" : "bg-neutral-200 text-neutral-600"}`}
+                            className={`rounded-lg px-3 py-2 text-sm min-h-10
+                              ${it.helped === h ? "bg-teal-700 text-white font-semibold" : "bg-neutral-100 border border-neutral-300 text-neutral-600"}`}
                           >
                             {t(`observe.${h}`)}
                           </button>
@@ -460,6 +503,7 @@ export default function Observe() {
             {saving ? t("common.loading") : editId ? t("observe.update") : t("observe.save")}
           </button>
         )}
+      </div>
       </div>
     </div>
   );

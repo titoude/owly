@@ -31,10 +31,10 @@ const FIGURE: { id: string; x: number; y: number; w: number; h: number; rx: numb
 export function BodyMap({ selected, onToggle }: Props) {
   const { t } = useTranslation();
   return (
-    <div className="flex gap-4 items-start">
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
       <svg
         viewBox="0 0 100 90"
-        className="w-36 shrink-0"
+        className="mx-auto w-32 shrink-0 sm:w-36"
         aria-hidden="true"
       >
         {FIGURE.filter((z) => z.id !== "back").map((z) => {
@@ -56,7 +56,8 @@ export function BodyMap({ selected, onToggle }: Props) {
           );
         })}
       </svg>
-      <div className="flex-1 grid grid-cols-2 gap-1.5 max-h-64 overflow-y-auto pr-1">
+      {/* No nested scroll: the page scrolls, all zones stay visible. */}
+      <div className="flex-1 grid grid-cols-2 gap-2">
         {BODY_ZONES.map((z) => {
           const sel = selected.includes(z.id);
           return (
@@ -65,8 +66,8 @@ export function BodyMap({ selected, onToggle }: Props) {
               type="button"
               onClick={() => onToggle(z.id)}
               aria-pressed={sel}
-              className={`rounded-lg px-2.5 py-2 text-xs text-left transition
-                ${sel ? "bg-orange-100 text-orange-800 border border-orange-300" : "bg-neutral-100 text-neutral-600 border border-neutral-200"}`}
+              className={`rounded-xl border px-3 py-2.5 min-h-11 text-left text-sm leading-tight transition
+                ${sel ? "bg-orange-100 text-orange-800 border-orange-300 font-medium" : "bg-[#fffdfa] text-neutral-700 border-neutral-300 hover:bg-neutral-100"}`}
             >
               {t(`zones.${z.id}`)}
             </button>

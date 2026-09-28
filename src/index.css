@@ -6,23 +6,25 @@
 
   /* Neutral scale pinned to sRGB hex — the Tailwind default oklch(... 0 none)
      serializes a `none` hue component that axe-core's color parser rejects,
-     which silently disables contrast auditing on every gray element. Same
-     visible palette, parseable form. */
-  --color-neutral-50: #fafafa;
-  --color-neutral-100: #f5f5f5;
-  --color-neutral-200: #e5e5e5;
-  --color-neutral-300: #d4d4d4;
-  --color-neutral-400: #a3a3a3;
-  --color-neutral-500: #737373;
-  --color-neutral-600: #525252;
-  --color-neutral-700: #404040;
-  --color-neutral-800: #262626;
-  --color-neutral-900: #171717;
-  --color-neutral-950: #0a0a0a;
+     which silently disables contrast auditing on every gray element. The
+     scale carries a warm bias (paper/stone values) for the "clear and warm"
+     direction; luminance matches the cool grays it replaced, so existing
+     contrast relationships hold. */
+  --color-neutral-50: #fafaf9;
+  --color-neutral-100: #f5f5f4;
+  --color-neutral-200: #e7e5e4;
+  --color-neutral-300: #d6d3d1;
+  --color-neutral-400: #a8a29e;
+  --color-neutral-500: #78716f;
+  --color-neutral-600: #57534e;
+  --color-neutral-700: #44403c;
+  --color-neutral-800: #292524;
+  --color-neutral-900: #1c1917;
+  --color-neutral-950: #0c0a09;
 }
 
 body {
-  @apply bg-neutral-100 text-neutral-900 antialiased;
+  @apply bg-[#f4f2ec] text-neutral-900 antialiased;
   min-height: 100dvh;
   letter-spacing: -0.011em;
   font-feature-settings: "cv02", "cv11", "ss01";
@@ -41,34 +43,59 @@ h1, h2, h3 {
   @apply min-h-12 min-w-12;
 }
 
-/* Elevated surface — white card, light neutral border, no floating shadow */
+/* Elevated surface — warm paper card, quiet border, no floating shadow */
 .card {
-  @apply rounded-2xl border border-neutral-200 bg-white;
+  @apply rounded-xl border border-neutral-200 bg-[#fffdfa];
 }
 
 .btn-primary {
-  @apply rounded-2xl bg-teal-700 text-white font-semibold px-5 py-3.5 min-h-12
+  @apply rounded-xl bg-teal-700 text-white font-semibold px-5 py-3.5 min-h-12
     active:scale-[0.975] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed
     hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700;
   box-shadow:
-    0 1px 2px rgba(16, 24, 40, 0.12),
-    0 8px 20px -8px rgba(13, 148, 136, 0.45);
+    0 1px 2px rgba(28, 25, 23, 0.16),
+    0 6px 16px -10px rgba(15, 118, 110, 0.4);
 }
 
 .btn-ghost {
-  @apply rounded-2xl bg-neutral-100 text-neutral-700 px-4 py-3 min-h-12
-    active:scale-[0.975] transition-all duration-150 hover:bg-neutral-200/70
+  @apply rounded-xl border border-neutral-300 bg-[#fffdfa] text-neutral-700 px-4 py-3 min-h-12
+    active:scale-[0.975] transition-all duration-150 hover:bg-neutral-100 hover:border-neutral-400
     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-400;
 }
 
+/* Compact secondary action (Edit/Delete-style controls) — real button
+   affordance at a ≥40px hit area instead of a bare underlined link. */
+.btn-quiet {
+  @apply inline-flex items-center justify-center rounded-lg border border-neutral-300
+    bg-[#fffdfa] px-3 py-2 text-sm font-medium text-neutral-700 min-h-10
+    transition-colors duration-150 hover:bg-neutral-100
+    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700;
+}
+
+/* Small section header used to group related content on a page. */
+.section-title {
+  @apply text-[13px] font-semibold uppercase tracking-[0.08em] text-neutral-600;
+}
+
+/* Page title — stronger desktop scale for a readable editorial hierarchy. */
+.page-title {
+  @apply text-[22px] leading-tight font-bold tracking-tight md:text-[28px];
+}
+
+a:focus-visible {
+  outline: 2px solid var(--color-teal-700);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 .input {
-  @apply w-full rounded-2xl bg-white border border-neutral-300 px-4 py-3 text-neutral-900
+  @apply w-full rounded-xl bg-white border border-neutral-300 px-4 py-3 text-neutral-900
     placeholder:text-neutral-600 focus:outline-none focus:border-teal-700
     focus:ring-4 focus:ring-teal-700/15 transition;
 }
 
 .label {
-  @apply block text-[13px] font-medium text-neutral-600 mb-1.5 tracking-tight;
+  @apply block text-[13px] font-semibold text-neutral-700 mb-1.5 tracking-tight;
 }
 
 /* Score badge chip */
