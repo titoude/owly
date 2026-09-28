@@ -131,8 +131,8 @@ export default function Report() {
               aria-pressed={period === d}
               className={`touch-target rounded-xl border text-sm font-medium transition-all duration-150 ${
                 period === d
-                  ? "bg-teal-700 text-white font-semibold border-teal-700"
-                  : "bg-[#fffdfa] border-neutral-300 text-neutral-600 hover:bg-neutral-100"
+                  ? "bg-accent-700 text-white font-semibold border-accent-700"
+                  : "bg-white border-neutral-300 text-neutral-600 hover:bg-neutral-100"
               }`}
             >
               {d == null ? t("report.all") : t("report.days", { n: d })}

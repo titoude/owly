@@ -134,11 +134,11 @@ export default function Settings() {
             <button
               type="button"
               onClick={() => void setActive(c.id!)}
-              className={`text-left ${c.id === active?.id ? "font-semibold text-teal-700" : "text-neutral-600"}`}
+              className={`text-left ${c.id === active?.id ? "font-semibold text-accent-700" : "text-neutral-600"}`}
             >
               <span dir="auto">{c.name}</span>{" "}
               {c.isDemo ? (
-                <span className="ml-1 rounded-full bg-teal-50 text-teal-700 border border-teal-300 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+                <span className="ml-1 rounded-full bg-accent-50 text-accent-700 border border-accent-500 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
                   demo
                 </span>
               ) : null}
@@ -161,7 +161,7 @@ export default function Settings() {
               onClick={() => changeLang(l)}
               className={`touch-target rounded-xl font-medium transition-all duration-150 ${
                 i18n.language === l
-                  ? "bg-teal-700 text-white font-semibold shadow-[0_4px_14px_-4px_rgba(45,212,191,0.5)]"
+                  ? "bg-accent-700 text-white font-semibold shadow-[0_4px_14px_-4px_rgba(45,212,191,0.5)]"
                   : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200/70"
               }`}
             >
@@ -277,7 +277,7 @@ export default function Settings() {
         <p className="text-sm text-neutral-600">{t("settings.license")}</p>
       </section>
 
-      {msg && <p className={`text-center text-sm ${msg.error ? "text-red-700" : "text-teal-700"}`} role={msg.error ? "alert" : "status"}>{msg.text}</p>}
+      {msg && <p className={`text-center text-sm ${msg.error ? "text-red-700" : "text-accent-700"}`} role={msg.error ? "alert" : "status"}>{msg.text}</p>}
     </div>
   );
 }

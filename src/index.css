@@ -1,41 +1,57 @@
+@import "@fontsource-variable/inter/wght.css";
 @import "tailwindcss";
 
 @theme {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
-    "Inter", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont,
+    "SF Pro Display", "SF Pro Text", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
 
   /* Neutral scale pinned to sRGB hex — the Tailwind default oklch(... 0 none)
      serializes a `none` hue component that axe-core's color parser rejects,
-     which silently disables contrast auditing on every gray element. The
-     scale carries a warm bias (paper/stone values) for the "clear and warm"
-     direction; luminance matches the cool grays it replaced, so existing
-     contrast relationships hold. */
-  --color-neutral-50: #fafaf9;
-  --color-neutral-100: #f5f5f4;
-  --color-neutral-200: #e7e5e4;
-  --color-neutral-300: #d6d3d1;
-  --color-neutral-400: #a8a29e;
-  --color-neutral-500: #78716f;
-  --color-neutral-600: #57534e;
-  --color-neutral-700: #44403c;
-  --color-neutral-800: #292524;
-  --color-neutral-900: #1c1917;
-  --color-neutral-950: #0c0a09;
+     which silently disables contrast auditing on every gray element. Barely-
+     warm grays for the chrome layer; luminance matches the previous scale,
+     so existing contrast relationships hold. */
+  --color-neutral-50: #f9f8f7;
+  --color-neutral-100: #f3f2f1;
+  --color-neutral-200: #e9e7e5;
+  --color-neutral-300: #d8d5d1;
+  --color-neutral-400: #aba79f;
+  --color-neutral-500: #8a857c;
+  --color-neutral-600: #615c53;
+  --color-neutral-700: #47433c;
+  --color-neutral-800: #2e2b26;
+  --color-neutral-900: #1f1d1a;
+  --color-neutral-950: #141210;
+
+  /* Restrained blue — primary actions, selection, and state only. */
+  --color-accent-50: #eef3fd;
+  --color-accent-100: #dbe7fb;
+  --color-accent-500: #4072d6;
+  --color-accent-600: #2f66d0;
+  --color-accent-700: #2958b8;
+  --color-accent-800: #234999;
 }
 
 body {
-  @apply bg-[#f4f2ec] text-neutral-900 antialiased;
+  @apply bg-white text-neutral-900 antialiased;
   min-height: 100dvh;
   letter-spacing: -0.011em;
   font-feature-settings: "cv02", "cv11", "ss01";
 }
 
 h1, h2, h3 {
-  letter-spacing: -0.022em;
+  letter-spacing: -0.02em;
 }
 
 ::selection {
-  @apply bg-teal-700/20 text-teal-900;
+  @apply bg-accent-100 text-neutral-900;
+}
+
+/* Native controls take the accent; focus stays the accent outline. */
+input[type="checkbox"], input[type="radio"], input[type="range"] {
+  accent-color: var(--color-accent-600);
+}
+input, textarea, select {
+  caret-color: var(--color-accent-600);
 }
 
 /* 3 a.m. design: everything big enough to hit with a thumb while holding a child */
@@ -43,73 +59,69 @@ h1, h2, h3 {
   @apply min-h-12 min-w-12;
 }
 
-/* Elevated surface — warm paper card, quiet border, no floating shadow */
+/* Boxed surface — one elevation: a quiet 1px border, no shadow. */
 .card {
-  @apply rounded-xl border border-neutral-200 bg-[#fffdfa];
+  @apply rounded-xl border border-neutral-200 bg-white;
 }
 
 .btn-primary {
-  @apply rounded-xl bg-teal-700 text-white font-semibold px-5 py-3.5 min-h-12
-    active:scale-[0.975] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed
-    hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700;
-  box-shadow:
-    0 1px 2px rgba(28, 25, 23, 0.16),
-    0 6px 16px -10px rgba(15, 118, 110, 0.4);
+  @apply rounded-lg bg-accent-600 text-white font-medium px-4 py-2.5 min-h-11
+    transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed
+    hover:bg-accent-700 active:bg-accent-800
+    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-600;
 }
 
 .btn-ghost {
-  @apply rounded-xl border border-neutral-300 bg-[#fffdfa] text-neutral-700 px-4 py-3 min-h-12
-    active:scale-[0.975] transition-all duration-150 hover:bg-neutral-100 hover:border-neutral-400
-    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-400;
+  @apply rounded-lg border border-neutral-300 bg-white text-neutral-800 px-4 py-2.5 min-h-11 font-medium
+    transition-colors duration-150 hover:bg-neutral-100 hover:border-neutral-400
+    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-600;
 }
 
-/* Compact secondary action (Edit/Delete-style controls) — real button
-   affordance at a ≥40px hit area instead of a bare underlined link. */
+/* Quiet inline action — bordered, ≥40px, for Edit/Delete-style controls. */
 .btn-quiet {
   @apply inline-flex items-center justify-center rounded-lg border border-neutral-300
-    bg-[#fffdfa] px-3 py-2 text-sm font-medium text-neutral-700 min-h-10
+    bg-white px-3 py-2 text-sm font-medium text-neutral-700 min-h-10
     transition-colors duration-150 hover:bg-neutral-100
-    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700;
+    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-600;
 }
 
-/* Small section header used to group related content on a page. */
+/* Small section header — plain sentence case, no tracked capitals. */
 .section-title {
-  @apply text-[13px] font-semibold uppercase tracking-[0.08em] text-neutral-600;
+  @apply text-[13px] font-semibold text-neutral-800;
 }
 
-/* Page title — stronger desktop scale for a readable editorial hierarchy. */
 .page-title {
-  @apply text-[22px] leading-tight font-bold tracking-tight md:text-[28px];
+  @apply text-[22px] leading-tight font-semibold tracking-tight md:text-[26px];
 }
 
 a:focus-visible {
-  outline: 2px solid var(--color-teal-700);
+  outline: 2px solid var(--color-accent-600);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 .input {
-  @apply w-full rounded-xl bg-white border border-neutral-300 px-4 py-3 text-neutral-900
-    placeholder:text-neutral-600 focus:outline-none focus:border-teal-700
-    focus:ring-4 focus:ring-teal-700/15 transition;
+  @apply w-full rounded-lg bg-white border border-neutral-300 px-3.5 py-2.5 min-h-11 text-neutral-900
+    placeholder:text-neutral-500 focus:outline-none focus:border-accent-600
+    focus:ring-4 focus:ring-accent-600/15 transition-colors;
 }
 
 .label {
-  @apply block text-[13px] font-semibold text-neutral-700 mb-1.5 tracking-tight;
+  @apply block text-[13px] font-medium text-neutral-700 mb-1.5;
 }
 
-/* Score badge chip */
+/* Small status chip */
 .badge {
   @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
 }
 
-/* Smooth step transitions in the wizard */
+/* Wizard step transition — 180ms state feedback only */
 @keyframes owly-step {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 .step-in {
-  animation: owly-step 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: owly-step 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {

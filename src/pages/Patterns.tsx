@@ -96,8 +96,8 @@ export default function Patterns() {
       </div>
 
       {insights.length > 0 && (
-        <div className="card p-4 !border-teal-200 !bg-teal-50 space-y-1.5">
-          <h2 className="text-sm font-semibold text-teal-700">{t("patterns.insight")}</h2>
+        <div className="card p-4 !border-accent-100 !bg-accent-50 space-y-1.5">
+          <h2 className="text-sm font-semibold text-accent-700">{t("patterns.insight")}</h2>
           {insights.map((s, i) => (
             <p key={i} className="text-sm text-neutral-600">• {s}</p>
           ))}
@@ -107,13 +107,13 @@ export default function Patterns() {
 
       <Link
         to="/report"
-        className="card p-4 flex items-center justify-between gap-3 min-h-12 hover:bg-teal-50/60 transition-colors"
+        className="card p-4 flex items-center justify-between gap-3 min-h-12 hover:bg-accent-50/60 transition-colors"
       >
         <span>
-          <span className="block text-sm font-semibold text-teal-700">{t("report.entryTitle")}</span>
+          <span className="block text-sm font-semibold text-accent-700">{t("report.entryTitle")}</span>
           <span className="block text-sm text-neutral-600">{t("report.entryDesc")}</span>
         </span>
-        <span aria-hidden className="text-teal-700">→</span>
+        <span aria-hidden className="text-accent-700">→</span>
       </Link>
 
       <div className="space-y-6 lg:grid lg:grid-cols-2 lg:gap-5 lg:space-y-0">

@@ -73,7 +73,7 @@ try {
 
   // ── 4. Observe wizard full pass ────────────────────────────
   await page.goto(BASE + "/#/observe");
-  await page.waitForSelector("text=/[0-9]\/[0-9]/", { timeout: 5000 });
+  await page.waitForSelector('[role="status"]', { timeout: 5000 });
   await shot("05-observe-step0");
   await nextBtn().click();
   const scores = [1, 2, 0, 1, 2];
@@ -125,7 +125,7 @@ try {
     p2.on("pageerror", (e) => perr.push(e.message));
     await p2.goto(BASE + "/#/welcome");
     await p2.locator("button", { hasText: /demo|démo/i }).first().click();
-    await p2.getByRole("heading", { name: /léo|leo/i }).waitFor({ timeout: 10000 }); // active child loaded
+    await p2.getByText(/^léo$/i).first().waitFor({ timeout: 10000 }); // active child loaded
     await p2.route("**/assets/report-*.js", (r) => r.abort("failed"));
     await p2.goto(BASE + "/#/report");
     const genBtn2 = p2.locator("button.btn-primary.w-full").first(); // label swaps to "Loading…" while busy — use a stable selector
@@ -227,7 +227,7 @@ try {
     const p3 = await ctx3.newPage();
     await p3.goto(BASE + "/#/welcome");
     await p3.locator("button", { hasText: /demo|démo/i }).first().click();
-    await p3.getByRole("heading", { name: /léo|leo/i }).waitFor({ timeout: 10000 });
+    await p3.getByText(/^léo$/i).first().waitFor({ timeout: 10000 });
     await p3.route("**/assets/report-*.js", (r) => r.abort("failed"));
     await p3.goto(BASE + "/#/report");
     const genBtn4 = p3.locator("button.btn-primary.w-full").first();
@@ -343,7 +343,7 @@ try {
   const h1new = await page.locator("h1").first().innerText();
   ok(
     "edit → new fully remounts the wizard",
-    /new observation|nouvelle observation/i.test(h1new) && /1\/8/.test(stepTxt) &&
+    /new observation|nouvelle observation/i.test(h1new) && /\b1\b.{0,24}\b8\b/.test(stepTxt) &&
       (await page.locator("#draft-title").count()) === 0,
     `${h1new} / ${stepTxt}`,
   );

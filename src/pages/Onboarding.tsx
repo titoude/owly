@@ -41,7 +41,7 @@ export default function Onboarding() {
       <ul className="space-y-2">
         {(t("onboarding.points", { returnObjects: true }) as string[]).map((p, i) => (
           <li key={i} className="flex gap-3 text-sm text-neutral-600">
-            <span className="text-teal-700">✓</span> {p}
+            <span className="text-accent-700">✓</span> {p}
           </li>
         ))}
       </ul>

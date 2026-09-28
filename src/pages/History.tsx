@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useApp } from "../appContext";
 import { db } from "../db";
 import type { Observation } from "../types";
@@ -13,6 +13,9 @@ export default function History() {
   const { active } = useApp();
   const [obs, setObs] = useState<Observation[]>([]);
   const [confirmId, setConfirmId] = useState<number | null>(null);
+  const [params] = useSearchParams();
+  const focusId = Number(params.get("focus")) || null;
+  const didFocus = useRef(false);
 
   useEffect(() => {
     if (!active?.id) return;
@@ -21,6 +24,16 @@ export default function History() {
       .reverse().sortBy("recordedAt")
       .then(setObs);
   }, [active]);
+
+  // Deep links from the journal point at one record — scroll it into view
+  // and ring it once the list has loaded.
+  useEffect(() => {
+    if (didFocus.current || !focusId || obs.length === 0) return;
+    const el = document.getElementById(`obs-${focusId}`);
+    if (!el) return;
+    didFocus.current = true;
+    el.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [focusId, obs]);
 
   async function remove(id: number) {
     await db.observations.delete(id);
@@ -46,7 +59,11 @@ export default function History() {
     <div className="space-y-4">
       <h1 className="text-xl font-bold">{t("history.title")}</h1>
       {obs.map((o) => (
-        <div key={o.id} className="card p-4 space-y-2">
+        <div
+          key={o.id}
+          id={`obs-${o.id}`}
+          className={`card p-4 space-y-2 scroll-mt-24 ${focusId === o.id ? "ring-2 ring-accent-600" : ""}`}
+        >
           <div className="flex items-start justify-between gap-2">
             <div>
               <div className="font-medium">
@@ -90,7 +107,7 @@ export default function History() {
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <Link to={`/observe/${o.id}/edit`} className="text-xs text-neutral-600 underline hover:text-teal-700">
+              <Link to={`/observe/${o.id}/edit`} className="text-xs text-neutral-600 underline hover:text-accent-700">
                 {t("common.edit")}
               </Link>
               <button

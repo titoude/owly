@@ -5,6 +5,7 @@
     "skipToContent": "Skip to main content",
     "navLabel": "Main navigation",
     "demoBadge": "Demo — fictional data",
+    "demoBadgeShort": "Demo",
     "storageErrorTitle": "Can't reach the local database",
     "storageErrorBody": "Owly keeps everything on this device, and the browser's storage is unavailable or full. Free some space or check your browser's site-data settings, then try again. Nothing was sent anywhere.",
     "changeChild": "Change"
@@ -88,7 +89,6 @@
     "note": "Note (optional)",
     "noteHint": "Anything else a doctor should know — e.g. was rocking, refused food, slept 2h",
     "save": "Save observation",
-    "saved": "Saved",
     "score": "FLACC score",
     "summary": "Summary",
     "saveError": "Could not save — please try again.",
@@ -100,13 +100,14 @@
     "discard": "Discard draft",
     "update": "Save changes",
     "draftSaveFailed": "Couldn't save the draft — device storage may be full or blocked. Your recorded data is safe; finish and save the observation to keep it.",
-    "stepOf": "step {{n}} of {{total}}",
+    "stepStatus": "Step {{n}} of {{total}} — {{name}}",
     "stepNames": {
       "when": "When",
       "details": "Details",
       "tried": "Care & notes"
     },
-    "stepsLabel": "Observation steps"
+    "stepsLabel": "Observation steps",
+    "draftSaved": "Draft saved"
   },
   "interventions": {
     "comfort": "Comfort (hug, hold, blanket)",
@@ -268,6 +269,8 @@
     "confirm": "Confirm",
     "loading": "Loading…",
     "of": "of",
+    "today": "Today",
+    "yesterday": "Yesterday",
     "edit": "Edit",
     "retry": "Try again",
     "viewAll": "View all"
@@ -333,6 +336,8 @@
     ]
   },
   "dashboard": {
-    "recent": "Recent observations"
+    "recent": "Recent observations",
+    "tools": "Tools",
+    "journal": "Journal"
   }
 }

@@ -5,6 +5,7 @@
     "skipToContent": "Aller au contenu principal",
     "navLabel": "Navigation principale",
     "demoBadge": "Démo — données fictives",
+    "demoBadgeShort": "Démo",
     "storageErrorTitle": "Impossible d'accéder à la base locale",
     "storageErrorBody": "Owly conserve tout sur cet appareil, et le stockage du navigateur est indisponible ou plein. Libérez de l'espace ou vérifiez les réglages de données de site, puis réessayez. Rien n'a été envoyé nulle part.",
     "changeChild": "Changer"
@@ -88,7 +89,6 @@
     "note": "Note (optionnel)",
     "noteHint": "Tout ce que le médecin devrait savoir — ex. se balançait, a refusé de manger, a dormi 2 h",
     "save": "Enregistrer l'observation",
-    "saved": "Enregistré",
     "score": "Score FLACC",
     "summary": "Résumé",
     "saveError": "Enregistrement impossible — réessayez.",
@@ -100,13 +100,14 @@
     "discard": "Supprimer le brouillon",
     "update": "Enregistrer",
     "draftSaveFailed": "Impossible d'enregistrer le brouillon — le stockage de l'appareil est peut-être plein ou bloqué. Vos données enregistrées sont en sécurité ; terminez et enregistrez l'observation pour la conserver.",
-    "stepOf": "étape {{n}} sur {{total}}",
+    "stepStatus": "Étape {{n}} sur {{total}} — {{name}}",
     "stepNames": {
       "when": "Quand",
       "details": "Détails",
       "tried": "Soins et note"
     },
-    "stepsLabel": "Étapes de l'observation"
+    "stepsLabel": "Étapes de l'observation",
+    "draftSaved": "Brouillon enregistré"
   },
   "interventions": {
     "comfort": "Réconfort (câlin, doudou, couverture)",
@@ -268,6 +269,8 @@
     "confirm": "Confirmer",
     "loading": "Chargement…",
     "of": "sur",
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
     "edit": "Modifier",
     "retry": "Réessayer",
     "viewAll": "Tout voir"
@@ -333,6 +336,8 @@
     ]
   },
   "dashboard": {
-    "recent": "Observations récentes"
+    "recent": "Observations récentes",
+    "tools": "Outils",
+    "journal": "Journal"
   }
 }

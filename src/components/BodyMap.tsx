@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { BODY_ZONES } from "../flacc";
 import { useTranslation } from "react-i18next";
 
@@ -6,55 +7,81 @@ interface Props {
   onToggle: (zoneId: string) => void;
 }
 
-// A simple symmetric figure, front view. Zones are large tap targets,
-// intentionally coarse — a parent taps "roughly ear", not "left pinna".
-const FIGURE: { id: string; x: number; y: number; w: number; h: number; rx: number }[] = [
-  { id: "head", x: 40, y: 4, w: 20, h: 14, rx: 6 },
-  { id: "ears", x: 36, y: 8, w: 28, h: 5, rx: 2 },
-  { id: "mouth", x: 45, y: 14, w: 10, h: 3, rx: 1 },
-  { id: "throat", x: 46, y: 18, w: 8, h: 4, rx: 2 },
-  { id: "chest", x: 40, y: 22, w: 20, h: 12, rx: 4 },
-  { id: "stomach", x: 40, y: 34, w: 20, h: 12, rx: 4 },
-  { id: "bottom", x: 40, y: 46, w: 20, h: 8, rx: 4 },
-  { id: "arm_l", x: 26, y: 22, w: 11, h: 22, rx: 4 },
-  { id: "arm_r", x: 63, y: 22, w: 11, h: 22, rx: 4 },
-  { id: "hand_l", x: 26, y: 45, w: 11, h: 9, rx: 4 },
-  { id: "hand_r", x: 63, y: 45, w: 11, h: 9, rx: 4 },
-  { id: "leg_l", x: 41, y: 55, w: 8, h: 24, rx: 3 },
-  { id: "leg_r", x: 51, y: 55, w: 8, h: 24, rx: 3 },
-  { id: "foot_l", x: 39, y: 80, w: 10, h: 6, rx: 2 },
-  { id: "foot_r", x: 51, y: 80, w: 10, h: 6, rx: 2 },
-  { id: "back", x: 40, y: 22, w: 20, h: 24, rx: 4 },
-  { id: "skin", x: 28, y: 56, w: 8, h: 8, rx: 2 },
-];
+// Front-view human figure in the app's stroke language: one silhouette
+// outline over soft zone highlights. The text chips below stay the primary
+// controls — zones are intentionally coarse tap regions.
+const HEAD = { cx: 50, cy: 14, r: 8.5 };
+const BODY_PATH =
+  "M50 22 C41 22 34.5 24.5 31.5 29.5 L27.5 51.5 C26.6 55 29.3 56.8 30.8 55.2 " +
+  "L35 39.5 L37.5 58 L39.8 101 C39.9 105 41.6 107.5 44.5 107.5 L46.3 107.5 " +
+  "C46.8 107.5 47.3 104.5 47.5 67 L52.5 67 C52.7 104.5 53.2 107.5 53.7 107.5 " +
+  "L55.5 107.5 C58.4 107.5 60.1 105 60.2 101 L62.5 58 L65 39.5 L69.2 55.2 " +
+  "C70.7 56.8 73.4 55 72.5 51.5 L68.5 29.5 C65.5 24.5 59 22 50 22 Z";
+
+const ZONES: Record<string, ReactNode> = {
+  head: <circle cx={50} cy={14} r={10} />,
+  ears: (
+    <>
+      <ellipse cx={41.5} cy={14} rx={2.6} ry={3.2} />
+      <ellipse cx={58.5} cy={14} rx={2.6} ry={3.2} />
+    </>
+  ),
+  mouth: <ellipse cx={50} cy={17} rx={3.4} ry={2.2} />,
+  throat: <rect x={46} y={22.5} width={8} height={4.5} rx={2.2} />,
+  chest: <ellipse cx={50} cy={42} rx={13} ry={7.5} />,
+  stomach: <ellipse cx={50} cy={53} rx={11.5} ry={6.5} />,
+  bottom: <ellipse cx={50} cy={62} rx={10} ry={4.5} />,
+  back: <ellipse cx={50} cy={47} rx={12.5} ry={11} />,
+  arm_l: <rect x={25.5} y={30} width={7.5} height={24} rx={3.75} transform="rotate(6 29 42)" />,
+  arm_r: <rect x={67} y={30} width={7.5} height={24} rx={3.75} transform="rotate(-6 71 42)" />,
+  hand_l: <circle cx={29} cy={54} r={4.2} />,
+  hand_r: <circle cx={71} cy={54} r={4.2} />,
+  leg_l: <rect x={40.5} y={67} width={7} height={35} rx={3.5} />,
+  leg_r: <rect x={52.5} y={67} width={7} height={35} rx={3.5} />,
+  foot_l: <ellipse cx={43} cy={104.5} rx={5} ry={3} />,
+  foot_r: <ellipse cx={57} cy={104.5} rx={5} ry={3} />,
+  skin: <circle cx={63} cy={63} r={5} />,
+  whole: (
+    <>
+      <circle cx={HEAD.cx} cy={HEAD.cy} r={HEAD.r} />
+      <path d={BODY_PATH} />
+    </>
+  ),
+};
 
 export function BodyMap({ selected, onToggle }: Props) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
       <svg
-        viewBox="0 0 100 90"
+        viewBox="0 0 100 114"
         className="mx-auto w-32 shrink-0 sm:w-36"
         aria-hidden="true"
       >
-        {FIGURE.filter((z) => z.id !== "back").map((z) => {
-          const sel = selected.includes(z.id);
-          return (
-            <rect
-              key={z.id}
-              x={z.x}
-              y={z.y}
-              width={z.w}
-              height={z.h}
-              rx={z.rx}
-              onClick={() => onToggle(z.id)}
-              className={`cursor-pointer transition-colors stroke-2
-                ${sel ? "fill-orange-400/70 stroke-orange-500" : "fill-neutral-100 stroke-neutral-400 hover:fill-neutral-200"}`}
-            >
-              <title>{t(`zones.${z.id}`)}</title>
-            </rect>
-          );
-        })}
+        {/* Clickable highlight regions under the silhouette. */}
+        {(Object.keys(ZONES) as (keyof typeof ZONES)[]).map((id) => (
+          <g
+            key={id}
+            onClick={() => onToggle(id)}
+            className={`cursor-pointer transition-colors ${
+              selected.includes(id) ? "fill-accent-500/40" : "fill-transparent hover:fill-neutral-500/15"
+            }`}
+          >
+            <title>{t(`zones.${id}`)}</title>
+            {ZONES[id]}
+          </g>
+        ))}
+        {/* Silhouette outline — decorative top layer. */}
+        <g
+          className="fill-none stroke-neutral-600"
+          strokeWidth={1.7}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          pointerEvents="none"
+        >
+          <circle cx={HEAD.cx} cy={HEAD.cy} r={HEAD.r} />
+          <path d={BODY_PATH} />
+        </g>
       </svg>
       {/* No nested scroll: the page scrolls, all zones stay visible. */}
       <div className="flex-1 grid grid-cols-2 gap-2">
@@ -67,7 +94,7 @@ export function BodyMap({ selected, onToggle }: Props) {
               onClick={() => onToggle(z.id)}
               aria-pressed={sel}
               className={`rounded-xl border px-3 py-2.5 min-h-11 text-left text-sm leading-tight transition
-                ${sel ? "bg-orange-100 text-orange-800 border-orange-300 font-medium" : "bg-[#fffdfa] text-neutral-700 border-neutral-300 hover:bg-neutral-100"}`}
+                ${sel ? "bg-accent-50 text-accent-800 border-accent-600 font-medium" : "bg-white text-neutral-700 border-neutral-300 hover:bg-neutral-100"}`}
             >
               {t(`zones.${z.id}`)}
             </button>

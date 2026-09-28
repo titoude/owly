@@ -13,51 +13,9 @@ import ChildForm from "./pages/ChildForm";
 import LockScreen from "./pages/LockScreen";
 import { getSetting } from "./db";
 import { useEffect, useState } from "react";
-
-const stroke = {
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 1.7,
-  strokeLinecap: "round" as const,
-  strokeLinejoin: "round" as const,
-};
-
-const IconHome = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
-    <path d="M3.5 10.5 12 3.5l8.5 7" />
-    <path d="M5.5 9.5V20a.5.5 0 0 0 .5.5h12a.5.5 0 0 0 .5-.5V9.5" />
-    <path d="M9.5 20.5v-5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5" />
-  </svg>
-);
-const IconObserve = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
-    <circle cx="12" cy="12" r="8.5" />
-    <path d="M12 8v8M8 12h8" />
-  </svg>
-);
-const IconHistory = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
-    <path d="M8 6.5h12M8 12h12M8 17.5h12" />
-    <path d="M4 6.5h.01M4 12h.01M4 17.5h.01" strokeWidth={2.6} />
-  </svg>
-);
-const IconPatterns = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
-    <path d="M4 19.5V10M9.5 19.5V4.5M15 19.5v-8M20.5 19.5V8" />
-  </svg>
-);
-const IconReport = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
-    <path d="M6.5 3.5h7L19 8.5v11a1 1 0 0 1-1 1H6.5a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1Z" />
-    <path d="M13.5 3.5V9H19M9 13h6.5M9 16.5h4" />
-  </svg>
-);
-const IconSettings = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
-    <circle cx="12" cy="12" r="3.2" />
-    <path d="M12 3.8v2.2M12 18v2.2M3.8 12H6M18 12h2.2M6.2 6.2l1.5 1.5M16.3 16.3l1.5 1.5M17.8 6.2l-1.5 1.5M7.7 16.3l-1.5 1.5" />
-  </svg>
-);
+import {
+  IconHome, IconObserve, IconHistory, IconPatterns, IconReport, IconSettings, IconAlert,
+} from "./components/icons";
 
 const NAV = [
   { to: "/", Icon: IconHome, label: "nav.home" },
@@ -76,9 +34,10 @@ function ObserveKeyed() {
   return <Observe key={`${active?.id ?? "none"}:${id ?? "new"}`} />;
 }
 
-// Report is a destination, not a daily tab — reachable in the desktop rail
-// and from Dashboard/Patterns entry points on mobile.
+// Report is a destination, not a daily tab — present in the desktop top nav
+// and reachable from Dashboard/Patterns entry points on mobile.
 const REPORT_NAV = { to: "/report", Icon: IconReport, label: "nav.report" };
+const TOP_NAV = [...NAV.slice(0, 4), REPORT_NAV, NAV[4]];
 
 function Shell() {
   const { t } = useTranslation();
@@ -100,6 +59,12 @@ function Shell() {
     window.addEventListener("owly:lock", arm);
     return () => window.removeEventListener("owly:lock", arm);
   }, []);
+
+  // HashRouter preserves scroll across route changes — every new page
+  // should open at its top.
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [loc.pathname]);
 
   if (loading || !lockChecked) {
     return (
@@ -147,21 +112,6 @@ function Shell() {
     );
   }
 
-  const railItems = [...NAV.slice(0, 4), REPORT_NAV, NAV[4]];
-
-  // Routes where the active child's identity must stay visible — the
-  // dashboard keeps its own large name header, so it is excluded here.
-  const childBarRoutes = loc.pathname.startsWith("/observe") ||
-    ["/history", "/patterns", "/report", "/settings"].includes(loc.pathname);
-  const showChildBar = !!active && childBarRoutes;
-
-  // Data pages earn a wider content grid on desktop; focused flows
-  // (wizard, forms, report) stay a readable centered column.
-  const contentWidth = loc.pathname === "/" ? "lg:max-w-5xl"
-    : loc.pathname === "/patterns" ? "lg:max-w-4xl"
-    : loc.pathname.startsWith("/observe") ? "lg:max-w-3xl"
-    : "";
-
   return (
     <div className="min-h-dvh">
       <a
@@ -174,82 +124,66 @@ function Shell() {
           m?.focus();
           m?.scrollIntoView({ block: "start" });
         }}
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-xl focus:bg-teal-700 focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lg"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-accent-600 focus:px-4 focus:py-2.5 focus:text-sm focus:font-medium focus:text-white"
       >
         {t("app.skipToContent")}
       </a>
-      {/* Desktop / tablet: left rail */}
-      <aside className="hidden md:flex md:flex-col fixed inset-y-0 left-0 w-56 z-40 border-r border-neutral-200 bg-white/75 backdrop-blur-xl px-3 py-6">
-        <div className="px-2 pb-5">
-          <div className="flex items-center gap-2.5">
-            <img src="/icon.svg" alt="" className="size-9 rounded-[10px]" />
-            <span className="text-xl font-bold tracking-tight">Owly</span>
-          </div>
-          <p className="mt-1.5 text-xs text-neutral-600">{t("app.tagline")}</p>
-          {active?.isDemo && (
-            <span className="badge bg-amber-100 text-amber-800 border border-amber-200 mt-2">
-              {t("app.demoBadge")}
-            </span>
-          )}
-        </div>
-        <nav className="flex-1 space-y-0.5" aria-label={t("app.navLabel")}>
-          {railItems.map((n) => {
-            const selected = loc.pathname === n.to;
-            return (
-              <button
-                key={n.to}
-                onClick={() => void nav(n.to)}
-                aria-current={selected ? "page" : undefined}
-                className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-left transition-colors duration-150 min-h-11
-                  ${selected ? "bg-teal-50 text-teal-700 font-semibold" : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"}`}
-              >
-                <span aria-hidden className="leading-none shrink-0"><n.Icon /></span>
-                {t(n.label)}
-              </button>
-            );
-          })}
-        </nav>
-        <div className="border-t border-neutral-200 pt-3">
-          <button
-            onClick={() => void nav("/redflags")}
-            className="w-full flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-700 hover:bg-red-50 transition-colors min-h-11"
-          >
-            ⚠ {t("nav.redflags")}
-          </button>
-        </div>
-      </aside>
 
-      <div className="md:pl-56 flex flex-col min-h-dvh">
-        <main id="main" tabIndex={-1} className={`flex-1 mx-auto w-full max-w-lg md:max-w-2xl ${contentWidth} px-4 pb-28 md:pb-14 pt-6 md:pt-10 focus:outline-none`}>
-          {active?.isDemo && (
-            <div className="md:hidden mb-4">
-              <span className="badge bg-amber-100 text-amber-800 border border-amber-200">
-                {t("app.demoBadge")}
-              </span>
-            </div>
-          )}
-          {showChildBar && (
-            <div className="mb-5 flex items-center justify-between gap-3 border-b border-neutral-200 pb-3">
-              <div className="flex min-w-0 items-center gap-2">
-                <span className="truncate text-[15px] font-semibold" dir="auto">{active.name}</span>
+      {/* Compact top bar — brand, destinations, child context, emergency. */}
+      <header className="sticky top-0 z-40 border-b border-neutral-200 bg-neutral-50">
+        <div className="mx-auto flex h-14 max-w-5xl items-center gap-2 px-3 md:px-6">
+          <Link to="/" className="flex shrink-0 items-center gap-2 rounded-lg px-1 py-1">
+            <img src="/icon.svg" alt="" className="size-7 rounded-lg" />
+            <span className="text-[15px] font-semibold tracking-tight">Owly</span>
+          </Link>
+
+          <nav className="mx-auto hidden items-center gap-0.5 md:flex" aria-label={t("app.navLabel")}>
+            {TOP_NAV.map((n) => {
+              const selected = loc.pathname === n.to;
+              return (
+                <button
+                  key={n.to}
+                  onClick={() => void nav(n.to)}
+                  aria-current={selected ? "page" : undefined}
+                  className={`flex min-h-10 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors duration-150
+                    ${selected ? "bg-white text-neutral-900 shadow-[inset_0_0_0_1px_var(--color-neutral-200)]" : "text-neutral-600 hover:bg-white/70 hover:text-neutral-900"}`}
+                >
+                  <span aria-hidden className="leading-none"><n.Icon size={17} /></span>
+                  {t(n.label)}
+                </button>
+              );
+            })}
+          </nav>
+
+          <div className="ms-auto flex min-w-0 items-center gap-2 md:ms-0">
+            {active && (
+              <Link
+                to="/settings"
+                title={t("app.changeChild")}
+                className="flex min-w-0 max-w-40 items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-white/70"
+              >
+                <span className="truncate" dir="auto">{active.name}</span>
                 {active.isDemo && (
-                  <span className="hidden md:inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
-                    {t("app.demoBadge")}
+                  <span className="shrink-0 rounded-md bg-amber-100 px-1.5 py-0.5 text-[11px] font-semibold text-amber-800">
+                    {t("app.demoBadgeShort")}
                   </span>
                 )}
-              </div>
-              <div className="flex shrink-0 items-center gap-4">
-                <Link to="/redflags" className="md:hidden text-sm font-semibold text-red-700">
-                  ⚠ {t("nav.redflags")}
-                </Link>
-                {loc.pathname !== "/settings" && (
-                  <Link to="/settings" className="text-sm font-medium text-teal-700 hover:text-teal-800">
-                    {t("app.changeChild")}
-                  </Link>
-                )}
-              </div>
-            </div>
-          )}
+              </Link>
+            )}
+            <Link
+              to="/redflags"
+              aria-label={t("nav.redflags")}
+              className="flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-sm font-semibold text-red-700 transition-colors hover:bg-red-50"
+            >
+              <span aria-hidden className="leading-none"><IconAlert size={17} /></span>
+              <span className="hidden sm:inline">{t("nav.redflags")}</span>
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <div className="flex min-h-[calc(100dvh-3.5rem)] flex-col">
+        <main id="main" tabIndex={-1} className="mx-auto w-full max-w-lg flex-1 px-4 pb-28 pt-6 focus:outline-none md:max-w-5xl md:pb-14 md:pt-8">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/welcome" element={<Onboarding />} />
@@ -267,7 +201,7 @@ function Shell() {
       </div>
 
       {/* Mobile: 5 calm tabs — flat bottom bar, no floating pill */}
-      <nav className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-neutral-200 pb-[env(safe-area-inset-bottom)] md:hidden" aria-label={t("app.navLabel")}>
+      <nav className="fixed bottom-0 inset-x-0 z-40 border-t border-neutral-200 bg-neutral-50 pb-[env(safe-area-inset-bottom)] md:hidden" aria-label={t("app.navLabel")}>
         <div className="mx-auto max-w-lg grid grid-cols-5">
           {NAV.map((n) => {
             const selected = loc.pathname === n.to;
@@ -276,8 +210,8 @@ function Shell() {
                 key={n.to}
                 onClick={() => void nav(n.to)}
                 aria-current={selected ? "page" : undefined}
-                className={`flex flex-col items-center gap-1 py-2 text-[13px] font-medium touch-target transition-colors duration-150 border-t-2 -mt-px
-                  ${selected ? "text-teal-700 border-teal-700" : "text-neutral-600 border-transparent hover:text-neutral-900"}`}
+                className={`flex flex-col items-center gap-1 py-2 text-[12px] font-medium touch-target transition-colors duration-150
+                  ${selected ? "text-accent-700" : "text-neutral-600 hover:text-neutral-900"}`}
               >
                 <span aria-hidden className="leading-none"><n.Icon /></span>
                 {/* Wrapping + hyphenation keep long native labels (e.g. de

@@ -5,6 +5,7 @@
     "skipToContent": "Zum Hauptinhalt springen",
     "navLabel": "Hauptnavigation",
     "demoBadge": "Demo — fiktive Daten",
+    "demoBadgeShort": "Demo",
     "storageErrorTitle": "Lokale Datenbank nicht erreichbar",
     "storageErrorBody": "Owly speichert alles auf diesem Gerät und der Browserspeicher ist nicht verfügbar oder voll. Geben Sie Speicher frei oder prüfen Sie die Website-Daten-Einstellungen und versuchen Sie es erneut. Es wurde nichts übertragen.",
     "changeChild": "Wechseln"
@@ -88,7 +89,6 @@
     "note": "Notiz (optional)",
     "noteHint": "Sonstiges, das der Arzt wissen sollte — z. B. hat geschaukelt, Essen verweigert, 2 h geschlafen",
     "save": "Beobachtung speichern",
-    "saved": "Gespeichert",
     "score": "FLACC-Score",
     "summary": "Zusammenfassung",
     "saveError": "Speichern nicht möglich — bitte erneut versuchen.",
@@ -100,13 +100,14 @@
     "discard": "Entwurf verwerfen",
     "update": "Änderungen speichern",
     "draftSaveFailed": "Der Entwurf konnte nicht gespeichert werden — der Gerätespeicher ist möglicherweise voll oder blockiert. Ihre aufgezeichneten Daten sind sicher; beenden Sie die Beobachtung und speichern Sie sie, um sie zu behalten.",
-    "stepOf": "Schritt {{n}} von {{total}}",
+    "stepStatus": "Schritt {{n}} von {{total}} — {{name}}",
     "stepNames": {
       "when": "Wann",
       "details": "Details",
       "tried": "Pflege & Notiz"
     },
-    "stepsLabel": "Schritte der Beobachtung"
+    "stepsLabel": "Schritte der Beobachtung",
+    "draftSaved": "Entwurf gespeichert"
   },
   "interventions": {
     "comfort": "Trösten (Umarmung, Halten, Decke)",
@@ -268,6 +269,8 @@
     "confirm": "Bestätigen",
     "loading": "Laden…",
     "of": "von",
+    "today": "Heute",
+    "yesterday": "Gestern",
     "edit": "Bearbeiten",
     "retry": "Erneut versuchen",
     "viewAll": "Alle anzeigen"
@@ -333,6 +336,8 @@
     ]
   },
   "dashboard": {
-    "recent": "Letzte Beobachtungen"
+    "recent": "Letzte Beobachtungen",
+    "tools": "Werkzeuge",
+    "journal": "Tagebuch"
   }
 }

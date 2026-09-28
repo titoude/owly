@@ -9,10 +9,11 @@ import { FLACC_CATEGORIES, type FlaccScores, type Intervention, type Observation
 import { FlaccPicker } from "../components/FlaccPicker";
 import { BodyMap } from "../components/BodyMap";
 import { ScoreBadge } from "../components/ScoreBadge";
+import { IconCheck } from "../components/icons";
 
 const STEPS = 8;
-// Step names shown in the caption and desktop rail. FLACC categories reuse
-// their existing keys; the three non-category steps get dedicated names.
+// Step names for the progress announcement. FLACC categories reuse their
+// existing keys; the three non-category steps get dedicated names.
 const STEP_KEYS = [
   "observe.stepNames.when",
   "flacc.face",
@@ -53,6 +54,7 @@ export default function Observe() {
   const [offer, setOffer] = useState<ObsDraft | null>(null);
   const [offerSeen, setOfferSeen] = useState(false); // true once resolved
   const [draftFailed, setDraftFailed] = useState(false); // draft write rejected (quota/denied)
+  const [draftSaved, setDraftSaved] = useState(false); // a draft write actually completed
   const seeded = useRef<string>(""); // JSON of the seeded fields
   const orig = useRef<Observation | null>(null); // edited record, for timestamp preservation
   const seededWhen = useRef<string | null>(null); // customAt string the form was seeded with
@@ -125,14 +127,19 @@ export default function Observe() {
     // The draft records the instant pinned by the last explicit "when"
     // change — recomputing it here would let clock drift shift the episode.
     saveDraft(key, { ...fields, savedAt: Date.now() })
-      .then(() => setDraftFailed(false))
+      .then(() => { setDraftFailed(false); setDraftSaved(true); })
       .catch(() => setDraftFailed(true));
   }, [key, offerSeen, offer, fields]);
 
-  // Move focus to the step region on each step change so keyboard and
-  // screen-reader users don't lose their place in the 8-step flow.
+  // Each step change resets the viewport to the step region (below the
+  // sticky top bar via scroll-margin) and moves focus there, so a long
+  // previous step can't leave the new heading off-screen.
   useEffect(() => {
-    stepHeading.current?.focus({ preventScroll: true });
+    const el = stepHeading.current;
+    if (!el) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+    el.focus({ preventScroll: true });
   }, [step]);
 
   const total = useMemo(() => {
@@ -226,49 +233,35 @@ export default function Observe() {
   if (!active) return null;
 
   return (
-    <div className="lg:grid lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-10">
-      {/* Named step rail — progress you can read, not a bare fraction. */}
-      <nav aria-label={t("observe.stepsLabel")} className="hidden lg:block">
-        <ol className="sticky top-10 space-y-0.5">
-          {STEP_KEYS.map((k, i) => {
-            const done = i < step;
-            const current = i === step;
-            return (
-              <li
-                key={k}
-                aria-current={current ? "step" : undefined}
-                className={`flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm
-                  ${current ? "bg-teal-50 font-semibold text-teal-800" : done ? "text-neutral-700" : "text-neutral-600"}`}
-              >
-                <span
-                  aria-hidden
-                  className={`grid size-6 shrink-0 place-items-center rounded-full border text-xs font-semibold
-                    ${done ? "border-teal-700 bg-teal-700 text-white" : current ? "border-teal-700 text-teal-800" : "border-neutral-300 text-neutral-500"}`}
-                >
-                  {done ? "✓" : i + 1}
-                </span>
-                {t(k)}
-              </li>
-            );
-          })}
-        </ol>
-      </nav>
-
-      <div className="min-w-0 space-y-6">
-      <div ref={stepHeading} tabIndex={-1}>
-        <h1 className="page-title">{editId ? t("observe.editTitle") : t("observe.start")}</h1>
-        <p className="mt-1 text-[15px] font-medium text-neutral-600">
-          {t(STEP_KEYS[step])} ·{" "}
-          <span className="tabular-nums" role="status">
-            {step + 1}/{STEPS}
-          </span>
-        </p>
-      </div>
-      <div className="h-1 rounded-full bg-neutral-200 overflow-hidden">
-        <div
-          className="h-1 rounded-full bg-teal-700 transition-all duration-300 ease-out"
-          style={{ width: `${((step + 1) / STEPS) * 100}%` }}
-        />
+    <div className="mx-auto w-full max-w-xl space-y-6">
+      {/* Focused form header — explicit child identity, named progress. */}
+      <div ref={stepHeading} tabIndex={-1} className="scroll-mt-20 focus:outline-none">
+        <div className="flex items-center gap-2 text-[13px] text-neutral-600">
+          <span dir="auto" className="font-medium text-neutral-700">{active.name}</span>
+          {active.isDemo && (
+            <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-[11px] font-semibold text-amber-800">
+              {t("app.demoBadgeShort")}
+            </span>
+          )}
+          {draftSaved && !draftFailed && (
+            <span aria-live="polite" className="ms-auto inline-flex items-center gap-1">
+              <span aria-hidden className="leading-none"><IconCheck size={13} /></span>
+              {t("observe.draftSaved")}
+            </span>
+          )}
+        </div>
+        <h1 className="page-title mt-1.5">{editId ? t("observe.editTitle") : t("observe.start")}</h1>
+        <div className="mt-3" role="group" aria-label={t("observe.stepsLabel")}>
+          <div className="flex gap-1" aria-hidden>
+            {STEP_KEYS.map((k, i) => (
+              <span key={k} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-accent-600" : "bg-neutral-200"}`} />
+            ))}
+          </div>
+          {/* One meaningful progress announcement — name + position together. */}
+          <p className="mt-2 text-sm text-neutral-600" role="status">
+            {t("observe.stepStatus", { n: step + 1, total: STEPS, name: t(STEP_KEYS[step]) })}
+          </p>
+        </div>
       </div>
 
       {offer && (
@@ -317,7 +310,7 @@ export default function Observe() {
                   type="button"
                   onClick={() => { setMinutesAgo(m); setCustomAt(null); setStartedAt(Date.now() - m * 60_000); }}
                   aria-pressed={minutesAgo === m && customAt === null}
-                  className={`btn-ghost text-[15px] ${minutesAgo === m && customAt === null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
+                  className={`btn-ghost text-[15px] ${minutesAgo === m && customAt === null ? "border border-accent-700 !bg-accent-50 text-accent-800" : ""}`}
                 >
                   {m === 0 ? t("observe.now") : t("observe.minutesAgo", { n: m })}
                 </button>
@@ -326,7 +319,7 @@ export default function Observe() {
                 type="button"
                 onClick={() => { if (customAt === null) { const now = Date.now(); setCustomAt(toLocalInput(new Date(now))); setStartedAt(now); } }}
                 aria-pressed={customAt !== null}
-                className={`btn-ghost text-[15px] ${customAt !== null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
+                className={`btn-ghost text-[15px] ${customAt !== null ? "border border-accent-700 !bg-accent-50 text-accent-800" : ""}`}
               >
                 {t("observe.pickTime")}
               </button>
@@ -374,7 +367,7 @@ export default function Observe() {
                   type="button"
                   onClick={() => setDuration(m)}
                   aria-pressed={duration === m}
-                  className={`btn-ghost text-[15px] ${duration === m ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
+                  className={`btn-ghost text-[15px] ${duration === m ? "border border-accent-700 !bg-accent-50 text-accent-800" : ""}`}
                 >
                   {m} min
                 </button>
@@ -383,7 +376,7 @@ export default function Observe() {
                 type="button"
                 onClick={() => setDuration(null)}
                 aria-pressed={duration === null}
-                className={`btn-ghost text-[15px] ${duration === null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
+                className={`btn-ghost text-[15px] ${duration === null ? "border border-accent-700 !bg-accent-50 text-accent-800" : ""}`}
               >
                 {t("observe.durationUnknown")}
               </button>
@@ -426,9 +419,9 @@ export default function Observe() {
                         )
                       }
                       aria-pressed={!!it}
-                      className={`flex-1 text-left text-sm min-h-11 flex items-center py-2 ${it ? "text-teal-700 font-semibold" : "text-neutral-600"}`}
+                      className={`flex-1 text-left text-[15px] min-h-11 flex items-center gap-2 py-2 ${it ? "text-accent-700 font-semibold" : "text-neutral-700"}`}
                     >
-                      {it ? "✓ " : ""}{t(`interventions.${type}`)}
+                      {it && <span aria-hidden className="leading-none"><IconCheck size={15} /></span>}{t(`interventions.${type}`)}
                     </button>
                     {it && (
                       <div className="flex gap-1.5">
@@ -442,8 +435,8 @@ export default function Observe() {
                               )
                             }
                             aria-pressed={it.helped === h}
-                            className={`rounded-lg px-3 py-2 text-sm min-h-10
-                              ${it.helped === h ? "bg-teal-700 text-white font-semibold" : "bg-neutral-100 border border-neutral-300 text-neutral-600"}`}
+                            className={`rounded-lg px-3.5 py-2 text-sm min-h-11
+                              ${it.helped === h ? "bg-accent-700 text-white font-semibold" : "bg-neutral-100 border border-neutral-300 text-neutral-600"}`}
                           >
                             {t(`observe.${h}`)}
                           </button>
@@ -481,14 +474,19 @@ export default function Observe() {
       )}
       </div>
 
-      <div className="flex gap-3 pt-2">
+      {/* Errors sit above the stable action row so button geometry never shifts. */}
+      {(saveError || draftFailed) && (
+        <div className="space-y-1">
+          {saveError && <p className="text-sm text-red-700 text-center" role="alert">{saveError}</p>}
+          {draftFailed && <p className="text-sm text-red-700 text-center" role="alert">{t("observe.draftSaveFailed")}</p>}
+        </div>
+      )}
+      <div className="flex gap-3 border-t border-neutral-200 pt-4">
         {step > 0 && (
           <button type="button" className="btn-ghost flex-1" onClick={() => setStep((s) => s - 1)}>
             {t("common.back")}
           </button>
         )}
-        {saveError && <p className="text-sm text-red-700 text-center w-full" role="alert">{saveError}</p>}
-        {draftFailed && <p className="text-sm text-red-700 text-center w-full" role="alert">{t("observe.draftSaveFailed")}</p>}
         {step < STEPS - 1 ? (
           <button
             type="button"
@@ -503,7 +501,6 @@ export default function Observe() {
             {saving ? t("common.loading") : editId ? t("observe.update") : t("observe.save")}
           </button>
         )}
-      </div>
       </div>
     </div>
   );

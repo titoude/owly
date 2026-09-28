@@ -105,8 +105,9 @@ for (const r of [
 await go(page, "#/observe");
 for (let s = 0; s <= 7; s++) {
   const stepTxt = await page.locator('[role="status"]').first().innerText().catch(() => "");
-  if (!stepTxt.trim().startsWith(`${s + 1}/`)) {
-    results.push({ id: `observe-step${s}`, status: "UNVERIFIED", error: `step indicator is "${stepTxt.trim()}" not ${s + 1}/8` });
+  const stepRe = new RegExp(`\\b${s + 1}\\b.{0,24}\\b8\\b`); // "Step 2 of 8 — Face" / localized equivalent
+  if (!stepRe.test(stepTxt)) {
+    results.push({ id: `observe-step${s}`, status: "UNVERIFIED", error: `step indicator is "${stepTxt.trim()}", expected step ${s + 1} of 8` });
     unverified++; break;
   }
   await audit(page, `observe-step${s}`, `observe wizard step ${s}`);
@@ -293,8 +294,8 @@ await go(page, "#/settings");
       await page.locator("button", { hasText: /suivant|next|continuer/i }).last().click().catch(() => {});
       await page.waitForTimeout(400);
       const stepTxt = await page.locator('[role="status"]').first().innerText().catch(() => "");
-      if (stepTxt.trim().startsWith("2/")) await audit(page, "state:fr-observe", "FLACC step in French (scaleNote rendered)");
-      else { results.push({ id: "state:fr-observe", status: "UNVERIFIED", error: `step indicator "${stepTxt.trim()}", expected 2/8` }); unverified++; }
+      if (/\b2\b.{0,24}\b8\b/.test(stepTxt)) await audit(page, "state:fr-observe", "FLACC step in French (scaleNote rendered)");
+      else { results.push({ id: "state:fr-observe", status: "UNVERIFIED", error: `step indicator "${stepTxt.trim()}", expected step 2 of 8` }); unverified++; }
     }
   }
   else { results.push({ id: "state:fr", status: "UNVERIFIED", error: "no FR button" }); unverified++; }

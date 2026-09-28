@@ -5,6 +5,7 @@
     "skipToContent": "跳转到主要内容",
     "navLabel": "主导航",
     "demoBadge": "演示 — 虚构数据",
+    "demoBadgeShort": "演示",
     "storageErrorTitle": "无法访问本地数据库",
     "storageErrorBody": "Owly 将所有内容保存在此设备上，而浏览器存储不可用或已满。请释放一些空间或检查浏览器的站点数据设置，然后重试。没有发送任何内容。",
     "changeChild": "更换"
@@ -88,7 +89,6 @@
     "note": "备注（可选）",
     "noteHint": "医生还应知道的其他情况——例如摇晃身体、拒绝进食、睡了 2 小时",
     "save": "保存观察",
-    "saved": "已保存",
     "score": "FLACC 评分",
     "summary": "摘要",
     "saveError": "无法保存——请重试。",
@@ -100,13 +100,14 @@
     "discard": "丢弃草稿",
     "update": "保存更改",
     "draftSaveFailed": "无法保存草稿——设备存储空间可能已满或被阻止。您已记录的数据是安全的；完成并保存观察记录即可保留。",
-    "stepOf": "第 {{n}} 步，共 {{total}} 步",
+    "stepStatus": "第 {{n}} 步，共 {{total}} 步 — {{name}}",
     "stepNames": {
       "when": "时间",
       "details": "详情",
       "tried": "照护与备注"
     },
-    "stepsLabel": "观察步骤"
+    "stepsLabel": "观察步骤",
+    "draftSaved": "草稿已保存"
   },
   "interventions": {
     "comfort": "安抚（拥抱、抱着、毯子）",
@@ -266,6 +267,8 @@
     "confirm": "确认",
     "loading": "加载中…",
     "of": "/",
+    "today": "今天",
+    "yesterday": "昨天",
     "edit": "编辑",
     "retry": "重试",
     "viewAll": "查看全部"
@@ -331,6 +334,8 @@
     ]
   },
   "dashboard": {
-    "recent": "最近记录"
+    "recent": "最近记录",
+    "tools": "工具",
+    "journal": "日志"
   }
 }

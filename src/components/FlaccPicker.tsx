@@ -26,7 +26,7 @@ export function FlaccPicker({ category, child, value, onChange }: Props) {
       <legend className="text-lg font-semibold text-neutral-900" lang={sl !== i18n.language ? sl : undefined} dir={sl !== i18n.language ? "ltr" : undefined}>{t(`flacc.${category}`)}</legend>
       {note ? <p className="text-[13px] text-neutral-600">{note}</p> : null}
       {custom ? (
-        <p className="text-sm text-teal-700 italic">
+        <p className="text-sm text-accent-700 italic">
           {t("observe.theirs", { name: child.name })} <span dir="auto">{custom}</span>
         </p>
       ) : null}
@@ -47,14 +47,14 @@ export function FlaccPicker({ category, child, value, onChange }: Props) {
               />
               <span
                 className={`flex items-center gap-3 w-full text-left rounded-xl border px-4 py-3.5 min-h-12 transition-all duration-150
-                  peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-teal-700
+                  peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent-700
                   ${sel
-                    ? "border-teal-700 bg-teal-50 text-neutral-900 shadow-[0_0_0_3px_rgba(45,212,191,0.15)]"
-                    : "border-neutral-300 bg-[#fffdfa] text-neutral-700 hover:border-neutral-400 hover:bg-neutral-100"}`}
+                    ? "border-accent-600 bg-accent-50 text-neutral-900"
+                    : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-400"}`}
               >
                 <span
-                  className={`shrink-0 grid place-items-center size-8 rounded-full font-bold text-sm
-                  ${sel ? "bg-teal-700 text-white" : "bg-neutral-200 text-neutral-600"}`}
+                  className={`shrink-0 grid place-items-center size-8 rounded-full font-semibold text-sm tabular-nums
+                  ${sel ? "bg-accent-600 text-white" : "bg-neutral-100 text-neutral-600"}`}
                 >
                   {score}
                 </span>

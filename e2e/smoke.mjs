@@ -33,7 +33,7 @@ try {
 
   // 3. Observation wizard: step 0 → next, steps 1-5 pick score 2, 6 → next, 7 → save
   await page.goto(BASE + "/#/observe");
-  await page.waitForSelector("text=/[0-9]\/[0-9]/", { timeout: 5000 });
+  await page.waitForSelector('[role="status"]', { timeout: 5000 });
   await nextBtn().click();
   for (let s = 0; s < 5; s++) {
     await page.waitForSelector("input[type='radio']", { timeout: 5000 });

@@ -5,6 +5,7 @@
     "skipToContent": "Salta al contenuto principale",
     "navLabel": "Navigazione principale",
     "demoBadge": "Demo — dati fittizi",
+    "demoBadgeShort": "Demo",
     "storageErrorTitle": "Impossibile accedere al database locale",
     "storageErrorBody": "Owly conserva tutto su questo dispositivo e lo spazio di archiviazione del browser non è disponibile o è pieno. Libera spazio o controlla le impostazioni dei dati dei siti, poi riprova. Nulla è stato inviato.",
     "changeChild": "Cambia"
@@ -88,7 +89,6 @@
     "note": "Nota (facoltativo)",
     "noteHint": "Qualsiasi altra cosa che il medico dovrebbe sapere — es. si dondolava, ha rifiutato il cibo, ha dormito 2 h",
     "save": "Salva osservazione",
-    "saved": "Salvato",
     "score": "Punteggio FLACC",
     "summary": "Riepilogo",
     "saveError": "Impossibile salvare — riprova.",
@@ -100,13 +100,14 @@
     "discard": "Elimina bozza",
     "update": "Salva modifiche",
     "draftSaveFailed": "Impossibile salvare la bozza: lo spazio sul dispositivo potrebbe essere pieno o bloccato. I dati registrati sono al sicuro; completa e salva l'osservazione per conservarla.",
-    "stepOf": "passo {{n}} di {{total}}",
+    "stepStatus": "Passo {{n}} di {{total}} — {{name}}",
     "stepNames": {
       "when": "Quando",
       "details": "Dettagli",
       "tried": "Cura e note"
     },
-    "stepsLabel": "Passaggi dell'osservazione"
+    "stepsLabel": "Passaggi dell'osservazione",
+    "draftSaved": "Bozza salvata"
   },
   "interventions": {
     "comfort": "Conforto (abbraccio, tenerlo in braccio, coperta)",
@@ -268,6 +269,8 @@
     "confirm": "Conferma",
     "loading": "Caricamento…",
     "of": "di",
+    "today": "Oggi",
+    "yesterday": "Ieri",
     "edit": "Modifica",
     "retry": "Riprova",
     "viewAll": "Vedi tutto"
@@ -333,6 +336,8 @@
     ]
   },
   "dashboard": {
-    "recent": "Osservazioni recenti"
+    "recent": "Osservazioni recenti",
+    "tools": "Strumenti",
+    "journal": "Diario"
   }
 }

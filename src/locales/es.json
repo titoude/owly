@@ -5,6 +5,7 @@
     "skipToContent": "Saltar al contenido principal",
     "navLabel": "Navegación principal",
     "demoBadge": "Demo — datos ficticios",
+    "demoBadgeShort": "Demo",
     "storageErrorTitle": "No se puede acceder a la base de datos local",
     "storageErrorBody": "Owly guarda todo en este dispositivo y el almacenamiento del navegador no está disponible o está lleno. Libera espacio o revisa la configuración de datos del sitio y vuelve a intentarlo. Nada se ha enviado a ningún lugar.",
     "changeChild": "Cambiar"
@@ -88,7 +89,6 @@
     "note": "Nota (opcional)",
     "noteHint": "Cualquier otra cosa que deba saber el médico — p. ej. se mecía, rechazó la comida, durmió 2 h",
     "save": "Guardar observación",
-    "saved": "Guardado",
     "score": "Puntuación FLACC",
     "summary": "Resumen",
     "saveError": "No se pudo guardar — inténtalo de nuevo.",
@@ -100,13 +100,14 @@
     "discard": "Descartar borrador",
     "update": "Guardar cambios",
     "draftSaveFailed": "No se pudo guardar el borrador: el almacenamiento del dispositivo puede estar lleno o bloqueado. Tus datos registrados están a salvo; termina y guarda la observación para conservarla.",
-    "stepOf": "paso {{n}} de {{total}}",
+    "stepStatus": "Paso {{n}} de {{total}} — {{name}}",
     "stepNames": {
       "when": "Cuándo",
       "details": "Detalles",
       "tried": "Cuidados y nota"
     },
-    "stepsLabel": "Pasos de la observación"
+    "stepsLabel": "Pasos de la observación",
+    "draftSaved": "Borrador guardado"
   },
   "interventions": {
     "comfort": "Consuelo (abrazo, tener en brazos, manta)",
@@ -268,6 +269,8 @@
     "confirm": "Confirmar",
     "loading": "Cargando…",
     "of": "de",
+    "today": "Hoy",
+    "yesterday": "Ayer",
     "edit": "Editar",
     "retry": "Reintentar",
     "viewAll": "Ver todo"
@@ -333,6 +336,8 @@
     ]
   },
   "dashboard": {
-    "recent": "Observaciones recientes"
+    "recent": "Observaciones recientes",
+    "tools": "Herramientas",
+    "journal": "Diario"
   }
 }

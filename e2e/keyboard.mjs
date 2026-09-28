@@ -34,7 +34,7 @@ await page.waitForSelector("body", { timeout: 8000 });
 await page.locator("button", { hasText: /demo|démo/i }).first().click();
 await page.waitForTimeout(1200);
 await page.goto(BASE + "/#/observe");
-await page.waitForSelector("text=/[0-9]\/[0-9]/", { timeout: 8000 });
+await page.waitForSelector('[role="status"]', { timeout: 8000 });
 await page.locator("button", { hasText: /next|continuer|suivant/i }).last().click();
 await page.waitForSelector("input[name='flacc-face']", { timeout: 8000 });
 
