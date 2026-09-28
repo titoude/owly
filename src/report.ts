@@ -1,4 +1,4 @@
-import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+import { PDFDocument, rgb, type PDFFont, type PDFPage } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 // fontkit's Indic shaper needs regeneratorRuntime in scope (UMD global) —
 // missing in browsers AND node without this tiny side-effect polyfill.
@@ -29,16 +29,16 @@ const intervLabel = (id: string): string => i18n.t(`interventions.${id}`, { defa
 interface Ctx {
   doc: PDFDocument;
   page: PDFPage;
-  font: PDFFont;   // regular face (Helvetica fallback, or Noto base)
-  bold: PDFFont;   // bold face
-  faces: Faces | null; // null = Helvetica-only fallback (font assets failed)
+  font: PDFFont;   // regular face (= faces.base)
+  bold: PDFFont;   // bold face (= faces.bold)
+  faces: Faces;
   y: number;
   left: number;
   width: number;
 }
 
 // Script coverage: pick the embedded face that can render each codepoint.
-// WinAnsi-stripped Helvetica is only a fallback when font assets cannot load.
+// If font assets fail to load, buildReport throws — no silent text stripping.
 type FaceKey = "base" | "bold" | "arabic" | "deva" | "cjk";
 interface Faces { base: PDFFont; bold: PDFFont; arabic: PDFFont; deva: PDFFont; cjk: PDFFont }
 
@@ -55,30 +55,59 @@ function faceOf(ch: string): FaceKey {
 }
 
 // Control/format chars are never drawable content — drop them only.
+// ZWJ/ZWNJ are kept: they are REQUIRED for correct Indic/Arabic shaping.
+// Newlines are kept: they are content (wrapText honours them).
 function sanitize(s: string): string {
-  return s.replace(/[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/gu, "");
+  return s
+    // oxlint-disable-next-line no-control-regex — intentionally strips control/format chars
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F\u200B\u200E\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/gu, "")
+    .replace(/\t/g, " ");
 }
 
 const bidi = bidiFactory();
-// A line containing RTL text must be visually reordered before sequential
-// left-to-right drawing (fontkit shapes each run but does not do bidi).
-function toVisual(s: string): string {
-  if (!RE_RTL.test(s)) return s;
-  return bidi.getReorderedString(s, bidi.getEmbeddingLevels(s));
+// Returns the text's directional runs in VISUAL (left-to-right) order.
+// Each returned slice is LOGICAL text — fontkit shapes RTL runs correctly
+// on its own; we only fix the ORDER of runs, never chars inside a run.
+// getReorderSegments gives [start,end] inclusive ranges to reverse (UAX L2).
+function visualRuns(s: string): string[] {
+  const clean = sanitize(s);
+  if (!clean || !RE_RTL.test(clean)) return [clean];
+  const levels = bidi.getEmbeddingLevels(clean);
+  // bidi-js indexes by UTF-16 code unit (it pairs with string slicing).
+  const perm: number[] = Array.from({ length: clean.length }, (_, i) => i);
+  for (const [a, e] of bidi.getReorderSegments(clean, levels) as [number, number][]) {
+    for (let i = a, j = e; i < j; i++, j--) [perm[i], perm[j]] = [perm[j], perm[i]];
+  }
+  const lv = levels.levels;
+  const out: string[] = [];
+  let lo = perm[0], hi = perm[0], dir = lv[perm[0]] % 2;
+  for (let i = 1; i <= perm.length; i++) {
+    const idx = perm[i];
+    const d = i < perm.length ? lv[idx] % 2 : -1;
+    // extend a run while same direction class AND contiguous in the source
+    if (i < perm.length && d === dir && (idx === lo - 1 || idx === hi + 1)) {
+      lo = Math.min(lo, idx); hi = Math.max(hi, idx);
+    } else {
+      out.push(clean.slice(lo, hi + 1));
+      lo = idx; hi = idx; dir = d;
+    }
+  }
+  return out;
 }
 
 function runs(s: string): { text: string; face: FaceKey }[] {
-  const v = toVisual(sanitize(s));
   const out: { text: string; face: FaceKey }[] = [];
   let cur = "";
   let face: FaceKey | null = null;
-  for (const ch of v) {
-    const f = faceOf(ch);
-    if (f !== face && cur) out.push({ text: cur, face: face! });
-    if (f !== face) { cur = ""; face = f; }
-    cur += ch;
+  const flush = () => { if (cur) { out.push({ text: cur, face: face! }); cur = ""; face = null; } };
+  for (const seg of visualRuns(s)) {
+    for (const ch of seg) {
+      const f = faceOf(ch);
+      if (f !== face) { flush(); face = f; }
+      cur += ch;
+    }
+    flush(); // never merge across directional runs
   }
-  if (cur) out.push({ text: cur, face: face! });
   return out;
 }
 
@@ -86,14 +115,8 @@ function measure(faces: Faces, s: string, size: number): number {
   return runs(s).reduce((w, r) => w + faces[r.face].widthOfTextAtSize(r.text, size), 0);
 }
 
-// Draw one logical string as face-segmented runs at an advancing x.
+// Draw one logical string as direction+face segmented runs at advancing x.
 function drawRuns(ctx: Ctx, s: string, x: number, y: number, o: { size: number; bold?: boolean; color: typeof INK }) {
-  if (!ctx.faces) { // degraded fallback: Helvetica + WinAnsi strip
-    const t = sanitize(s).replace(/[^\u0020-\u00FF\u0152\u0153\u0178\u2013\u2014\u2018\u2019\u201C\u201D\u2026]/g, "");
-    if (!t) return;
-    ctx.page.drawText(t, { x, y, size: o.size, font: o.bold ? ctx.bold : ctx.font, color: o.color });
-    return;
-  }
   let cx = x;
   for (const r of runs(s)) {
     const f = o.bold && r.face === "base" ? ctx.faces.bold : ctx.faces[r.face];
@@ -102,44 +125,58 @@ function drawRuns(ctx: Ctx, s: string, x: number, y: number, o: { size: number; 
   }
 }
 
+// A horizontal rule needs its own reserved space: drawn at ctx.y it sits
+// inside the next line's ascent zone. Clearance: 4pt below the previous
+// baseline slot, and the next baseline is pushed 12pt below the rule so its
+// ~10pt ascender can never touch it.
+function rule(ctx: Ctx, color: typeof INK, thickness = 0.7) {
+  ctx.y -= 4;
+  ctx.page.drawLine({ start: { x: ctx.left, y: ctx.y }, end: { x: ctx.left + ctx.width, y: ctx.y }, thickness, color });
+  ctx.y -= 12;
+}
+
 function t(key: string, opts?: Record<string, unknown>): string {
   return i18n.t(`report.pdf.${key}`, opts);
 }
 
 function wrapText(ctx: Ctx, text: string, size: number, maxWidth: number): string[] {
-  const width = (s: string) => (ctx.faces ? measure(ctx.faces, s, size) : ctx.font.widthOfTextAtSize(s, size));
-  const words = sanitize(text).split(/\s+/).filter(Boolean);
+  const width = (s: string) => measure(ctx.faces, s, size);
   const lines: string[] = [];
-  let cur = "";
-  for (const w of words) {
-    const next = cur ? `${cur} ${w}` : w;
-    if (width(next) <= maxWidth) {
-      cur = next;
-    } else {
-      if (cur) lines.push(cur);
-      // A single word wider than the column: cut at codepoint boundaries
-      // (CJK text has no spaces; hyphenless so we never inject latin chars).
-      let piece = w;
-      while (width(piece) > maxWidth && piece.length > 1) {
-        let cut = piece.length - 1;
-        while (cut > 1 && width(piece.slice(0, cut)) > maxWidth) cut--;
-        lines.push(piece.slice(0, cut));
-        piece = piece.slice(cut);
+  // Split real line breaks first — user-typed newlines are preserved.
+  for (const para of sanitize(text).split(/\n/)) {
+    const words = para.split(/[ \r\f\v\u00A0]+/u).filter(Boolean);
+    let cur = "";
+    for (const w of words) {
+      const next = cur ? `${cur} ${w}` : w;
+      if (width(next) <= maxWidth) {
+        cur = next;
+      } else {
+        if (cur) lines.push(cur);
+        // A single word wider than the column: cut at CODEPOINT boundaries
+        // (CJK text has no spaces; hyphenless so we never inject latin chars;
+        // codepoint slicing never splits a surrogate pair or ZWJ sequence's
+        // base+modifier pair — a broken ZWJ just renders unjoined).
+        let cps = [...w];
+        while (width(cps.join("")) > maxWidth && cps.length > 1) {
+          let cut = cps.length - 1;
+          while (cut > 1 && width(cps.slice(0, cut).join("")) > maxWidth) cut--;
+          lines.push(cps.slice(0, cut).join(""));
+          cps = cps.slice(cut);
+        }
+        cur = cps.join("");
       }
-      cur = piece;
     }
+    if (cur || words.length === 0) lines.push(cur);
   }
-  if (cur) lines.push(cur);
   return lines;
 }
 
 function truncToWidth(ctx: Ctx, s: string, size: number, maxWidth: number): string {
-  const t2 = sanitize(s);
-  const width = (x: string) => (ctx.faces ? measure(ctx.faces, x, size) : ctx.font.widthOfTextAtSize(x, size));
-  if (width(t2) <= maxWidth) return t2;
-  let out = t2;
-  while (out.length > 1 && width(out + "…") > maxWidth) out = out.slice(0, -1);
-  return out + "…";
+  const cps = [...sanitize(s)]; // codepoints — never split a surrogate pair
+  const width = (x: string) => measure(ctx.faces, x, size);
+  if (width(cps.join("")) <= maxWidth) return cps.join("");
+  while (cps.length > 1 && width(cps.join("") + "…") > maxWidth) cps.pop();
+  return cps.join("") + "…";
 }
 
 function newPage(ctx: Ctx): void {
@@ -168,10 +205,10 @@ function line(ctx: Ctx, text: string, opts: { size?: number; bold?: boolean; col
 
 function heading(ctx: Ctx, text: string) {
   // Keep a heading attached to at least the first line of its section.
-  ensureSpace(ctx, 46);
+  ensureSpace(ctx, 50);
   ctx.y -= 6;
-  line(ctx, text.toUpperCase(), { bold: true, size: 8.5, color: ACCENT, gap: 11 });
-  ctx.page.drawLine({ start: { x: ctx.left, y: ctx.y + 4 }, end: { x: ctx.left + ctx.width, y: ctx.y + 4 }, thickness: 0.7, color: LINE });
+  line(ctx, text.toUpperCase(), { bold: true, size: 8.5, color: ACCENT, gap: 9 });
+  rule(ctx, LINE);
 }
 
 function fmtDate(ms: number): string {
@@ -215,26 +252,21 @@ function fontBytes(url: string): Promise<Uint8Array> {
   return p;
 }
 
-async function loadFaces(doc: PDFDocument): Promise<Faces | null> {
-  try {
-    doc.registerFontkit(fontkit);
-    const [r, b, a, d, c] = await Promise.all(
-      [fontRegularUrl, fontBoldUrl, fontArabicUrl, fontDevaUrl, fontCjkUrl].map(fontBytes),
-    );
-    const subset = { subset: true } as const;
-    return {
-      base: await doc.embedFont(r, subset),
-      bold: await doc.embedFont(b, subset),
-      arabic: await doc.embedFont(a, subset),
-      deva: await doc.embedFont(d, subset),
-      // CFF-outline OTF: fontkit's CFF subsetter crashes — embed whole.
-      cjk: await doc.embedFont(c),
-    };
-  } catch {
-    // Font assets unavailable (e.g. old shell): keep generating the report
-    // with Helvetica rather than failing outright for the caregiver.
-    return null;
-  }
+async function loadFaces(doc: PDFDocument): Promise<Faces> {
+  doc.registerFontkit(fontkit);
+  const [r, b, a, d, c] = await Promise.all(
+    [fontRegularUrl, fontBoldUrl, fontArabicUrl, fontDevaUrl, fontCjkUrl].map(fontBytes),
+  );
+  const subset = { subset: true } as const;
+  return {
+    base: await doc.embedFont(r, subset),
+    bold: await doc.embedFont(b, subset),
+    arabic: await doc.embedFont(a, subset),
+    deva: await doc.embedFont(d, subset),
+    // CFF-outline OTF: fontkit's CFF subsetter crashes — embed whole.
+    cjk: await doc.embedFont(c),
+  };
+  // Throws on failure — Report.tsx surfaces it; we never silently strip text.
 }
 
 export async function buildReport(child: Child, observations: Observation[], opts: ReportOptions): Promise<Uint8Array> {
@@ -247,17 +279,15 @@ export async function buildReport(child: Child, observations: Observation[], opt
   doc.setTitle(`Owly pain report — ${sanitize(child.name)}`);
   doc.setCreator("Owly (open-source pain observation journal)");
   const faces = await loadFaces(doc);
-  const font = faces ? faces.base : await doc.embedFont(StandardFonts.Helvetica);
-  const bold = faces ? faces.bold : await doc.embedFont(StandardFonts.HelveticaBold);
-  const ctx: Ctx = { doc, page: undefined as unknown as PDFPage, font, bold, faces, y: TOP_Y, left: 48, width: PAGE_W - 96 };
+  const ctx: Ctx = { doc, page: undefined as unknown as PDFPage, font: faces.base, bold: faces.bold, faces, y: TOP_Y, left: 48, width: PAGE_W - 96 };
   newPage(ctx);
 
   // Header
   line(ctx, t("title"), { bold: true, size: 15, color: INK, gap: 19 });
   line(ctx, `${child.name}${child.isDemo ? ` (${t("demoTag")})` : ""}${child.birthYear ? ` · ${t("born")} ${child.birthYear}` : ""}${child.conditions ? ` · ${child.conditions}` : ""}`, { size: 10, color: MUTED, gap: 14 });
   line(ctx, t("prepared", { date: fmtDate(Date.now()), count: episodes.length }), { size: 8.5, color: MUTED, gap: 10 });
-  ctx.page.drawLine({ start: { x: ctx.left, y: ctx.y }, end: { x: ctx.left + ctx.width, y: ctx.y }, thickness: 1.4, color: ACCENT });
-  ctx.y -= 12;
+  rule(ctx, ACCENT, 1.4);
+  ctx.y -= 6;
 
   // How the child communicates
   if (child.communicates) {

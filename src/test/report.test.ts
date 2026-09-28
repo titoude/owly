@@ -150,14 +150,15 @@ describe("unicode rendering", () => {
   it("draws Arabic, Devanagari, CJK and mixed text without stripping", async () => {
     const uni: Child = {
       ...child,
-      name: "زين Léo 孩子",
+      name: "زين سارة Léo 孩子",
       communicates: "يشير إلى أذنه · कान पकड़ता है · 摸耳朵",
       customDescriptors: { face: "يجعد وجهه", legs: "يركل", activity: "", cry: "", consolability: "" },
     };
     const note = "ملاحظة عربية · हिंदी नोट · 中文备注";
     const spy = spyOnDraw();
     await buildReport(uni, [{ ...mkObs(7, 1), note }], { periodDays: null, questions: ["ما سبب الألم؟"] });
-    const all = drawnText(spy.calls());
+    const calls = spy.calls(); // mockRestore clears history — capture once
+    const all = drawnText(calls);
     // Real scripts survive end-to-end (they may be reordered per bidi rules —
     // assert script presence, not byte-exact substrings).
     expect(all).toMatch(/[؀-ۿ]/);            // Arabic block present
@@ -165,5 +166,37 @@ describe("unicode rendering", () => {
     expect(all).toMatch(/[一-鿿]/);          // CJK present
     expect(all).toContain("中文备注");
     expect(all).toContain("Léo");
+    // RTL runs must reach drawText in LOGICAL order — fontkit emits the
+    // visual glyph order itself. A pre-reversed string would appear as "ةراس".
+    expect(calls.some((c) => String(c[0]).includes("سارة"))).toBe(true);
+    expect(calls.some((c) => String(c[0]).includes("ةراس"))).toBe(false);
+  }, 30000);
+
+  it("keeps every horizontal rule clear of text baselines", async () => {
+    const txtSpy = vi.spyOn(PDFPage.prototype, "drawText");
+    const lnSpy = vi.spyOn(PDFPage.prototype, "drawLine");
+    const multi: Child = { ...child, communicates: "a ".repeat(400) };
+    const many = Array.from({ length: 12 }, (_, i) => mkObs((i * 7) % 10 + 1, i));
+    await buildReport(multi, many, { periodDays: null, questions: ["q?"] });
+    const byPage = (spy: ReturnType<typeof vi.spyOn>, pick: (c: unknown[]) => number) => {
+      const m = new Map<PDFPage, number[]>();
+      spy.mock.calls.forEach((c, i) => {
+        const p = spy.mock.instances[i] as PDFPage;
+        m.set(p, [...(m.get(p) ?? []), pick(c)]);
+      });
+      return m;
+    };
+    const textY = byPage(txtSpy, (c) => (c[1] as { y: number }).y);
+    const lineY = byPage(lnSpy, (c) => (c[0] as { start: { y: number } }).start.y);
+    txtSpy.mockRestore(); lnSpy.mockRestore();
+    const bad: string[] = [];
+    for (const [p, ys] of lineY) {
+      const baselines = textY.get(p) ?? [];
+      for (const ly of ys) for (const by of baselines) {
+        // glyph ink spans ≈ [baseline-3, baseline+9] for our sizes
+        if (ly > by - 3 && ly < by + 9) bad.push(`rule@${ly} crosses text baseline@${by}`);
+      }
+    }
+    expect(bad).toEqual([]);
   }, 30000);
 });
