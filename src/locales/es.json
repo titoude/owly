@@ -128,7 +128,8 @@
     "empty": "Aún no hay observaciones. La primera solo lleva un momento.",
     "emptyCta": "Registrar la primera observación",
     "baseline": "baseline",
-    "deleteConfirm": "¿Eliminar esta observación?"
+    "deleteConfirm": "¿Eliminar esta observación?",
+    "observations": "observaciones"
   },
   "patterns": {
     "title": "Patrones",

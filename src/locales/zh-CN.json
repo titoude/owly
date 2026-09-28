@@ -128,7 +128,8 @@
     "empty": "还没有观察记录。第一条只需片刻。",
     "emptyCta": "记录第一条观察",
     "baseline": "基线",
-    "deleteConfirm": "删除这条观察？"
+    "deleteConfirm": "删除这条观察？",
+    "observations": "次观察"
   },
   "patterns": {
     "title": "规律",

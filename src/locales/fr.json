@@ -128,7 +128,8 @@
     "empty": "Pas encore d'observation. La première ne prend qu'un moment.",
     "emptyCta": "Enregistrer la première observation",
     "baseline": "baseline",
-    "deleteConfirm": "Supprimer cette observation ?"
+    "deleteConfirm": "Supprimer cette observation ?",
+    "observations": "observations"
   },
   "patterns": {
     "title": "Tendances",

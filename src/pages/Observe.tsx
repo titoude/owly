@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useApp } from "../appContext";
 import { db } from "../db";
-import { clearDraft, draftEditKey, draftKey, latestWriteGate, loadDraft, saveDraft, type ObsDraft } from "../drafts";
+import { clearDraft, draftEditKey, draftKey, loadDraft, saveDraft, type ObsDraft } from "../drafts";
 import { INTERVENTION_TYPES, totalFlacc } from "../flacc";
 import { FLACC_CATEGORIES, type FlaccScores, type Intervention, type Observation } from "../types";
 import { FlaccPicker } from "../components/FlaccPicker";
@@ -55,7 +55,7 @@ export default function Observe() {
   const [offerSeen, setOfferSeen] = useState(false); // true once resolved
   const [draftFailed, setDraftFailed] = useState(false); // draft write rejected (quota/denied)
   const [draftSaved, setDraftSaved] = useState(false); // a draft write actually completed
-  const writeGate = useRef(latestWriteGate()); // overlapping-write order — latest wins
+  const writeSeq = useRef(0); // overlapping draft writes — only the latest may set the indicator
   const seeded = useRef<string>(""); // JSON of the seeded fields
   const orig = useRef<Observation | null>(null); // edited record, for timestamp preservation
   const seededWhen = useRef<string | null>(null); // customAt string the form was seeded with
@@ -127,18 +127,18 @@ export default function Observe() {
     if (JSON.stringify(fields) === seeded.current) return;
     // The draft records the instant pinned by the last explicit "when"
     // change — recomputing it here would let clock drift shift the episode.
-    const ticket = writeGate.current.begin();
+    const ticket = ++writeSeq.current;
     setDraftSaved(false); // a write is in flight — nothing is durably saved yet
     saveDraft(key, { ...fields, savedAt: Date.now() })
       .then(() => {
         // Only the newest write may mark fields saved — a delayed older
         // resolution must not resurrect a stale "saved" status.
-        if (!writeGate.current.isCurrent(ticket)) return;
+        if (ticket !== writeSeq.current) return;
         setDraftFailed(false);
         setDraftSaved(true);
       })
       .catch(() => {
-        if (writeGate.current.isCurrent(ticket)) setDraftFailed(true);
+        if (ticket === writeSeq.current) setDraftFailed(true);
       });
   }, [key, offerSeen, offer, fields]);
 
@@ -485,14 +485,19 @@ export default function Observe() {
       )}
       </div>
 
-      {/* Errors sit above the stable action row so button geometry never shifts. */}
-      {(saveError || draftFailed) && (
-        <div className="space-y-1">
-          {saveError && <p className="text-sm text-red-700 text-center" role="alert">{saveError}</p>}
-          {draftFailed && <p className="text-sm text-red-700 text-center" role="alert">{t("observe.draftSaveFailed")}</p>}
-        </div>
-      )}
-      <div className="flex gap-3 border-t border-neutral-200 pt-4">
+      {/* Stable action area: pinned above the mobile bottom nav on small
+          screens so the step's primary action is reachable at any scroll
+          position. It stays in flow (its slot reserves the space), so fields
+          are never covered, and errors live inside the same bar so a late
+          save/draft failure can't be hidden offscreen. */}
+      <div className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] lg:bottom-4 z-30 -mx-2 space-y-2 border-t border-neutral-200 bg-white/95 px-2 pb-3 pt-4 backdrop-blur-sm">
+        {(saveError || draftFailed) && (
+          <div className="space-y-1">
+            {saveError && <p className="text-sm text-red-700 text-center" role="alert">{saveError}</p>}
+            {draftFailed && <p className="text-sm text-red-700 text-center" role="alert">{t("observe.draftSaveFailed")}</p>}
+          </div>
+        )}
+        <div className="flex gap-3">
         {step > 0 && (
           <button type="button" className="btn-ghost flex-1" onClick={() => setStep((s) => s - 1)}>
             {t("common.back")}
@@ -512,6 +517,7 @@ export default function Observe() {
             {saving ? t("common.loading") : editId ? t("observe.update") : t("observe.save")}
           </button>
         )}
+        </div>
       </div>
     </div>
   );

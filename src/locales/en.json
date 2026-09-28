@@ -128,7 +128,8 @@
     "empty": "No observations yet. The first one only takes a moment.",
     "emptyCta": "Record first observation",
     "baseline": "baseline",
-    "deleteConfirm": "Delete this observation?"
+    "deleteConfirm": "Delete this observation?",
+    "observations": "observations"
   },
   "patterns": {
     "title": "Patterns",

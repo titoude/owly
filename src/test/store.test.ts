@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db, getSetting, setSetting } from "../db";
 import { seedDemo, clearDemo } from "../demo";
-import { clearAllDrafts, draftEditKey, draftKey, latestWriteGate, loadDraft, saveDraft } from "../drafts";
+import { clearAllDrafts, draftEditKey, draftKey, loadDraft, saveDraft } from "../drafts";
 import { exportAll, importAll, deleteAll } from "../export";
 import { hashPin } from "../pin";
 import type { Observation } from "../types";
@@ -271,37 +271,3 @@ describe("drafts", () => {
   });
 });
 
-describe("latestWriteGate", () => {
-  it("a delayed older write cannot mark current fields saved", async () => {
-    // Simulates the wizard autosave: write A starts, fields change, write B
-    // starts — A resolving late must not flip the indicator.
-    const gate = latestWriteGate();
-    const a = gate.begin();
-    const b = gate.begin();
-    expect(gate.isCurrent(a)).toBe(false);
-    expect(gate.isCurrent(b)).toBe(true);
-  });
-
-  it("latest resolution wins; latest rejection reports failure", async () => {
-    const gate = latestWriteGate();
-    const state = { saved: false, failed: false };
-    const apply = (ticket: number, ok: boolean) => {
-      if (!gate.isCurrent(ticket)) return;
-      if (ok) { state.saved = true; state.failed = false; }
-      else { state.saved = false; state.failed = true; }
-    };
-    const slow = gate.begin();
-    const fast = gate.begin();
-    // slow write resolves AFTER fast one started — stale, ignored
-    apply(slow, true);
-    expect(state.saved).toBe(false);
-    // fast write rejects — the current outcome is failure, not saved
-    apply(fast, false);
-    expect(state.failed).toBe(true);
-    // and a subsequent fresh write that succeeds restores saved
-    const third = gate.begin();
-    apply(third, true);
-    expect(state.saved).toBe(true);
-    expect(state.failed).toBe(false);
-  });
-});

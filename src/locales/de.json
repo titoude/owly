@@ -128,7 +128,8 @@
     "empty": "Noch keine Beobachtungen. Die erste dauert nur einen Moment.",
     "emptyCta": "Erste Beobachtung erfassen",
     "baseline": "Baseline",
-    "deleteConfirm": "Diese Beobachtung löschen?"
+    "deleteConfirm": "Diese Beobachtung löschen?",
+    "observations": "Beobachtungen"
   },
   "patterns": {
     "title": "Muster",

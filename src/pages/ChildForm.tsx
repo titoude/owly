@@ -88,7 +88,7 @@ export default function ChildForm() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto w-full max-w-xl space-y-6">
       <h1 className="page-title">{id ? t("child.editTitle") : t("child.title")}</h1>
       <div className="space-y-4">
         <div>

@@ -128,7 +128,8 @@
     "empty": "لا ملاحظات بعد. الأولى تستغرق لحظات فقط.",
     "emptyCta": "سجّل أول ملاحظة",
     "baseline": "أساسية",
-    "deleteConfirm": "حذف هذه الملاحظة؟"
+    "deleteConfirm": "حذف هذه الملاحظة؟",
+    "observations": "ملاحظات"
   },
   "patterns": {
     "title": "الأنماط",

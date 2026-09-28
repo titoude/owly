@@ -74,15 +74,3 @@ export async function clearAllDrafts(): Promise<void> {
 export async function clearChildDrafts(childId: number, obsIds: number[]): Promise<void> {
   await db.settings.bulkDelete([draftKey(childId), ...obsIds.map(draftEditKey)]);
 }
-
-// Autosaves overlap in real life (IndexedDB writes can be slow or quota-
-// denied). Each new write gets a newer ticket, so a delayed resolution —
-// or a rejection — of an older write can never mark current fields saved
-// or failed. Latest write wins.
-export function latestWriteGate() {
-  let seq = 0;
-  return {
-    begin: () => ++seq,
-    isCurrent: (ticket: number) => ticket === seq,
-  };
-}

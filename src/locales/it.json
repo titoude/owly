@@ -128,7 +128,8 @@
     "empty": "Ancora nessuna osservazione. La prima richiede solo un momento.",
     "emptyCta": "Registra la prima osservazione",
     "baseline": "baseline",
-    "deleteConfirm": "Eliminare questa osservazione?"
+    "deleteConfirm": "Eliminare questa osservazione?",
+    "observations": "osservazioni"
   },
   "patterns": {
     "title": "Schemi",
