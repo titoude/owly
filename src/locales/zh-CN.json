@@ -2,6 +2,7 @@
   "app": {
     "name": "Owly",
     "tagline": "当他们说不出哪里疼",
+    "skipToContent": "跳转到主要内容",
     "navLabel": "主导航",
     "demoBadge": "演示 — 虚构数据",
     "storageErrorTitle": "无法访问本地数据库",

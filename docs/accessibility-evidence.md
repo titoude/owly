@@ -35,9 +35,13 @@ Reflow: nav labels verified unclipped at 320×800 in all 9 locales.
 
 ## Dispositions
 
-- `color-contrast` is `incomplete` on every page **with 0 nodes needing
-  review** — axe could not fully evaluate the rule but found no elements to
-  flag. Decision: non-issue; no element was exempted.
+- `color-contrast` was `incomplete` on every page under axe-core 4.10.3
+  because the whole rule **threw** on Tailwind v4's `oklch(… 0 none)`
+  colors — `nodes:[]` meant "unevaluated", not "no issues". The harness
+  now pins axe-core 4.13.0 (the official release line that parses
+  oklch/oklab `none`) and surfaces each incomplete rule's error +
+  errorNode. The old baseline's contrast results are **noncomparable** —
+  contrast was never evaluated there; current runs evaluate it for real.
 - The FLACC scale wording renders in English on non-EN/FR locales (clinical
   wording authorization is unconfirmed — see `docs/i18n-review.md`); those
   spans carry `lang`/`dir` so assistive tech pronounces them correctly.

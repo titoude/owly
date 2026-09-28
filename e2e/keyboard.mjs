@@ -1,6 +1,7 @@
 // Keyboard-only E2E — real key events against the production build.
 // Usage: npm run build && npx vite preview --port 4173 && node e2e/keyboard.mjs
 import { launchBrowser } from "./browser.mjs";
+import { writeFileSync } from "node:fs";
 
 const BASE = process.env.BASE_URL || "http://localhost:4173";
 const results = [];
@@ -73,6 +74,71 @@ for (let i = 0; i < 25 && !(await focused()).tag?.match(/A|BUTTON/); i++) {
 }
 f = await focused();
 ok("Tab reaches an interactive element", /A|BUTTON/.test(f.tag ?? ""), JSON.stringify(f));
+
+// ── Skip-to-content link ───────────────────────────────────
+// Full reload (not a hash change): sequential focus starts at document top,
+// which is what a real keyboard user's first Tab sees.
+await page.goto(BASE);
+await page.waitForSelector("nav", { timeout: 8000 });
+await page.keyboard.press("Tab");
+const fSkip = await page.evaluate(() => ({
+  tag: document.activeElement?.tagName,
+  href: document.activeElement?.getAttribute("href"),
+  text: document.activeElement?.textContent?.trim(),
+}));
+ok("first Tab stop is the skip link", fSkip.tag === "A" && fSkip.href === "#main", JSON.stringify(fSkip));
+await page.keyboard.press("Enter");
+const fMain = await page.evaluate(() => document.activeElement?.id);
+ok("skip link moves focus to main content", fMain === "main", `active=${fMain}`);
+
+// ── Import preview dialog: focus entry / containment / Escape / restore ──
+writeFileSync(
+  "/tmp/owly-kb-import.json",
+  JSON.stringify({
+    version: 1,
+    children: [{ id: 7, name: "KB Test", createdAt: 1700000000000, birthYear: 2020, conditions: "", communicates: "", customDescriptors: {} }],
+    observations: [],
+  }),
+);
+await page.goto(BASE + "/#/settings");
+await page.waitForSelector('input[type="file"]', { state: "attached", timeout: 8000 });
+const importBtn = page.locator("button", { hasText: /import|importer/i }).first();
+await importBtn.click(); // focuses the trigger (dialog restores here)
+await page.locator('input[type="file"]').setInputFiles("/tmp/owly-kb-import.json");
+await page.waitForSelector("dialog[open]", { timeout: 8000 });
+const inDlg = await page.evaluate(() => {
+  const dlg = document.querySelector("dialog[open]");
+  return { inDialog: !!dlg && dlg.contains(document.activeElement), active: document.activeElement?.tagName + "." + (document.activeElement?.textContent?.trim().slice(0, 16) ?? "") };
+});
+ok("dialog opens with focus inside", inDlg.inDialog, inDlg.active);
+// Native modal containment: Tab must never land on a focusable element in the
+// inert background. Chrome's own chrome-frame wrap slot reports BODY — allowed.
+let leaked = null;
+for (let i = 0; i < 6; i++) {
+  await page.keyboard.press("Tab");
+  const where = await page.evaluate(() => {
+    const el = document.activeElement;
+    if (!el || el === document.body) return "body-wrap";
+    const dlg = document.querySelector("dialog[open]");
+    return dlg && dlg.contains(el) ? "in" : `OUT:${el.tagName}.${el.textContent?.trim().slice(0, 30)}`;
+  });
+  if (where !== "in" && where !== "body-wrap") { leaked = where; break; }
+}
+ok("Tab never reaches background controls", leaked === null, leaked ?? "cycled inside dialog + browser wrap");
+await page.keyboard.press("Escape");
+const dlgGone = await page.evaluate(() => !document.querySelector("dialog[open]"));
+const restore = await page.evaluate(() => ({
+  tag: document.activeElement?.tagName,
+  txt: document.activeElement?.textContent?.trim().slice(0, 30) ?? "",
+}));
+ok("Escape dismisses and restores focus to the trigger", dlgGone && restore.tag === "BUTTON" && /import|importer/i.test(restore.txt), `focus=${restore.tag}.${restore.txt}`);
+// data invariant: cancelled import must leave children untouched
+const childNames = await page.evaluate(async () => {
+  const db = await new Promise((res, rej) => { const r = indexedDB.open("owly"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+  const names = await new Promise((res, rej) => { const tx = db.transaction("children"); const q = tx.objectStore("children").getAll(); q.onsuccess = () => res(q.result.map((c) => c.name)); q.onerror = () => rej(q.error); });
+  return names;
+});
+ok("cancelled import preserved existing data", !childNames.includes("KB Test"), JSON.stringify(childNames));
 
 await browser.close();
 const failed = results.filter((r) => !r.pass);

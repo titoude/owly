@@ -28,6 +28,24 @@ page.on("console", (m) => m.type() === "error" && errors.push("console: " + m.te
 const shot = (n) => page.screenshot({ path: `${SHOTS}/${n}.png` });
 const nextBtn = () => page.locator("button", { hasText: /next|continuer|suivant/i }).last();
 
+// Read the database straight from IndexedDB so assertions check persisted
+// records, not just rendered text.
+const idb = (store, mode = "count") =>
+  page.evaluate(
+    ([s, m]) =>
+      new Promise((res, rej) => {
+        const r = indexedDB.open("owly");
+        r.onerror = () => rej(r.error);
+        r.onsuccess = () => {
+          const os = r.result.transaction(s).objectStore(s);
+          const req = m === "count" ? os.count() : os.getAll();
+          req.onerror = () => rej(req.error);
+          req.onsuccess = () => res(req.result);
+        };
+      }),
+    [store, mode],
+  );
+
 try {
   // ── 1. Onboarding + demo seed ──────────────────────────────
   await page.goto(BASE + "/#/");
@@ -98,6 +116,27 @@ try {
   await gen.click();
   const download = await dl;
   ok("PDF downloads", /\.pdf$/.test(download.suggestedFilename()), download.suggestedFilename());
+
+  // ── 5b. Report lazy-chunk failure → retryable error, not a stuck button ──
+  {
+    const ctx2 = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block" });
+    const p2 = await ctx2.newPage();
+    const perr = [];
+    p2.on("pageerror", (e) => perr.push(e.message));
+    await p2.goto(BASE + "/#/welcome");
+    await p2.locator("button", { hasText: /demo|démo/i }).first().click();
+    await p2.getByRole("heading", { name: /léo|leo/i }).waitFor({ timeout: 10000 }); // active child loaded
+    await p2.route("**/assets/report-*.js", (r) => r.abort("failed"));
+    await p2.goto(BASE + "/#/report");
+    const genBtn2 = p2.locator("button.btn-primary.w-full").first(); // label swaps to "Loading…" while busy — use a stable selector
+    await genBtn2.waitFor({ timeout: 8000 });
+    await genBtn2.click();
+    await p2.locator('[role="alert"]').waitFor({ timeout: 8000 }).catch(() => {});
+    const alerts = await p2.locator('[role="alert"]').count();
+    const enabled = await genBtn2.isEnabled(); // re-enabled ⇒ busy reset ⇒ not wedged
+    ok("aborted report chunk → alert + button recovers", alerts > 0 && enabled, `alerts=${alerts} enabled=${enabled} pageerrors=${perr.length}`);
+    await ctx2.close();
+  }
 
   // ── 6. PIN lock roundtrip ──────────────────────────────────
   await page.goto(BASE + "/#/settings");
@@ -205,11 +244,18 @@ try {
       (await page.locator("#draft-title").count()) === 0,
     `${h1new} / ${stepTxt}`,
   );
-  // edit → edit on a different record must reseed, not leak.
+  // edit → edit on a different record must reseed, not leak — and each
+  // seeded value must equal THAT record's stored face score.
   await page.goto(BASE + "/#/history");
   await page.waitForTimeout(500);
   const links2 = page.locator("a", { hasText: /^edit$|^modifier$/i });
   if ((await links2.count()) >= 2) {
+    const obsIdOf = (h) => Number(h?.match(/observe\/(\d+)\/edit/)?.[1]);
+    const hrefA = await links2.nth(0).getAttribute("href");
+    const hrefB = await links2.nth(1).getAttribute("href");
+    const stored = async (id) => (await idb("observations", "getAll")).find((o) => o.id === id);
+    const faceA = (await stored(obsIdOf(hrefA)))?.scores?.face;
+    const faceB = (await stored(obsIdOf(hrefB)))?.scores?.face;
     await links2.nth(0).click();
     await page.waitForTimeout(400);
     await page.locator("button", { hasText: /next|suivant/i }).first().click();
@@ -222,10 +268,76 @@ try {
     await page.locator("button", { hasText: /next|suivant/i }).first().click();
     await page.waitForTimeout(300);
     const b = await page.locator("input[name='flacc-face']:checked").inputValue().catch(() => "none");
-    ok("edit → edit reseeds per record", a !== "none" && b !== "none", `record1 face=${a} record2 face=${b}`);
+    ok("edit → edit reseeds per record", a === String(faceA) && b === String(faceB), `obs${obsIdOf(hrefA)} face=${a} (stored ${faceA}) · obs${obsIdOf(hrefB)} face=${b} (stored ${faceB})`);
   } else {
     ok("edit → edit reseeds per record", false, "need ≥2 observations to compare");
   }
+
+  // ── 10c. Draft pins the "when" instant; clock drift can't move it ──
+  await page.clock.install();
+  await page.goto(BASE + "/#/observe");
+  await page.waitForSelector('[role="status"]');
+  // discard any draft the earlier wizard run left, for a clean state
+  if (await page.locator("#draft-title").count()) {
+    await page.locator("button", { hasText: /discard|ignorer/i }).first().click();
+    await page.waitForTimeout(300);
+  }
+  await page.locator("button", { hasText: /^15\s*min/i }).first().click(); // "15 min ago"
+  await page.waitForTimeout(600);
+  const draftRow = async () =>
+    (await idb("settings", "getAll")).find((r) => typeof r.key === "string" && r.key.startsWith("owly-draft-"));
+  const d1 = (await draftRow())?.value?.startedAt ?? null;
+  ok("draft records the pinned when-instant", typeof d1 === "number", `startedAt=${d1}`);
+  await page.clock.fastForward(2 * 60 * 60 * 1000); // +2h of wall clock
+  await page.locator("button", { hasText: /baseline|de base/i }).first().click(); // unrelated field → autosave
+  await page.waitForTimeout(600);
+  const d2 = (await draftRow())?.value?.startedAt ?? null;
+  ok("elapsed time cannot drift the pinned instant", d1 !== null && d1 === d2, `${d1} → ${d2}`);
+
+  // resumed draft keeps the exact pinned ms through save (no
+  // datetime-local minute truncation)
+  const pinned = (await page.evaluate(() => Date.now())) - 91_234;
+  const demoId = (await idb("children", "getAll")).find((c) => /léo|leo/i.test(c.name))?.id;
+  await page.evaluate(async ([pin, cid]) => {
+    const db = await new Promise((res, rej) => { const r = indexedDB.open("owly"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+    await new Promise((res, rej) => {
+      const tx = db.transaction("settings", "readwrite");
+      tx.objectStore("settings").put({
+        key: `owly-draft-${cid}`,
+        value: { step: 7, baseline: false, minutesAgo: 0, customAt: null, scores: { face: 1, legs: 1, activity: 1, cry: 1, consolability: 1 }, duration: null, zones: [], cause: "", interventions: [], note: "pin-check", startedAt: pin, savedAt: Date.now() },
+      });
+      tx.oncomplete = res; tx.onerror = () => rej(tx.error);
+    });
+  }, [pinned, demoId]);
+  await page.goto(BASE + "/#/observe");
+  await page.waitForTimeout(500);
+  await page.locator("button", { hasText: /resume|reprendre/i }).first().click();
+  await page.waitForTimeout(400);
+  await page.locator("button", { hasText: /save observation|enregistrer/i }).last().click();
+  await page.waitForTimeout(800);
+  const savedObs = (await idb("observations", "getAll")).find((o) => o.note === "pin-check");
+  ok("resumed draft saves the exact pinned instant", savedObs && savedObs.startedAt === pinned, `want ${pinned}, got ${savedObs?.startedAt}`);
+
+  // note-only edit: startedAt AND recordedAt must be bit-identical
+  await page.goto(BASE + "/#/history");
+  await page.waitForTimeout(500);
+  const firstEdit = page.locator("a", { hasText: /^edit$|^modifier$/i }).first();
+  const editHref = await firstEdit.getAttribute("href");
+  const editObsId = Number(editHref?.match(/observe\/(\d+)\/edit/)?.[1]);
+  const beforeEdit = (await idb("observations", "getAll")).find((o) => o.id === editObsId);
+  await firstEdit.click();
+  await page.waitForTimeout(400);
+  for (let i = 0; i < 7; i++) { await nextBtn().click(); await page.waitForTimeout(200); }
+  const noteArea = page.locator("textarea").last();
+  await noteArea.fill("note-only edit");
+  await page.locator("button", { hasText: /save observation|enregistrer/i }).last().click();
+  await page.waitForTimeout(700);
+  const afterEdit = (await idb("observations", "getAll")).find((o) => o.id === editObsId);
+  ok(
+    "note-only edit preserves original timestamps",
+    afterEdit && afterEdit.startedAt === beforeEdit.startedAt && afterEdit.recordedAt === beforeEdit.recordedAt,
+    `startedAt ${beforeEdit?.startedAt}→${afterEdit?.startedAt}, recordedAt ${beforeEdit?.recordedAt}→${afterEdit?.recordedAt}`,
+  );
 
   // ── 11. Export produces JSON download ──────────────────────
   await page.goto(BASE + "/#/settings");
@@ -240,21 +352,6 @@ try {
   // ── 12. Import: real file chooser — preview → cancel → reject → replace ──
   // Read the database straight from IndexedDB so assertions check persisted
   // records, not just rendered text.
-  const idb = (store, mode = "count") =>
-    page.evaluate(
-      ([s, m]) =>
-        new Promise((res, rej) => {
-          const r = indexedDB.open("owly");
-          r.onerror = () => rej(r.error);
-          r.onsuccess = () => {
-            const os = r.result.transaction(s).objectStore(s);
-            const req = m === "count" ? os.count() : os.getAll();
-            req.onerror = () => rej(req.error);
-            req.onsuccess = () => res(req.result);
-          };
-        }),
-      [store, mode],
-    );
   const obsCount = () => idb("observations");
   const childNames = async () =>
     (await idb("children", "getAll")).map((c) => c.name).sort();

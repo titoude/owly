@@ -2,8 +2,10 @@
 
 Owly's privacy model is architectural, not policy-based: there is no
 server, no account, no analytics, no telemetry, and no third-party
-network calls at runtime. You can verify this in browser dev tools —
-the Network tab stays empty after assets are precached.
+service. Journal data is never transmitted anywhere. The network traffic
+you will still see in dev tools is same-origin asset fetches and
+service-worker update checks — plus whatever you deliberately share
+(JSON backups, downloaded PDFs).
 
 ## What is stored, and where
 
@@ -12,6 +14,7 @@ the Network tab stays empty after assets are precached.
 | Children, observations, drafts, settings | IndexedDB (`owly` database) | Never |
 | UI language | `localStorage` (`owly-lang`) | Never |
 | Exported backups / PDF reports | Downloaded files you keep or share | Only if you share them |
+| Asset fetches / SW update checks | Same-origin HTTP only | n/a (no journal data) |
 
 ## Honest limits
 

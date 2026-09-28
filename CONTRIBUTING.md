@@ -7,12 +7,12 @@ Thanks for helping. Owly exists for a population that gets very few free tools �
 1. **Privacy is non-negotiable.** Owly is local-first. Any feature that sends data off the device needs an opt-in flag, a README section, and a good reason. PRs that add telemetry, analytics, or third-party calls will be rejected.
 2. **Observations, not diagnosis.** Owly records what caregivers see. It must never present a FLACC score as a medical conclusion, and never add "risk prediction" or auto-diagnosis language.
 3. **Caregivers are tired.** Design for 3 a.m.: large targets, few taps, calm colors, no account creation, no paywalls.
-4. **FLACC wording is not public domain.** The English FLACC descriptors follow the published instrument (Merkel et al., 1997; rFLACC: Malviya et al., 2006). Redistribution/translation rights are being verified with the licensor — do not translate the scale wording until that is confirmed (see README › Instrument licensing). Keep its scoring semantics intact (0–2 per category, 0–10 total).
+4. **FLACC wording is not public domain.** The English FLACC descriptors follow the published instrument (Merkel et al., 1997; rFLACC: Malviya et al., 2006). Redistribution/translation rights are **unknown — no licensor has been contacted** — do not translate the scale wording (see README › Instrument licensing). Keep its scoring semantics intact (0–2 per category, 0–10 total).
 
 ## Dev setup
 
 ```bash
-npm install
+npm ci --ignore-scripts   # frozen install
 npm run dev
 ```
 
@@ -32,7 +32,7 @@ node scripts/a11y/audit.mjs http://localhost:4173  # axe audit (0 violations gat
 ## Conventions
 
 - TypeScript strict; no `any` unless the type genuinely can't be expressed.
-- All user-facing strings go through the locale files — all 9 locales (`src/locales/*.json`) must keep identical key sets; `node scripts/i18n-parity.mjs` enforces it.
+- All user-facing strings go through the locale files — all 9 locales (`src/locales/*.json`) must keep the same base key set; `node scripts/i18n-parity.mjs` enforces it. Note that plural-form keys legitimately differ per locale's CLDR rules (e.g. Arabic needs `_zero/_two/_few/_many`) — the checker accounts for that.
 - Schema changes bump the Dexie version in `src/db.ts` with a migration — never silently reshape stored data.
 - Tests: unit tests in `src/test/`, and if your change touches a user flow, update `e2e/smoke.mjs`.
 

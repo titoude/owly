@@ -151,6 +151,12 @@ function Shell() {
 
   return (
     <div className="min-h-dvh">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-xl focus:bg-teal-700 focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lg"
+      >
+        {t("app.skipToContent")}
+      </a>
       {/* Desktop / tablet: left rail */}
       <aside className="hidden md:flex md:flex-col fixed inset-y-0 left-0 w-56 z-40 border-r border-neutral-200 bg-white/75 backdrop-blur-xl px-3 py-6">
         <div className="px-2 pb-5">
@@ -190,7 +196,7 @@ function Shell() {
       </aside>
 
       <div className="md:pl-56 flex flex-col min-h-dvh">
-        <main className="flex-1 mx-auto w-full max-w-lg md:max-w-2xl px-4 pb-28 md:pb-14 pt-6 md:pt-10">
+        <main id="main" tabIndex={-1} className="flex-1 mx-auto w-full max-w-lg md:max-w-2xl px-4 pb-28 md:pb-14 pt-6 md:pt-10 focus:outline-none">
           {active?.isDemo && (
             <div className="md:hidden mb-4">
               <span className="badge bg-amber-100 text-amber-800 border border-amber-200">

@@ -44,6 +44,11 @@ export default function Observe() {
   const seeded = useRef<string>(""); // JSON of the seeded fields
   const orig = useRef<Observation | null>(null); // edited record, for timestamp preservation
   const seededWhen = useRef<string | null>(null); // customAt string the form was seeded with
+  // Absolute epoch-ms the "when" selection refers to. Written ONLY by an
+  // explicit when interaction (chip click, custom-time edit, seed, resume)
+  // — never recomputed per keystroke or per autosave, so it cannot drift
+  // with wall-clock time while the user fills other fields.
+  const whenInstant = useRef<number | null>(null);
   const stepHeading = useRef<HTMLDivElement>(null);
 
   const key = editId ? draftEditKey(editId) : active?.id ? draftKey(active.id) : null;
@@ -66,6 +71,7 @@ export default function Observe() {
         if (!o || o.childId !== active.id) { nav("/history"); return; }
         orig.current = o;
         seededWhen.current = toLocalInput(new Date(o.startedAt));
+        whenInstant.current = o.startedAt;
         setBaseline(o.baseline);
         setMinutesAgo(0);
         setCustomAt(seededWhen.current);
@@ -98,13 +104,12 @@ export default function Observe() {
   useEffect(() => {
     if (!key || !offerSeen || offer) return;
     if (JSON.stringify(fields) === seeded.current) return;
-    // Pin the absolute instant the "when" selection refers to now, so
-    // resuming hours later cannot silently shift the episode's timing.
-    const startedAt = customAt ? new Date(customAt).getTime() : Date.now() - minutesAgo * 60_000;
-    saveDraft(key, { ...fields, startedAt: Number.isFinite(startedAt) ? startedAt : null, savedAt: Date.now() })
+    // The draft records the instant pinned by the last explicit "when"
+    // change — recomputing it here would let clock drift shift the episode.
+    saveDraft(key, { ...fields, startedAt: whenInstant.current, savedAt: Date.now() })
       .then(() => setDraftFailed(false))
       .catch(() => setDraftFailed(true));
-  }, [key, offerSeen, offer, fields, customAt, minutesAgo]);
+  }, [key, offerSeen, offer, fields]);
 
   // Move focus to the step region on each step change so keyboard and
   // screen-reader users don't lose their place in the 8-step flow.
@@ -133,7 +138,7 @@ export default function Observe() {
       // timestamp — a note-only correction must not move the episode.
       startedAt: editId && orig.current && customAt === seededWhen.current
         ? orig.current.startedAt
-        : customAt ? Math.min(new Date(customAt).getTime(), Date.now()) : Date.now() - minutesAgo * 60_000,
+        : whenInstant.current ?? (customAt ? Math.min(new Date(customAt).getTime(), Date.now()) : Date.now() - minutesAgo * 60_000),
       recordedAt: editId && orig.current ? orig.current.recordedAt : Date.now(),
       scores: scores as FlaccScores,
       total,
@@ -165,9 +170,14 @@ export default function Observe() {
     // Restore the pinned absolute instant, not the relative "N minutes
     // ago" that would re-anchor against resume time.
     if (offer.startedAt != null) {
+      // datetime-local displays only minutes; the pinned instant keeps
+      // the exact ms so a resumed save preserves it.
+      whenInstant.current = offer.startedAt;
       setCustomAt(toLocalInput(new Date(offer.startedAt)));
       setMinutesAgo(0);
     } else {
+      const ms = offer.customAt ? new Date(offer.customAt).getTime() : NaN;
+      whenInstant.current = Number.isFinite(ms) ? ms : null;
       setMinutesAgo(offer.minutesAgo);
       setCustomAt(offer.customAt);
     }
@@ -253,7 +263,7 @@ export default function Observe() {
                 <button
                   key={m}
                   type="button"
-                  onClick={() => { setMinutesAgo(m); setCustomAt(null); }}
+                  onClick={() => { setMinutesAgo(m); setCustomAt(null); whenInstant.current = Date.now() - m * 60_000; }}
                   aria-pressed={minutesAgo === m && customAt === null}
                   className={`btn-ghost text-sm ${minutesAgo === m && customAt === null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
                 >
@@ -262,7 +272,7 @@ export default function Observe() {
               ))}
               <button
                 type="button"
-                onClick={() => { if (customAt === null) setCustomAt(toLocalInput(new Date())); }}
+                onClick={() => { if (customAt === null) { const now = Date.now(); setCustomAt(toLocalInput(new Date(now))); whenInstant.current = now; } }}
                 aria-pressed={customAt !== null}
                 className={`btn-ghost text-sm ${customAt !== null ? "border border-teal-700 !bg-teal-50 text-teal-800" : ""}`}
               >
@@ -276,7 +286,12 @@ export default function Observe() {
                 className="input text-sm w-full"
                 value={customAt}
                 max={toLocalInput(new Date())}
-                onChange={(e) => setCustomAt(e.target.value === "" ? null : e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value === "" ? null : e.target.value;
+                  setCustomAt(v);
+                  const ms = v ? new Date(v).getTime() : NaN;
+                  whenInstant.current = Number.isFinite(ms) ? ms : null;
+                }}
               />
             )}
           </div>

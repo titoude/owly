@@ -1,13 +1,14 @@
 # Demo script (≈3 minutes)
 
-Goal: show that a caregiver can go from "installed" to "a report a
-pediatrician can read" entirely offline, in under a minute of taps.
+Goal: show that a caregiver can go from a fresh install to a report a
+pediatrician can read, entirely on-device.
 
 ## Setup
 
 Serve the production build (`npm run preview`) and open it on a phone
-viewport (~390 px) — Owly is designed for one-handed use. Airplane mode
-optional but recommended: the point is that nothing needs a network.
+viewport (~390 px) — Owly is designed for one-handed use. The first load
+must be online so assets precache; after that, airplane mode works —
+the point is that no network is needed once installed.
 
 ## Walkthrough
 
@@ -29,10 +30,11 @@ optional but recommended: the point is that nothing needs a network.
 5. **History + edit (15 s)** — Open an existing observation from
    History, change only the note, save — original timestamps are kept.
    Show delete asks first.
-6. **Report PDF (30 s)** — Settings → Report: pick the period, include
-   notes and the clinician question, generate. The PDF has real
-   pagination, the child's name and page numbers on every page, and
-   renders Arabic/Hindi/Chinese names correctly. All on-device.
+6. **Report PDF (30 s)** — Home or Patterns → "Prepare the report":
+   pick the period, include notes and the clinician question, generate.
+   The PDF has real pagination, the child's name and page numbers on
+   every page, and renders Arabic/Hindi/Chinese names correctly. All
+   on-device.
 7. **Privacy (15 s)** — Settings: the privacy paragraph, JSON backup
    download, PIN lock (a screen lock — stated honestly, not
    encryption), and one-tap delete-all.

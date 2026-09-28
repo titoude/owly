@@ -8,8 +8,8 @@ doc: check anything.
 
 | Claim | Evidence | How to reproduce |
 |---|---|---|
-| Works fully offline | `e2e/offline.mjs` — cold reload with cache cleared, then a PDF is generated and its bytes verified | `npm run preview`, `node e2e/offline.mjs` |
-| No network calls at runtime | Service worker precache covers all assets incl. fonts; offline e2e passes with the network cut | DevTools Network tab during use |
+| Previously-loaded installs work offline | `e2e/offline.mjs` — reload with precache intact but network cut, then a PDF is generated and its bytes verified | `npm run preview`, `node e2e/offline.mjs` |
+| No journal data transmitted | The app makes no API calls; only same-origin asset fetches and service-worker update checks occur. Exports/PDFs leave the device only if the user shares them | DevTools Network tab; `src/` has no fetch/XHR of user data |
 | Local-first storage | Dexie/IndexedDB only; `src/export.ts` for the only IO path | `src/db.ts`, `src/export.ts` |
 | Import can't half-destroy data | `importAll` validates before writing, commits in one transaction; unit tests fault-inject mid-tx | `npx vitest run` — store tests |
 | Drafts are atomic with data | Drafts live in the `settings` store; replace/delete cleanup shares the mutation's transaction | `npx vitest run` — draft tests |
@@ -17,7 +17,7 @@ doc: check anything.
 | Multilingual PDF (Arabic/Indic/CJK) | Vendored Noto fonts + fontkit shaping + bidi reordering; glyph-level assertions in `src/test/report.test.ts` | generate a report with mixed-script names |
 | Unsupported characters never become silent boxes | `UnsupportedCharsError` → localized `role=alert`, PDF is not produced | rename a child with an emoji, generate report |
 | Keyboard-operable wizard | `e2e/keyboard.mjs` — 11 assertions on the radio groups and tab order | `npm run e2e:keys` |
-| Automated a11y: 0 violations | `scripts/a11y/audit.mjs` — 32 scenarios, axe-core WCAG 2.2 A/AA + best-practice | `node scripts/a11y/audit.mjs <url>` |
+| Automated a11y: 0 violations | `scripts/a11y/audit.mjs` — axe-core WCAG 2.2 A/AA + best-practice over the manifest | `node scripts/a11y/audit.mjs <url>` |
 | 9 locales with key parity | `scripts/i18n-parity.mjs` — every locale has all keys | `node scripts/i18n-parity.mjs` |
 | RTL works | `state:rtl` audit + `dir="rtl"` wiring + RTL-aligned PDF text | set language to العربية |
 
@@ -44,3 +44,9 @@ doc: check anything.
 `npm run build` clean · `npx vitest run` 34/34 · `e2e/smoke.mjs` 9/9 ·
 `e2e/full.mjs` 33/33 · `e2e/keyboard.mjs` 11/11 · `e2e/offline.mjs` 6/6 ·
 a11y audit 32/32 PASS / 0 violations / 0 unverified.
+
+Note on audit scope history: the baseline run covered 25 scenarios; the
+final run covers 32. The 7 added states (draft-resume, observe-edit,
+draft-save-error, pdf-unsupported, storage-denied-boot, ls-denied-boot,
+empty-patterns) have **no comparable baseline** — they were introduced
+alongside the features they check.

@@ -2,6 +2,7 @@
   "app": {
     "name": "Owly",
     "tagline": "Wenn sie nicht sagen können, wo es wehtut",
+    "skipToContent": "Zum Hauptinhalt springen",
     "navLabel": "Hauptnavigation",
     "demoBadge": "Demo — fiktive Daten",
     "storageErrorTitle": "Lokale Datenbank nicht erreichbar",

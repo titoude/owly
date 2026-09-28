@@ -2,6 +2,7 @@
   "app": {
     "name": "Owly",
     "tagline": "When they can't say where it hurts",
+    "skipToContent": "Skip to main content",
     "navLabel": "Main navigation",
     "demoBadge": "Demo — fictional data",
     "storageErrorTitle": "Can't reach the local database",

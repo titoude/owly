@@ -32,6 +32,16 @@ export default function Settings() {
   const [confirmDemoClear, setConfirmDemoClear] = useState(false);
   const [msg, setMsg] = useState<{ text: string; error: boolean } | null>(null);
   const [pendingImport, setPendingImport] = useState<{ file: File; summary: BackupSummary } | null>(null);
+  const importDlgRef = useRef<HTMLDialogElement>(null);
+  const importBtnRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!pendingImport) return;
+    const dlg = importDlgRef.current;
+    if (dlg && !dlg.open) dlg.showModal();
+    // The native file picker steals the pre-dialog focus slot, so
+    // showModal()'s own restore can land on <body>. Pin the trigger.
+    return () => importBtnRef.current?.focus();
+  }, [pendingImport]);
   const [obsCount, setObsCount] = useState(0);
 
   useEffect(() => {
@@ -188,11 +198,20 @@ export default function Settings() {
       <section className="card p-4 space-y-3">
         <h2 className="text-sm font-semibold text-neutral-600">{t("settings.data")}</h2>
         <button type="button" className="btn-ghost w-full" onClick={() => void doExport()}>{t("settings.export")}</button>
-        <button type="button" className="btn-ghost w-full" onClick={() => fileRef.current?.click()}>{t("settings.import")}</button>
+        <button ref={importBtnRef} type="button" className="btn-ghost w-full" onClick={() => fileRef.current?.click()}>{t("settings.import")}</button>
         <p className="text-xs text-neutral-500">{t("settings.importWarn")}</p>
         <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void pickImport(f); }} />
         {pendingImport && (
-          <div className="rounded-xl border border-amber-300 bg-amber-50 p-3 space-y-2" role="alertdialog" aria-labelledby="import-preview-title">
+          // Native dialog: showModal() supplies focus entry, Tab containment,
+          // Escape cancellation and focus restoration. role=alertdialog keeps
+          // the assertive announcement semantics on top.
+          <dialog
+            ref={importDlgRef}
+            role="alertdialog"
+            aria-labelledby="import-preview-title"
+            onCancel={() => setPendingImport(null)}
+            className="rounded-xl border border-amber-300 bg-amber-50 p-3 space-y-2 w-full max-w-sm backdrop:bg-neutral-900/40"
+          >
             <p id="import-preview-title" className="text-sm font-semibold text-amber-900">{t("settings.importPreviewTitle")}</p>
             <p className="text-xs text-amber-900">
               {t("settings.importPreview", {
@@ -209,7 +228,7 @@ export default function Settings() {
                 {t("settings.importConfirm")}
               </button>
             </div>
-          </div>
+          </dialog>
         )}
         {!confirmDel ? (
           <button type="button" className="btn-ghost w-full text-red-700" onClick={() => setConfirmDel(true)}>{t("settings.deleteAll")}</button>

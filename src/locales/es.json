@@ -2,6 +2,7 @@
   "app": {
     "name": "Owly",
     "tagline": "Cuando no pueden decir dónde les duele",
+    "skipToContent": "Saltar al contenido principal",
     "navLabel": "Navegación principal",
     "demoBadge": "Demo — datos ficticios",
     "storageErrorTitle": "No se puede acceder a la base de datos local",

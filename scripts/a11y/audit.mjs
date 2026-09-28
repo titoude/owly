@@ -20,6 +20,14 @@ const DEMO_RE = /demo|démo/i;
 const results = [];
 let pass = 0, fail = 0, unverified = 0;
 
+// A state audit only counts when its precondition element actually rendered.
+// Otherwise record UNVERIFIED — never silently PASS a state we didn't reach.
+async function req(page, selector, id, what) {
+  const found = (await page.locator(selector).first().count()) > 0;
+  if (!found) { results.push({ id, status: "UNVERIFIED", error: `missing precondition: ${what}` }); unverified++; }
+  return found;
+}
+
 async function audit(page, id, description) {
   await page.waitForSelector("body");
   await page.waitForTimeout(350); // settle route transitions
@@ -32,7 +40,13 @@ async function audit(page, id, description) {
           id: v.id, impact: v.impact, help: v.help,
           nodes: v.nodes.slice(0, 6).map((n) => ({ html: n.html.slice(0, 160), target: n.target })),
         })),
-        incomplete: res.incomplete.map((v) => ({ id: v.id, nodes: v.nodes.length })),
+        // keep the actual failure detail: an incomplete with nodes:[] may be a
+        // rule that THREW (e.g. unparseable color) — that is never "no issues".
+        incomplete: res.incomplete.map((v) => ({
+          id: v.id, nodes: v.nodes.length,
+          error: v.error ? String(v.error).slice(0, 200) : undefined,
+          errorNode: v.nodes.find((n) => n.any?.some((c) => c.error))?.target?.join(" ") ?? undefined,
+        })),
         passes: res.passes.length,
       };
     }, TAGS);
@@ -83,6 +97,11 @@ for (const r of [
 // observe steps 0..7: audit each wizard step
 await go(page, "#/observe");
 for (let s = 0; s <= 7; s++) {
+  const stepTxt = await page.locator('[role="status"]').first().innerText().catch(() => "");
+  if (!stepTxt.trim().startsWith(`${s + 1}/`)) {
+    results.push({ id: `observe-step${s}`, status: "UNVERIFIED", error: `step indicator is "${stepTxt.trim()}" not ${s + 1}/8` });
+    unverified++; break;
+  }
   await audit(page, `observe-step${s}`, `observe wizard step ${s}`);
   if (s < 7) {
     // FLACC score steps require a selection before Next is enabled.
@@ -100,15 +119,19 @@ await go(page, "#/history");
 {
   await page.locator("button", { hasText: /^delete$|^supprimer$/i }).first().waitFor({ timeout: 8000 }).catch(() => {});
   const del = page.locator("button", { hasText: /^delete$|^supprimer$/i }).first();
-  if (await del.count()) { await del.click(); await page.waitForTimeout(250); await audit(page, "delete-confirm", "inline delete confirmation"); }
-  else { results.push({ id: "delete-confirm", status: "UNVERIFIED", error: "no delete button found" }); unverified++; }
+  if (await del.count()) {
+    await del.click();
+    // the confirm affordance must actually appear
+    if (await req(page, 'button:has-text("Delete this"), button:has-text("Supprimer")', "delete-confirm", "confirm button after delete click"))
+      await audit(page, "delete-confirm", "inline delete confirmation");
+  } else { results.push({ id: "delete-confirm", status: "UNVERIFIED", error: "no delete button found" }); unverified++; }
 }
 
 // child-edit via settings edit link
 await go(page, "#/settings");
 {
   const edit = page.locator("a", { hasText: /edit|modifier/i }).first();
-  if (await edit.count()) { await edit.click(); await audit(page, "child-edit", "edit form for existing child"); await page.goBack(); }
+  if (await edit.count()) { await edit.click(); if (await req(page, "form input", "child-edit", "edit form input")) await audit(page, "child-edit", "edit form for existing child"); await page.goBack(); }
   else { results.push({ id: "child-edit", status: "UNVERIFIED", error: "no edit link" }); unverified++; }
 }
 
@@ -125,7 +148,8 @@ await go(page, "#/settings");
     const input = page.locator('input[type="file"]');
     await input.setInputFiles(path);
     await page.waitForTimeout(500);
-    await audit(page, "import-preview", "replacement-preview dialog");
+    if (await req(page, '[role="alertdialog"]', "import-preview", "replacement-preview alertdialog"))
+      await audit(page, "import-preview", "replacement-preview dialog");
     await page.locator("button", { hasText: /cancel|annuler/i }).first().click().catch(() => {});
   } else { results.push({ id: "import-preview", status: "UNVERIFIED", error: "no export download" }); unverified++; }
 }
@@ -138,7 +162,8 @@ await go(page, "#/settings");
   const offer = page.locator("#draft-title");
   await offer.waitFor({ timeout: 6000 }).catch(() => {});
   if (await offer.count()) {
-    await audit(page, "draft-resume", "draft resume/discard offer on wizard entry");
+    await req(page, "#draft-title", "draft-resume", "draft offer");
+    if (results.at(-1).status !== "UNVERIFIED") await audit(page, "draft-resume", "draft resume/discard offer on wizard entry");
     await page.locator("button", { hasText: /discard|ignorer/i }).first().click().catch(() => {});
     await page.waitForTimeout(300);
   } else { results.push({ id: "draft-resume", status: "UNVERIFIED", error: "no draft offer after partial wizard" }); unverified++; }
@@ -149,7 +174,7 @@ await go(page, "#/settings");
   await go(page, "#/history");
   const editLink = page.locator("a", { hasText: /edit|modifier/i }).first();
   await editLink.waitFor({ timeout: 6000 }).catch(() => {});
-  if (await editLink.count()) { await editLink.click(); await page.waitForTimeout(400); await audit(page, "observe-edit", "observation edit mode (preseeded)"); }
+  if (await editLink.count()) { await editLink.click(); await page.waitForTimeout(400); if (await req(page, 'h1:has-text("Edit"), h1:has-text("Modifier")', "observe-edit", "edit-mode heading")) await audit(page, "observe-edit", "observation edit mode (preseeded)"); }
   else { results.push({ id: "observe-edit", status: "UNVERIFIED", error: "no edit link on history row" }); unverified++; }
 }
 
@@ -162,7 +187,8 @@ await go(page, "#/settings");
   await go(page, "#/observe");
   await page.locator('label:has(input[type="radio"])').first().click().catch(() => {});
   await page.waitForTimeout(700);
-  await audit(page, "draft-save-error", "autosave failure surfaced (quota/denied)");
+  if (await req(page, '[role="alert"]', "draft-save-error", "draft-save alert (quota fault)"))
+    await audit(page, "draft-save-error", "autosave failure surfaced (quota/denied)");
   await page.evaluate(() => { IDBObjectStore.prototype.put = window.__origPut; });
 }
 
@@ -182,7 +208,8 @@ await go(page, "#/settings");
     await go(page, "#/report");
     await page.locator("button", { hasText: /generate|générer|prepare|préparer|download|télécharger/i }).last().click().catch(() => {});
     await page.locator('[role="alert"]').waitFor({ timeout: 10000 }).catch(() => {});
-    await audit(page, "pdf-unsupported", "unsupported-character PDF error");
+    if (await req(page, '[role="alert"]', "pdf-unsupported", "unsupported-chars alert"))
+      await audit(page, "pdf-unsupported", "unsupported-character PDF error");
     await go(page, "#/settings");
     const editBack = page.locator("a", { hasText: /edit|modifier/i }).first();
     await editBack.click().catch(() => {});
@@ -235,7 +262,12 @@ await go(page, "#/settings");
 await go(page, "#/settings");
 {
   const fr = page.locator("button", { hasText: /Français/ }).first();
-  if (await fr.count()) { await fr.click(); await page.waitForTimeout(300); await audit(page, "state:fr", "settings in French"); }
+  if (await fr.count()) {
+    await fr.click(); await page.waitForTimeout(300);
+    const lang = await page.evaluate(() => document.documentElement.lang);
+    if (lang !== "fr") { results.push({ id: "state:fr", status: "UNVERIFIED", error: `lang=${lang}, expected fr` }); unverified++; }
+    else await audit(page, "state:fr", "settings in French");
+  }
   else { results.push({ id: "state:fr", status: "UNVERIFIED", error: "no FR button" }); unverified++; }
 }
 
@@ -245,7 +277,9 @@ await go(page, "#/settings");
   if (await ar.count()) {
     await ar.click(); await page.waitForTimeout(300);
     await go(page, "#/");
-    await audit(page, "state:rtl", "app shell RTL (ar)");
+    const dir = await page.evaluate(() => document.documentElement.dir);
+    if (dir !== "rtl") { results.push({ id: "state:rtl", status: "UNVERIFIED", error: `dir=${dir}, expected rtl` }); unverified++; }
+    else await audit(page, "state:rtl", "app shell RTL (ar)");
     await page.locator("button", { hasText: /English/ }).first().click().catch(() => {});
     await go(page, "#/settings"); await page.locator("button", { hasText: /English/ }).first().click().catch(() => {});
   } else { results.push({ id: "state:rtl", status: "UNVERIFIED", error: "no AR button" }); unverified++; }
@@ -280,12 +314,14 @@ await go(page, "#/settings");
     await page.waitForTimeout(400);
     await page.reload();
     await page.waitForTimeout(500);
-    await audit(page, "pin-locked", "lock screen after PIN set");
+    if (await req(page, 'input[inputmode="numeric"], input[type="password"]', "pin-locked", "lock input after PIN set"))
+      await audit(page, "pin-locked", "lock screen after PIN set");
     // wrong PIN
     const lockInput = page.locator("input").first();
     await lockInput.fill("9999");
     await page.waitForTimeout(600);
-    await audit(page, "pin-error", "lock screen wrong-PIN error");
+    if (await req(page, '[role="alert"]', "pin-error", "wrong-PIN alert"))
+      await audit(page, "pin-error", "lock screen wrong-PIN error");
     // unlock with correct PIN to restore
     await lockInput.fill("1234");
     await page.waitForTimeout(600);

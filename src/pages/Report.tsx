@@ -36,16 +36,20 @@ export default function Report() {
     if (!active) return;
     setBusy(true);
     setError(null);
-    const { buildReport, downloadPdf, UnsupportedCharsError } = await import("../report");
     try {
-      const bytes = await buildReport(active, obs, { periodDays: period, questions });
+      // The lazy chunk load is inside try/finally too: an aborted or stale
+      // module fetch (interrupted first load, SW mid-update) must surface a
+      // retryable error, not wedge the button in "loading" forever.
+      const mod = await import("../report");
+      const bytes = await mod.buildReport(active, obs, { periodDays: period, questions });
       const date = new Date().toISOString().slice(0, 10);
-      downloadPdf(bytes, `owly-report-${active.name.toLowerCase()}-${date}.pdf`);
+      mod.downloadPdf(bytes, `owly-report-${active.name.toLowerCase()}-${date}.pdf`);
     } catch (e) {
       // Unsupported characters: name them so the user can fix or keep the
       // journal + export a JSON backup instead. Never ship a misleading PDF.
-      if (e instanceof UnsupportedCharsError) {
-        setError(t("report.unsupported", { chars: e.chars.join(" ") }));
+      const chars = (e as { chars?: unknown }).chars;
+      if (e instanceof Error && e.name === "UnsupportedCharsError" && Array.isArray(chars)) {
+        setError(t("report.unsupported", { chars: chars.join(" ") }));
       } else {
         setError(t("report.error"));
       }
