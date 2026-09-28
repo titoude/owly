@@ -211,6 +211,13 @@ try {
   const obsCount = () => idb("observations");
   const childNames = async () =>
     (await idb("children", "getAll")).map((c) => c.name).sort();
+  // Deep snapshots: counts/names alone could pass while records were mutated.
+  const snapshot = async () =>
+    JSON.stringify({
+      children: await idb("children", "getAll"),
+      observations: await idb("observations", "getAll"),
+      settings: await idb("settings", "getAll"),
+    });
   const activeChildName = async () => {
     const st = await idb("settings", "getAll");
     const id = st.find((r) => r.key === "activeChildId")?.value;
@@ -220,18 +227,24 @@ try {
 
   const beforeObs = await obsCount();
   const beforeKids = await childNames();
+  const beforeSnap = await snapshot();
+  const expInKids = beforeKids.length; // the exported backup carries all current children
+  const expInObs = beforeObs;
 
   // 12a. Valid backup → preview → Cancel must leave every record untouched.
   await page.locator("input[type='file']").setInputFiles(backupPath);
   await page.waitForSelector("[role='alertdialog']", { timeout: 5000 });
   const previewTxt = await page.locator("[role='alertdialog']").innerText();
-  ok("import preview summarizes incoming + current", /\d+/.test(previewTxt) && /replace|remplace/i.test(previewTxt));
+  ok(
+    "import preview shows exact incoming counts",
+    new RegExp(`${expInKids} profile|${expInKids} profil`).test(previewTxt) &&
+      new RegExp(`${expInObs} observation`).test(previewTxt),
+    `want ${expInKids}/${expInObs}, got: ${previewTxt.slice(0, 120)}`,
+  );
+  ok("preview shows current counts too", /replaces|remplace/i.test(previewTxt));
   await page.locator("[role='alertdialog'] button", { hasText: /cancel|annuler/i }).click();
   await page.waitForTimeout(400);
-  ok(
-    "cancel import preserves all records",
-    (await obsCount()) === beforeObs && JSON.stringify(await childNames()) === JSON.stringify(beforeKids),
-  );
+  ok("cancel import preserves all records", (await snapshot()) === beforeSnap);
 
   // 12b. A structurally invalid backup (nested object where text belongs)
   // must be rejected before any data is touched.
@@ -251,10 +264,31 @@ try {
   await page.waitForTimeout(600);
   ok("invalid backup rejected (no preview)", (await page.locator("[role='alertdialog']").count()) === 0);
   ok("rejection shown to user", /couldn't read|impossible|error|erreur|invalide/i.test(await page.locator("body").innerText()));
-  ok(
-    "rejected import preserves all records",
-    (await obsCount()) === beforeObs && JSON.stringify(await childNames()) === JSON.stringify(beforeKids),
+  ok("rejected import preserves all records", (await snapshot()) === beforeSnap);
+
+  // 12b2. A file whose timestamps exceed Date range must also be rejected
+  // before any data is touched.
+  const badTsPath = `${SHOTS}/bad-ts-import.json`;
+  writeFileSync(
+    badTsPath,
+    JSON.stringify({
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      children: [{ id: 91, name: "BadTs", createdAt: Date.now() }],
+      observations: [
+        {
+          childId: 91,
+          startedAt: 9e18,
+          recordedAt: Date.now(),
+          scores: { face: 0, legs: 0, activity: 0, cry: 0, consolability: 0 },
+        },
+      ],
+    }),
   );
+  await page.locator("input[type='file']").setInputFiles(badTsPath);
+  await page.waitForTimeout(600);
+  ok("unrepresentable-date backup rejected (no preview)", (await page.locator("[role='alertdialog']").count()) === 0);
+  ok("date rejection preserves all records", (await snapshot()) === beforeSnap);
 
   // 12c. Confirmed replacement swaps the data and refreshes the active child.
   const okPath = `${SHOTS}/ok-import.json`;
@@ -293,6 +327,15 @@ try {
   );
   await page.locator("input[type='file']").setInputFiles(okPath);
   await page.waitForSelector("[role='alertdialog']", { timeout: 5000 });
+  // Preview must quote fresh current counts (obsCount re-read after the
+  // earlier demo/seed mutations — the stale-mount bug would show 0 here).
+  const replacePreviewTxt = await page.locator("[role='alertdialog']").innerText();
+  ok(
+    "replace preview shows fresh current counts",
+    new RegExp(`${beforeKids.length} profile|${beforeKids.length} profil`).test(replacePreviewTxt) &&
+      new RegExp(`${beforeObs} observation`).test(replacePreviewTxt),
+    replacePreviewTxt.slice(0, 120),
+  );
   await page.locator("[role='alertdialog'] button", { hasText: /replace with|remplacer/i }).click();
   await page.waitForTimeout(800);
   ok("confirmed import replaces records", (await obsCount()) === 1 && JSON.stringify(await childNames()) === '["Restored Kid"]');

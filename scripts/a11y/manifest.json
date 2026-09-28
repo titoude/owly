@@ -1,5 +1,5 @@
 {
-  "note": "Audited scope for scripts/a11y/audit.mjs. Every reachable screen is listed; scope.json in each audit report must match this.",
+  "note": "Audited scope for scripts/a11y/audit.mjs. Every reachable screen is listed; scope.json in each audit report must account for every entry — unaudited required states are reported as UNVERIFIED, never silently dropped.",
   "routes": [
     { "path": "/", "role": "dashboard", "precondition": "demo seed (Léo) loaded", "expects": "child header, primary observe action, recent history" },
     { "path": "/observe", "role": "wizard", "precondition": "active child", "expects": "8-step flow, radio-style FLACC pickers, next/back" },
@@ -12,8 +12,14 @@
     { "path": "/welcome", "role": "onboarding", "precondition": "none", "expects": "intro + CTA" }
   ],
   "states": [
+    { "id": "empty-dashboard", "description": "dashboard + history + patterns with a brand-new child (no observations)", "route": "/", "setup": "fresh child, no seed" },
+    { "id": "child-edit", "description": "edit form for an existing child", "route": "/child/:id/edit", "setup": "open edit of seeded child" },
     { "id": "fr", "description": "settings page in French", "route": "/settings", "setup": "click Français button" },
-    { "id": "import-preview", "description": "replacement-preview alertdialog on settings", "route": "/settings", "setup": "inject pendingImport via file input upload of a valid backup" },
-    { "id": "observe-step5", "description": "deeper wizard step (body map / interventions)", "route": "/observe", "setup": "advance wizard with Next clicks" }
+    { "id": "rtl", "description": "app shell in a RTL locale once wired (ar)", "route": "/", "setup": "language=ar after locale wiring lands — UNVERIFIED until then" },
+    { "id": "import-preview", "description": "replacement-preview alertdialog on settings", "route": "/settings", "setup": "file input upload of a valid backup" },
+    { "id": "delete-confirm", "description": "inline delete confirmation on a history row", "route": "/history", "setup": "click a row's delete button" },
+    { "id": "pin-locked", "description": "lock screen after a PIN is set", "route": "any", "setup": "set PIN then reload" },
+    { "id": "pin-error", "description": "lock screen after a wrong PIN attempt", "route": "any", "setup": "set PIN, reload, enter wrong PIN" },
+    { "id": "observe-step0..step7", "description": "every wizard step (context, 5 FLACC radios, zones, interventions, note/summary)", "route": "/observe", "setup": "advance with Next, audit each step" }
   ]
 }
