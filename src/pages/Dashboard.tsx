@@ -57,7 +57,7 @@ export default function Dashboard() {
           </span>
           <span>
             <span className="block text-lg font-bold text-teal-800 tracking-tight">{t("observe.start")}</span>
-            <span className="block text-sm text-neutral-600">{t("observe.pickScore")} — 60 s</span>
+            <span className="block text-sm text-neutral-600">{t("observe.pickScore")}</span>
           </span>
         </div>
       </button>
