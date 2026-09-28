@@ -91,7 +91,16 @@ e2e/smoke.mjs      golden-path e2e (playwright + system chrome)
 
 ## Disclosure
 
-Built with AI assistance (Devin / Cognition) — scaffolding, i18n, tests and docs were AI-generated and human-reviewed. The FLACC instrument is a public clinical scale (Merkel et al., 1997); the individualized descriptors follow rFLACC (Malviya et al., 2006).
+Built with AI assistance (Devin / Cognition) — scaffolding, i18n, tests and docs were AI-generated and human-reviewed. The English FLACC descriptors follow the published instrument (Merkel et al., 1997); the individualized descriptors follow rFLACC (Malviya et al., 2006). See below for instrument licensing.
+
+## Instrument licensing
+
+FLACC is a published clinical instrument. Redistribution and translation terms vary by source:
+
+- University of Michigan (instrument origin) describes commercial and authorized academic/research licenses, English-only official wording, licensee-managed translation: https://available-inventions.umich.edu/product/face-legs-activity-cry-consolability-observational-tool-as-a-measure-of-pain
+- PhenX Toolkit describes the protocol as freely available for use: https://phenxtoolkit.org/protocols/view/860403
+
+Owly ships the English wording only and does **not** claim the scale is public domain or that its translation is authorized. Whether a license already exists for this redistribution is being confirmed; machine-translated clinical wording is not shipped as a validated scale.
 
 **Owly is an observation journal, not a medical device.** It records what caregivers observe — it does not diagnose. The red-flags screen is there for a reason: when in doubt, call a doctor.
 

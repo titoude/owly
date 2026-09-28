@@ -66,7 +66,7 @@ try {
   // 6. Settings + language switch
   await page.goto(BASE + "/#/settings");
   await page.waitForTimeout(500);
-  ok("settings renders", /settings|paramètres|data/i.test(await page.locator("body").innerText()));
+  ok("settings renders", /settings|réglages|paramètres|data/i.test(await page.locator("body").innerText()));
   const fr = page.locator("button", { hasText: /français/i }).first();
   if (await fr.count()) {
     await fr.click();

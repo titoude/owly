@@ -1,7 +1,25 @@
-import { describe, expect, it } from "vitest";
-import { PDFDocument } from "pdf-lib";
+import { describe, expect, it, vi } from "vitest";
+import { PDFDocument, PDFPage } from "pdf-lib";
 import { buildReport } from "../report";
 import type { Child, Observation } from "../types";
+
+// Intercept the real rendering boundary: every string the report actually
+// draws, with the y coordinate it was drawn at.
+function spyOnDraw() {
+  const spy = vi.spyOn(PDFPage.prototype, "drawText");
+  // Capture then restore: mockRestore() clears the call history.
+  return {
+    calls: () => {
+      const calls = spy.mock.calls;
+      spy.mockRestore();
+      return calls;
+    },
+  };
+}
+const drawnY = (calls: unknown[][]) =>
+  calls.map((c) => (c[1] as { y: number }).y);
+const drawnText = (calls: unknown[][]) =>
+  calls.map((c) => String(c[0])).join("\n");
 
 const child: Child = {
   id: 1,
@@ -49,5 +67,40 @@ describe("buildReport", () => {
     const bytes = await buildReport(child, [], { periodDays: null, questions: [] });
     const doc = await PDFDocument.load(bytes);
     expect(doc.getPageCount()).toBe(1);
+  });
+
+  it("paginates a long 'communicates' field instead of drawing off-page", async () => {
+    const spy = spyOnDraw();
+    const bytes = await buildReport(
+      { ...child, communicates: "Observation detaillee du comportement. ".repeat(140) },
+      [mkObs(8, 2)],
+      { periodDays: null, questions: ["Is this pattern relevant?"] },
+    );
+    const calls = spy.calls();
+    const doc = await PDFDocument.load(bytes);
+    expect(doc.getPageCount()).toBeGreaterThan(1);
+    // Every string actually rendered sits inside the printable area
+    // (content stays above the footer zone; nothing below ~34pt or off-page).
+    expect(Math.min(...drawnY(calls))).toBeGreaterThanOrEqual(30);
+    // The long field was rendered, not clipped away.
+    expect(drawnText(calls)).toContain("Observation detaillee du comportement.");
+    expect(drawnText(calls)).toContain("Is this pattern relevant?");
+  });
+
+  it("keeps every episode in the log across pages (no silent truncation)", async () => {
+    const many = Array.from({ length: 60 }, (_, i) => ({
+      ...mkObs((i % 10) + 1, i + 1),
+      note: `ep${String(i).padStart(2, "0")}marker`,
+    }));
+    const spy = spyOnDraw();
+    const bytes = await buildReport(child, many, { periodDays: null, questions: [] });
+    const calls = spy.calls();
+    const doc = await PDFDocument.load(bytes);
+    expect(doc.getPageCount()).toBeGreaterThan(1);
+    const all = drawnText(calls);
+    for (let i = 0; i < 60; i++) {
+      expect(all).toContain(`ep${String(i).padStart(2, "0")}marker`);
+    }
+    expect(Math.min(...drawnY(calls))).toBeGreaterThanOrEqual(30);
   });
 });

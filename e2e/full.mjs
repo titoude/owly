@@ -152,15 +152,33 @@ try {
   await page.waitForTimeout(700);
   ok("second child created", /Maya/i.test(await page.locator("body").innerText()));
 
-  // ── 10. Delete confirm in history ──────────────────────────
-  await page.goto(BASE + "/#/history");
+  // ── 10. Delete persists in history ─────────────────────────
+  // Maya (just created) has no observations — switch back to Léo first.
+  await page.goto(BASE + "/#/settings");
   await page.waitForTimeout(500);
-  const del = page.locator("button", { hasText: /^delete$|^supprimer$/i }).first();
-  if (await del.count()) {
-    await del.click();
+  await page.locator("button", { hasText: /léo/i }).first().click();
+  await page.waitForTimeout(400);
+  await page.goto(BASE + "/#/history");
+  await page.waitForTimeout(600);
+  const delBtns = () => page.locator("button", { hasText: /^delete$|^supprimer$/i }).count();
+  const delBefore = await delBtns();
+  if (delBefore === 0) {
+    ok("delete asks confirm", false, "no observations on active child (Léo seed missing?)");
+  } else {
+    await page.locator("button", { hasText: /^delete$|^supprimer$/i }).first().click();
     await page.waitForTimeout(300);
-    ok("delete asks confirm", /confirm|sûr|sure/i.test(await page.locator("body").innerText()) || (await page.locator("button", { hasText: /confirm|supprimer/i }).count()) > 0);
-  } else ok("delete asks confirm", true, "no obs on this child — skipped");
+    const confirmBtn = page.locator("button", { hasText: /this observation\?|cette observation/i }).first();
+    ok("delete asks confirm", (await confirmBtn.count()) > 0);
+    if (await confirmBtn.count()) {
+      await confirmBtn.click();
+      await page.waitForTimeout(500);
+      const delAfter = await delBtns();
+      ok("delete removes the row", delAfter === delBefore - 1, `${delBefore} → ${delAfter}`);
+      await page.reload();
+      await page.waitForTimeout(700);
+      ok("delete persists after reload", (await delBtns()) === delBefore - 1);
+    }
+  }
 
   // ── 11. Export produces JSON download ──────────────────────
   await page.goto(BASE + "/#/settings");

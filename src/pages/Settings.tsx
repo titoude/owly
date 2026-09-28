@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useApp } from "../appContext";
-import { getSetting, setSetting } from "../db";
+import { db, getSetting, setSetting } from "../db";
 import { clearDemo, seedDemo } from "../demo";
-import { deleteAll, exportAll, importAll } from "../export";
+import { deleteAll, exportAll, importAll, inspectBackup, type BackupSummary } from "../export";
 import { newPinRecord } from "../pin";
 import type { Child } from "../types";
 
@@ -30,9 +30,12 @@ export default function Settings() {
   const [confirmDel, setConfirmDel] = useState(false);
   const [confirmDemoClear, setConfirmDemoClear] = useState(false);
   const [msg, setMsg] = useState<{ text: string; error: boolean } | null>(null);
+  const [pendingImport, setPendingImport] = useState<{ file: File; summary: BackupSummary } | null>(null);
+  const [obsCount, setObsCount] = useState(0);
 
   useEffect(() => {
     void getSetting<string>("passcode").then((p) => setPinSet(!!p));
+    void db.observations.count().then(setObsCount);
   }, []);
 
   // ?demo=1 auto-seed (from onboarding)
@@ -65,9 +68,23 @@ export default function Settings() {
     download(`owly-backup-${new Date().toISOString().slice(0, 10)}.json`, await exportAll());
   }
 
-  async function doImport(file: File) {
+  // Step 1: validate + summarize the backup before anything is replaced.
+  async function pickImport(file: File) {
     try {
-      await importAll(await file.text());
+      const summary = inspectBackup(await file.text());
+      setPendingImport({ file, summary });
+    } catch {
+      setPendingImport(null);
+      setMsg({ text: t("settings.importError"), error: true });
+    }
+  }
+
+  // Step 2: user confirmed the replacement preview — now actually import.
+  async function doImport() {
+    if (!pendingImport) return;
+    try {
+      await importAll(await pendingImport.file.text());
+      setPendingImport(null);
       await refresh();
       setMsg({ text: t("settings.imported"), error: false });
     } catch {
@@ -166,7 +183,27 @@ export default function Settings() {
         <button type="button" className="btn-ghost w-full" onClick={() => void doExport()}>{t("settings.export")}</button>
         <button type="button" className="btn-ghost w-full" onClick={() => fileRef.current?.click()}>{t("settings.import")}</button>
         <p className="text-xs text-neutral-500">{t("settings.importWarn")}</p>
-        <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void doImport(f); }} />
+        <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void pickImport(f); }} />
+        {pendingImport && (
+          <div className="rounded-xl border border-amber-300 bg-amber-50 p-3 space-y-2" role="alertdialog" aria-labelledby="import-preview-title">
+            <p id="import-preview-title" className="text-sm font-semibold text-amber-900">{t("settings.importPreviewTitle")}</p>
+            <p className="text-xs text-amber-900">
+              {t("settings.importPreview", {
+                children: pendingImport.summary.children,
+                observations: pendingImport.summary.observations,
+                date: pendingImport.summary.exportedAt ? new Date(pendingImport.summary.exportedAt).toLocaleDateString(i18n.language === "fr" ? "fr-FR" : "en-GB") : "?",
+                curChildren: children.length,
+                curObs: obsCount,
+              })}
+            </p>
+            <div className="flex gap-2">
+              <button type="button" className="btn-ghost flex-1 text-sm" onClick={() => setPendingImport(null)}>{t("common.cancel")}</button>
+              <button type="button" className="flex-1 rounded-xl bg-amber-600 py-2 text-sm font-semibold text-white" onClick={() => void doImport()}>
+                {t("settings.importConfirm")}
+              </button>
+            </div>
+          </div>
+        )}
         {!confirmDel ? (
           <button type="button" className="btn-ghost w-full text-red-700" onClick={() => setConfirmDel(true)}>{t("settings.deleteAll")}</button>
         ) : (

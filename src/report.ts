@@ -7,10 +7,17 @@ const MUTED = rgb(0.42, 0.45, 0.52);
 const ACCENT = rgb(0.05, 0.6, 0.55);
 const LINE = rgb(0.85, 0.87, 0.9);
 
+const PAGE_W = 595;
+const PAGE_H = 842; // A4
+const TOP_Y = 800;
+// Reserve the strip below this for the fixed footer (drawn at y≈46/34).
+const BOTTOM_Y = 64;
+
 const zoneLabel = (z: string) => i18n.t(`zones.${z}`, { defaultValue: z });
 const intervLabel = (id: string): string => i18n.t(`interventions.${id}`, { defaultValue: id });
 
 interface Ctx {
+  doc: PDFDocument;
   page: PDFPage;
   font: PDFFont;
   bold: PDFFont;
@@ -21,6 +28,8 @@ interface Ctx {
 
 // StandardFonts (Helvetica) only encode WinAnsi — emoji, CJK, etc. throw
 // inside drawText. Strip them so an unusual name/note can never crash the PDF.
+// TODO(i18n): embed a Unicode font so non-Latin scripts render instead of
+// being stripped. Tracked as a known limitation — see NOTICE.
 function safe(s: string): string {
   return s.replace(/[^\u0020-\u00FF\u0152\u0153\u0178\u2013\u2014\u2018\u2019\u201C\u201D\u2026]/g, "");
 }
@@ -62,10 +71,25 @@ function truncToWidth(font: PDFFont, s: string, size: number, maxWidth: number):
   return out + "…";
 }
 
+function newPage(ctx: Ctx): void {
+  ctx.page = ctx.doc.addPage([PAGE_W, PAGE_H]);
+  ctx.y = TOP_Y;
+}
+
+// Content may never be drawn below the footer zone; overflow opens a page.
+function ensureSpace(ctx: Ctx, needed: number): boolean {
+  if (ctx.y - needed < BOTTOM_Y) {
+    newPage(ctx);
+    return true;
+  }
+  return false;
+}
+
 function line(ctx: Ctx, text: string, opts: { size?: number; font?: PDFFont; color?: typeof INK; gap?: number } = {}) {
   const size = opts.size ?? 9.5;
   const font = opts.font ?? ctx.font;
   for (const l of wrapText(text, size, font, ctx.width)) {
+    ensureSpace(ctx, size + 4.5);
     ctx.page.drawText(safe(l), {
       x: ctx.left,
       y: ctx.y,
@@ -79,6 +103,8 @@ function line(ctx: Ctx, text: string, opts: { size?: number; font?: PDFFont; col
 }
 
 function heading(ctx: Ctx, text: string) {
+  // Keep a heading attached to at least the first line of its section.
+  ensureSpace(ctx, 46);
   ctx.y -= 6;
   line(ctx, text.toUpperCase(), { font: ctx.bold, size: 8.5, color: ACCENT, gap: 11 });
   ctx.page.drawLine({ start: { x: ctx.left, y: ctx.y + 4 }, end: { x: ctx.left + ctx.width, y: ctx.y + 4 }, thickness: 0.7, color: LINE });
@@ -95,6 +121,16 @@ export interface ReportOptions {
   questions: string[];
 }
 
+const COLS = [0, 86, 126, 182, 226, 318]; // date, score, band, duration, areas, cause/note
+const COL_W = [86, 40, 56, 44, 92, 181];
+
+function drawTableHeader(ctx: Ctx, headerRow: string[]) {
+  headerRow.forEach((h, i) => {
+    ctx.page.drawText(safe(h), { x: ctx.left + COLS[i], y: ctx.y, size: 7.5, font: ctx.bold, color: MUTED });
+  });
+  ctx.y -= 10;
+}
+
 export async function buildReport(child: Child, observations: Observation[], opts: ReportOptions): Promise<Uint8Array> {
   const episodes = observations
     .filter((o) => !o.baseline)
@@ -106,14 +142,14 @@ export async function buildReport(child: Child, observations: Observation[], opt
   doc.setCreator("Owly (open-source pain observation journal)");
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
-  const page = doc.addPage([595, 842]); // A4
-  const ctx: Ctx = { page, font, bold, y: 800, left: 48, width: 499 };
+  const ctx: Ctx = { doc, page: undefined as unknown as PDFPage, font, bold, y: TOP_Y, left: 48, width: PAGE_W - 96 };
+  newPage(ctx);
 
   // Header
   line(ctx, t("title"), { font: bold, size: 15, color: INK, gap: 19 });
   line(ctx, `${child.name}${child.birthYear ? ` · ${t("born")} ${child.birthYear}` : ""}${child.conditions ? ` · ${child.conditions}` : ""}`, { size: 10, color: MUTED, gap: 14 });
   line(ctx, t("prepared", { date: fmtDate(Date.now()), count: episodes.length }), { size: 8.5, color: MUTED, gap: 10 });
-  page.drawLine({ start: { x: ctx.left, y: ctx.y }, end: { x: ctx.left + ctx.width, y: ctx.y }, thickness: 1.4, color: ACCENT });
+  ctx.page.drawLine({ start: { x: ctx.left, y: ctx.y }, end: { x: ctx.left + ctx.width, y: ctx.y }, thickness: 1.4, color: ACCENT });
   ctx.y -= 12;
 
   // How the child communicates
@@ -150,33 +186,38 @@ export async function buildReport(child: Child, observations: Observation[], opt
     if (workedList) line(ctx, `• ${t("intervLine")}: ${workedList}`, { color: MUTED });
   }
 
-  // Timeline table — fixed column x positions (proportional font can't padEnd)
-  heading(ctx, t("episodeLog"));
-  const cols = [0, 86, 126, 182, 226, 318]; // date, score, band, duration, areas, cause/note
-  const colW = [86, 40, 56, 44, 92, 181];
-  const headerRow = [t("colDate"), t("colScore"), t("colBand"), t("colDuration"), t("colAreas"), t("colCause")];
-  headerRow.forEach((h, i) => {
-    page.drawText(safe(h), { x: ctx.left + cols[i], y: ctx.y, size: 7.5, font: bold, color: MUTED });
-  });
-  ctx.y -= 10;
-  const shown = episodes.slice(-14);
-  for (const o of shown) {
-    const areas = o.bodyZones.map((z) => zoneLabel(z)).join("+").replace(/\s+/g, "");
-    const cells = [
-      fmtDate(o.startedAt),
-      `${o.total}/10`,
-      i18n.t(`band.${bandFor(o.total)}`),
-      o.durationMinutes ? `${o.durationMinutes}m` : "—",
-      areas,
-      [o.suspectedCause, o.note].filter(Boolean).join(" — "),
-    ];
-    cells.forEach((c, i) => {
-      page.drawText(truncToWidth(font, c, 7.6, colW[i]), { x: ctx.left + cols[i], y: ctx.y, size: 7.6, font, color: INK });
-    });
-    ctx.y -= 10.5;
-  }
-  if (episodes.length > shown.length) {
-    line(ctx, t("earlierEpisodes", { count: episodes.length - shown.length }), { size: 7.5, color: MUTED });
+  // Episode log — fixed column x positions (proportional font can't padEnd).
+  // Every episode is rendered; the table re-heads itself after a page break.
+  if (episodes.length > 0) {
+    heading(ctx, t("episodeLog"));
+    const headerRow = [t("colDate"), t("colScore"), t("colBand"), t("colDuration"), t("colAreas"), t("colCause")];
+    drawTableHeader(ctx, headerRow);
+    for (const o of episodes) {
+      const areas = o.bodyZones.map((z) => zoneLabel(z)).join(", ");
+      const noteLines = wrapText(
+        [o.suspectedCause, o.note].filter(Boolean).join(" — "),
+        7.6, font, COL_W[5],
+      );
+      const areaLines = wrapText(areas, 7.6, font, COL_W[4]);
+      const rowH = Math.max(10.5, Math.max(noteLines.length, areaLines.length) * 9 + 1.5);
+      if (ensureSpace(ctx, rowH + 2)) drawTableHeader(ctx, headerRow);
+      const cells = [
+        fmtDate(o.startedAt),
+        `${o.total}/10`,
+        i18n.t(`band.${bandFor(o.total)}`),
+        o.durationMinutes ? `${o.durationMinutes}m` : "—",
+      ];
+      cells.forEach((c, i) => {
+        ctx.page.drawText(truncToWidth(font, c, 7.6, COL_W[i]), { x: ctx.left + COLS[i], y: ctx.y, size: 7.6, font, color: INK });
+      });
+      areaLines.forEach((l, i) => {
+        ctx.page.drawText(truncToWidth(font, l, 7.6, COL_W[4]), { x: ctx.left + COLS[4], y: ctx.y - i * 9, size: 7.6, font, color: INK });
+      });
+      noteLines.forEach((l, i) => {
+        ctx.page.drawText(truncToWidth(font, l, 7.6, COL_W[5]), { x: ctx.left + COLS[5], y: ctx.y - i * 9, size: 7.6, font, color: INK });
+      });
+      ctx.y -= rowH;
+    }
   }
 
   // Baselines
@@ -194,10 +235,14 @@ export async function buildReport(child: Child, observations: Observation[], opt
     qs.slice(0, 5).forEach((q, i) => line(ctx, `${i + 1}. ${q}`, { size: 9.5 }));
   }
 
-  // Footer
-  ctx.y = 46;
-  line(ctx, t("footer1"), { size: 7, color: MUTED, gap: 9 });
-  line(ctx, t("footer2"), { size: 7, color: MUTED });
+  // Footer — fixed position on the last page, above the page's lower edge.
+  const foot1 = wrapText(t("footer1"), 7, font, ctx.width);
+  const foot2 = wrapText(t("footer2"), 7, font, ctx.width);
+  let fy = 46;
+  for (const l of [...foot1, ...foot2]) {
+    ctx.page.drawText(safe(l), { x: ctx.left, y: fy, size: 7, font, color: MUTED });
+    fy -= 9;
+  }
 
   return doc.save();
 }

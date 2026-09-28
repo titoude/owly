@@ -1,6 +1,7 @@
 import type { FlaccCategory, FlaccScores, PainBand } from "./types";
 
-// Canonical FLACC descriptors (Merkel et al. 1997) — public domain clinical instrument.
+// Canonical FLACC descriptors (Merkel et al. 1997) — published clinical instrument;
+// English wording only — redistribution/translation rights pending licensor confirmation (see README).
 // rFLACC (Malviya et al. 2006) additionally allows per-child individualized descriptors;
 // Owly surfaces them as "this is how {child} shows it" hints on each category.
 export const FLACC: Record<

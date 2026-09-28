@@ -7,7 +7,7 @@ Thanks for helping. Owly exists for a population that gets very few free tools �
 1. **Privacy is non-negotiable.** Owly is local-first. Any feature that sends data off the device needs an opt-in flag, a README section, and a good reason. PRs that add telemetry, analytics, or third-party calls will be rejected.
 2. **Observations, not diagnosis.** Owly records what caregivers see. It must never present a FLACC score as a medical conclusion, and never add "risk prediction" or auto-diagnosis language.
 3. **Caregivers are tired.** Design for 3 a.m.: large targets, few taps, calm colors, no account creation, no paywalls.
-4. **The FLACC instrument is public domain** (Merkel et al., 1997). Keep its scoring semantics intact (0–2 per category, 0–10 total).
+4. **FLACC wording is not public domain.** The English FLACC descriptors follow the published instrument (Merkel et al., 1997; rFLACC: Malviya et al., 2006). Redistribution/translation rights are being verified with the licensor — do not translate the scale wording until that is confirmed (see README › Instrument licensing). Keep its scoring semantics intact (0–2 per category, 0–10 total).
 
 ## Dev setup
 

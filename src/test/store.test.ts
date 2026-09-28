@@ -59,6 +59,46 @@ describe("export/import", () => {
     await expect(importAll("{}")).rejects.toThrow();
     await expect(importAll('{"version":9,"children":[],"observations":[]}')).rejects.toThrow();
   });
+
+  // exportedAt differs between exports — compare the stored rows, not the dump string.
+  const dbRows = async () => ({
+    children: await db.children.toArray(),
+    observations: await db.observations.toArray(),
+  });
+
+  it("rejects a backup with a non-string custom descriptor and preserves existing data", async () => {
+    await seedDemo();
+    const before = await dbRows();
+    const dump = JSON.parse(await exportAll());
+    dump.children[0].customDescriptors.face = { en: "grimaces" };
+    await expect(importAll(JSON.stringify(dump))).rejects.toThrow();
+    expect(await dbRows()).toEqual(before);
+  });
+
+  it("rejects non-string free-text fields instead of silently dropping them", async () => {
+    await seedDemo();
+    const before = await dbRows();
+    const base = await exportAll();
+    for (const field of ["communicates", "conditions", "name"]) {
+      const dump = JSON.parse(base);
+      dump.children[0][field] = { text: "nested" };
+      await expect(importAll(JSON.stringify(dump))).rejects.toThrow();
+    }
+    const dump = JSON.parse(base);
+    dump.observations[0].note = 42;
+    await expect(importAll(JSON.stringify(dump))).rejects.toThrow();
+    expect(await dbRows()).toEqual(before);
+  });
+
+  it("points the active child at an imported profile after restore", async () => {
+    await seedDemo();
+    const dump = await exportAll();
+    const importedId = JSON.parse(dump).children[0].id;
+    await deleteAll();
+    await setSetting("activeChildId", 9999); // stale id, no longer exists
+    await importAll(dump);
+    expect(await getSetting("activeChildId")).toBe(importedId);
+  });
 });
 
 describe("settings + pin", () => {

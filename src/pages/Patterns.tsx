@@ -99,6 +99,7 @@ export default function Patterns() {
           {insights.map((s, i) => (
             <p key={i} className="text-sm text-neutral-600">• {s}</p>
           ))}
+          <p className="text-xs text-neutral-500 pt-1">{t("patterns.note")}</p>
         </div>
       )}
 
