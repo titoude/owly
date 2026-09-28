@@ -89,7 +89,7 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
             setError(false);
             if (v.length === 4) void tryUnlock(v);
           }}
-          className={`input text-center text-2xl tracking-[0.5em] w-40 ${error ? "border-red-500" : ""}`}
+          className={`input text-center text-2xl tracking-[0.5em] !w-40 ${error ? "border-red-500" : ""}`}
           aria-label={t("settings.unlock")}
         />
         {error && <p className="text-[13px] text-red-700" role="alert">{t("settings.wrongPin")}</p>}

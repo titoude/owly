@@ -152,7 +152,8 @@
     "scoreChartLabel": "Grafico a barre: {{n}} episodi più recenti, media {{avg}}, massimo {{max}}",
     "insightZone_one": "«{{zone}}» è l'area più sospettata ({{n}} episodio).",
     "insightZone_other": "«{{zone}}» è l'area più sospettata ({{n}} episodi).",
-    "entryDesc": "Quando si concentrano gli episodi e cosa ha aiutato."
+    "entryDesc": "Quando si concentrano gli episodi e cosa ha aiutato.",
+    "values": "Mostra valori"
   },
   "report": {
     "title": "Report per il medico",

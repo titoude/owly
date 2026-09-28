@@ -120,24 +120,39 @@ export default function Patterns() {
       <div className="space-y-6 lg:grid lg:grid-cols-2 lg:gap-5 lg:space-y-0">
       <section className="card p-4 space-y-3">
         <h2 className="section-title">{t("patterns.scoreOverTime")}</h2>
+        {/* Bars are scaled on the real 0–10 score axis (not relative to the
+            local max) so heights are truthful; the numeric value sits above
+            each bar whenever the column can hold it. */}
         <div
-          className="flex items-end gap-1 h-24"
+          className="flex items-end gap-1"
           role="img"
           aria-label={t("patterns.scoreChartLabel", { n: Math.min(30, episodes.length), avg: avg.toFixed(1), max: maxScore })}
         >
           {episodes.slice(-30).map((o) => (
-            <div
-              key={o.id}
-              title={`${fmtD(o.startedAt)} — ${o.total}/10`}
-              className={`flex-1 rounded-t-md ${BAND_COLOR[bandFor(o.total)]}`}
-              style={{ height: `${(o.total / maxScore) * 100}%`, opacity: 0.9 }}
-            />
+            <div key={o.id} className="flex min-w-0 flex-1 flex-col items-center justify-end gap-1" title={`${fmtD(o.startedAt)} — ${o.total}/10`}>
+              <span className="hidden text-[11px] tabular-nums text-neutral-600 md:block">{o.total}</span>
+              <div
+                className={`w-full rounded-t-md ${BAND_COLOR[bandFor(o.total)]}`}
+                style={{ height: `${o.total * 7.2}px`, opacity: 0.9 }}
+              />
+            </div>
           ))}
         </div>
-        <div className="flex justify-between text-[13px] text-neutral-600">
+        <div className="flex justify-between border-t border-neutral-200 pt-1 text-[13px] text-neutral-600">
           <span>{episodes.length > 0 && fmtD(episodes[Math.max(0, episodes.length - 30)].startedAt)}</span>
+          <span aria-hidden>0–10</span>
           <span>{episodes.length > 0 && fmtD(episodes[episodes.length - 1].startedAt)}</span>
         </div>
+        {/* Same records as a plain data list — the chart's accessible
+            alternative and the mobile value readout. */}
+        <details className="text-[13px] text-neutral-600">
+          <summary className="min-h-11 cursor-pointer font-medium text-neutral-700 inline-flex items-center">{t("patterns.values")}</summary>
+          <ul className="mt-1 grid grid-cols-2 gap-x-6 gap-y-0.5 sm:grid-cols-3">
+            {episodes.slice(-30).map((o) => (
+              <li key={o.id} className="tabular-nums">{fmtD(o.startedAt)} — {o.total}/10</li>
+            ))}
+          </ul>
+        </details>
       </section>
 
       <section className="card p-4 space-y-3">

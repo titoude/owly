@@ -124,7 +124,7 @@ export default function Settings() {
   const hasDemo = children.some((c: Child) => c.isDemo);
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6">
       <h1 className="page-title">{t("settings.title")}</h1>
 
       <section className="card p-4 space-y-3">
@@ -159,7 +159,7 @@ export default function Settings() {
         {/* One compact native select for 9 locales — keeps each label in its
             own lang/dir and stays readable at 320px. */}
         <select
-          className="input w-full"
+          className="input w-full sm:max-w-xs"
           value={i18n.language}
           onChange={(e) => changeLang(e.target.value as Lang)}
           aria-label={t("settings.language")}
@@ -185,11 +185,11 @@ export default function Settings() {
               maxLength={4}
               value={pin}
               onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
-              className="input w-28 text-center tracking-[0.4em]"
+              className="input !w-24 shrink-0 text-center tracking-[0.4em]"
               aria-label={t("settings.pin")}
               placeholder="••••"
             />
-            <button type="button" className="btn-ghost flex-1" disabled={pin.length !== 4} onClick={() => void setPasscode()}>
+            <button type="button" className="btn-ghost flex-1 whitespace-nowrap" disabled={pin.length !== 4} onClick={() => void setPasscode()}>
               {t("settings.pinSet")}
             </button>
           </div>

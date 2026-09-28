@@ -152,7 +152,8 @@
     "scoreChartLabel": "Balkendiagramm: {{n}} neueste Episoden, Mittelwert {{avg}}, Maximum {{max}}",
     "insightZone_one": "„{{zone}}“ ist der am häufigsten vermutete Bereich ({{n}} Episode).",
     "insightZone_other": "„{{zone}}“ ist der am häufigsten vermutete Bereich ({{n}} Episoden).",
-    "entryDesc": "Wann Episoden häufig sind und was geholfen hat."
+    "entryDesc": "Wann Episoden häufig sind und was geholfen hat.",
+    "values": "Werte anzeigen"
   },
   "report": {
     "title": "Arztbericht",

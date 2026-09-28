@@ -151,7 +151,8 @@
     "insightWorked": "“{{label}}”在 {{n}} 次使用中 {{yes}} 次被记录为有效。",
     "scoreChartLabel": "柱状图：最近 {{n}} 次发作，平均 {{avg}}，最高 {{max}}",
     "insightZone_other": "“{{zone}}”是最常怀疑的部位（{{n}} 次发作）。",
-    "entryDesc": "查看发作集中的时段以及哪些安抚有效。"
+    "entryDesc": "查看发作集中的时段以及哪些安抚有效。",
+    "values": "查看数值"
   },
   "report": {
     "title": "医生报告",

@@ -152,7 +152,8 @@
     "insightZone_other": "« {{zone}} » est la zone la plus soupçonnée ({{n}} épisodes).",
     "note": "Les motifs décrivent ce que vous avez noté — ils suggèrent quoi discuter avec le médecin, ils ne prouvent ni cause ni efficacité.",
     "toReport": "Générer le rapport médecin →",
-    "entryDesc": "Quand les épisodes se concentrent et ce qui a aidé."
+    "entryDesc": "Quand les épisodes se concentrent et ce qui a aidé.",
+    "values": "Afficher les valeurs"
   },
   "report": {
     "title": "Rapport médecin",

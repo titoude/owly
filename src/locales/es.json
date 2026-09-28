@@ -152,7 +152,8 @@
     "scoreChartLabel": "Gráfico de barras: {{n}} episodios más recientes, media {{avg}}, máximo {{max}}",
     "insightZone_one": "«{{zone}}» es la zona más sospechada ({{n}} episodio).",
     "insightZone_other": "«{{zone}}» es la zona más sospechada ({{n}} episodios).",
-    "entryDesc": "Cuándo se agrupan los episodios y qué ayudó."
+    "entryDesc": "Cuándo se agrupan los episodios y qué ayudó.",
+    "values": "Ver valores"
   },
   "report": {
     "title": "Informe para el médico",

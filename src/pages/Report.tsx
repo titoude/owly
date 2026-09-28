@@ -100,7 +100,7 @@ export default function Report() {
 
   if (!ready) {
     return (
-      <div className="text-center space-y-4 pt-20">
+      <div className="mx-auto max-w-xl text-center space-y-4 pt-20">
         <div className="mx-auto grid place-items-center size-16 rounded-3xl bg-neutral-100 border border-neutral-200">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-600" aria-hidden>
             <path d="M6.5 3.5h7L19 8.5v11a1 1 0 0 1-1 1H6.5a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1Z" />
@@ -114,7 +114,7 @@ export default function Report() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-xl space-y-6">
       <div>
         <h1 className="page-title">{t("report.title")}</h1>
         <p className="mt-1 text-sm text-neutral-600">

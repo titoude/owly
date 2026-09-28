@@ -152,7 +152,8 @@
     "scoreChartLabel": "Bar chart: {{n}} most recent episodes, average {{avg}}, max {{max}}",
     "insightZone_one": "\"{{zone}}\" is the most suspected area ({{n}} episode).",
     "insightZone_other": "\"{{zone}}\" is the most suspected area ({{n}} episodes).",
-    "entryDesc": "See when episodes cluster and what you recorded as helping."
+    "entryDesc": "See when episodes cluster and what you recorded as helping.",
+    "values": "Show values"
   },
   "report": {
     "title": "Doctor report",
