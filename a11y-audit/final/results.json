@@ -8,7 +8,7 @@
     "wcag22aa",
     "best-practice"
   ],
-  "when": "2026-09-28T11:01:28.968Z",
+  "when": "2026-09-28T11:04:16.053Z",
   "results": [
     {
       "id": "route:/",
@@ -277,29 +277,15 @@
     {
       "id": "observe-edit",
       "description": "observation edit mode (preseeded)",
-      "status": "FAIL",
-      "violations": [
-        {
-          "id": "label",
-          "impact": "critical",
-          "help": "Form elements must have labels",
-          "nodes": [
-            {
-              "html": "<input class=\"input text-sm w-full\" max=\"2026-09-28T11:00\" type=\"datetime-local\" value=\"2026-09-27T02:00\">",
-              "target": [
-                "input"
-              ]
-            }
-          ]
-        }
-      ],
+      "status": "PASS",
+      "violations": [],
       "incomplete": [
         {
           "id": "color-contrast",
           "nodes": 0
         }
       ],
-      "passes": 31
+      "passes": 32
     },
     {
       "id": "draft-save-error",
@@ -330,29 +316,15 @@
     {
       "id": "storage-denied-boot",
       "description": "boot with storage denied → recovery screen",
-      "status": "FAIL",
-      "violations": [
-        {
-          "id": "landmark-one-main",
-          "impact": "moderate",
-          "help": "Document should have one main landmark",
-          "nodes": [
-            {
-              "html": "<html lang=\"en\" dir=\"ltr\">",
-              "target": [
-                "html"
-              ]
-            }
-          ]
-        }
-      ],
+      "status": "PASS",
+      "violations": [],
       "incomplete": [
         {
           "id": "color-contrast",
           "nodes": 0
         }
       ],
-      "passes": 17
+      "passes": 21
     },
     {
       "id": "ls-denied-boot",
@@ -422,29 +394,15 @@
     {
       "id": "empty-patterns",
       "description": "patterns with zero observations",
-      "status": "FAIL",
-      "violations": [
-        {
-          "id": "page-has-heading-one",
-          "impact": "moderate",
-          "help": "Page should contain a level-one heading",
-          "nodes": [
-            {
-              "html": "<html lang=\"en\" dir=\"ltr\">",
-              "target": [
-                "html"
-              ]
-            }
-          ]
-        }
-      ],
+      "status": "PASS",
+      "violations": [],
       "incomplete": [
         {
           "id": "color-contrast",
           "nodes": 0
         }
       ],
-      "passes": 22
+      "passes": 25
     },
     {
       "id": "pin-locked",

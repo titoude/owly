@@ -25,17 +25,17 @@ Tags: wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa, best-practice
 | child-edit | PASS | 0 | 1 |
 | import-preview | PASS | 0 | 1 |
 | draft-resume | PASS | 0 | 2 |
-| observe-edit | FAIL | 1 | 1 |
+| observe-edit | PASS | 0 | 1 |
 | draft-save-error | PASS | 0 | 1 |
 | pdf-unsupported | PASS | 0 | 1 |
-| storage-denied-boot | FAIL | 1 | 1 |
+| storage-denied-boot | PASS | 0 | 1 |
 | ls-denied-boot | PASS | 0 | 1 |
 | state:fr | PASS | 0 | 1 |
 | state:rtl | PASS | 0 | 1 |
 | empty-dashboard | PASS | 0 | 1 |
 | empty-history | PASS | 0 | 1 |
-| empty-patterns | FAIL | 1 | 1 |
+| empty-patterns | PASS | 0 | 1 |
 | pin-locked | PASS | 0 | 1 |
 | pin-error | PASS | 0 | 1 |
 
-**29 PASS · 3 FAIL · 0 UNVERIFIED**
+**32 PASS · 0 FAIL · 0 UNVERIFIED**

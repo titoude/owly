@@ -11,14 +11,20 @@ production build (`vite preview`). The audited scope is fixed by
 `scripts/a11y/manifest.json` — every reachable route plus the interactive
 states that a route crawl misses. Reports land in `a11y-audit/*/`.
 
-Coverage (25 scenarios, all PASS — 0 violations):
+Coverage (32 scenarios, all PASS — 0 violations):
 
 - All 9 routes: `/` `/welcome` `/observe` `/history` `/patterns` `/report`
   `/settings` `/redflags` `/child/new` (+ `/child/:id/edit`).
 - All 8 observe wizard steps, audited live while advancing.
-- States: child edit form, empty dashboard/history (zero observations),
-  PIN lock screen, wrong-PIN error, inline delete confirmation,
-  import replacement-preview dialog, French locale, Arabic (RTL) shell.
+- States: child edit form, empty dashboard/history/patterns (zero
+  observations — each audited separately), PIN lock screen, wrong-PIN
+  error, inline delete confirmation, import replacement-preview dialog,
+  French locale, Arabic (RTL) shell.
+- New flows: draft resume/discard offer, observation edit mode, draft-save
+  failure surfaced under fault injection (IndexedDB `put` →
+  QuotaExceededError), unsupported-character PDF error, boot with
+  IndexedDB+localStorage denied (recovery screen), boot with only
+  localStorage denied (app still loads).
 
 Keyboard: `e2e/keyboard.mjs` — 11 assertions on the FLACC radio groups
 (focus without selection, ArrowDown/Up changes selection+focus, wraparound,
