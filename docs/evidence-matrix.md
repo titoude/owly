@@ -42,11 +42,12 @@ doc: check anything.
 ## Test status (this branch)
 
 `npm run build` clean · `npx vitest run` 34/34 · `e2e/smoke.mjs` 9/9 ·
-`e2e/full.mjs` 41/41 · `e2e/keyboard.mjs` 17/17 · `e2e/offline.mjs` 6/6 ·
-a11y audit 32/32 PASS / 0 violations / 0 unverified.
+`e2e/full.mjs` 44/44 · `e2e/keyboard.mjs` 17/17 · `e2e/offline.mjs` 6/6 ·
+a11y audit 33/33 PASS / 0 violations / 0 unverified.
+`npm run lint` exits 0 with 11 warnings (style/purity hints, no errors).
 
 Note on audit scope history: the baseline run covered 25 scenarios; the
-final run covers 32. The 7 added states (draft-resume, observe-edit,
+final run covers 33. The 8 added states (draft-resume, observe-edit,
 draft-save-error, pdf-unsupported, storage-denied-boot, ls-denied-boot,
-empty-patterns) have **no comparable baseline** — they were introduced
-alongside the features they check.
+empty-patterns, fr-observe) have **no comparable baseline** — they were
+introduced alongside the features they check.

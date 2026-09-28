@@ -8,7 +8,7 @@
     "wcag22aa",
     "best-practice"
   ],
-  "when": "2026-09-28T12:03:30.816Z",
+  "when": "2026-09-28T12:20:34.479Z",
   "results": [
     {
       "id": "route:/",
@@ -321,6 +321,14 @@
         }
       ],
       "passes": 32
+    },
+    {
+      "id": "state:fr-observe",
+      "description": "FLACC step in French (scaleNote rendered)",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 36
     },
     {
       "id": "state:rtl",

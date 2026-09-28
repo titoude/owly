@@ -24,8 +24,8 @@
     "cta": "Crea il profilo del tuo bambino",
     "demo": "Esplora invece la demo",
     "points": [
-      "Registrazioni da 60 secondi, anche alle 3 di notte",
-      "Scala del dolore validata (FLACC), individualizzata sul tuo bambino",
+      "Registrazioni rapide, anche alle 3 di notte",
+      "Osservazione strutturata basata sulla scala FLACC pubblicata, adattabile al tuo bambino",
       "Tutto resta su questo dispositivo — niente viene inviato da nessuna parte"
     ],
     "restore": "Ripristina un backup",
@@ -113,7 +113,7 @@
   },
   "history": {
     "title": "Cronologia",
-    "empty": "Ancora nessuna osservazione. La prima richiede circa un minuto.",
+    "empty": "Ancora nessuna osservazione. La prima richiede solo un momento.",
     "emptyCta": "Registra la prima osservazione",
     "baseline": "baseline",
     "deleteConfirm": "Eliminare questa osservazione?"
@@ -199,7 +199,8 @@
     "allTime": "Tutti gli episodi registrati",
     "entryTitle": "Prepara il report",
     "entryDesc": "Scegli il periodo e cosa includere, poi genera il PDF per il medico.",
-    "unsupported": "Questo report non può mostrare il/i carattere/i: {{chars}}. Correggili nel diario, oppure conserva i dati ed esporta un backup JSON — nulla è stato inviato."
+    "unsupported": "Questo report non può mostrare il/i carattere/i: {{chars}}. Correggili nel diario, oppure conserva i dati ed esporta un backup JSON — nulla è stato inviato.",
+    "loadFailedNoKeep": "Il report non è stato caricato — ricarica per riprovare. Le domande non salvate non hanno potuto essere conservate; il diario non è interessato."
   },
   "settings": {
     "title": "Impostazioni",
@@ -236,7 +237,7 @@
     "demoBody": "Carica «Léo» — un bambino fittizio di 9 anni con 3 settimane di osservazioni, per provare subito ogni funzione.",
     "demoLoad": "Carica dati demo",
     "demoLoaded": "Demo caricata — esplora pure",
-    "license": "Owly è gratuito e open source (MIT). I testi di osservazione seguono la scala FLACC pubblicata (Merkel et al., 1997) e la rFLACC (Malviya et al., 2006). Owly è un diario di osservazione, non un dispositivo medico.",
+    "license": "Owly è gratuito e open source (MIT). I testi di osservazione seguono la scala FLACC pubblicata (Merkel et al., 1997) e rFLACC (Malviya et al., 2006). Owly è un diario di osservazione e non è stato sottoposto a valutazione regolatoria come dispositivo medico.",
     "unlockWait": "Troppi tentativi — attendi 30 secondi",
     "forgotPin": "Hai dimenticato il codice?",
     "forgotPinWarning": "Il PIN non può essere recuperato — Owly non ha un meccanismo di reset. Puoi cancellare tutto e ricominciare — questo elimina tutti i profili e le osservazioni su questo dispositivo.",

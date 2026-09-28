@@ -21,17 +21,35 @@ export default function Report() {
   const [reloadNeeded, setReloadNeeded] = useState(false);
   const [ready, setReady] = useState(false);
 
-  // Restore questions/period stashed before a chunk-load-failure reload so a
-  // retried generate keeps the user's unsaved text.
+  // The pre-reload stash is keyed per child so a recovery for one child can
+  // never bleed into another's report. It is consumed on read — a stale stash
+  // must not resurrect old inputs on a later mount.
+  const stashKey = active?.id != null ? `owly-report-draft-${active.id}` : null;
+
   useEffect(() => {
+    if (!stashKey) return;
     try {
-      const raw = sessionStorage.getItem("owly-report-draft");
+      const raw = sessionStorage.getItem(stashKey);
+      sessionStorage.removeItem(stashKey);
       if (!raw) return;
       const d = JSON.parse(raw) as { questions?: string[]; period?: number | null };
       if (Array.isArray(d.questions)) setQuestions(d.questions);
       if ("period" in d) setPeriod(d.period ?? null);
     } catch { /* sessionStorage can be denied — restoration is best-effort */ }
-  }, []);
+  }, [stashKey]);
+
+  // While a reload is pending, keep the stash equal to the CURRENT inputs —
+  // text typed after the failure must be what survives the reload — and keep
+  // the message honest if persistence itself is denied.
+  useEffect(() => {
+    if (!reloadNeeded || !stashKey) return;
+    try {
+      sessionStorage.setItem(stashKey, JSON.stringify({ questions, period }));
+      setError(t("report.loadFailed"));
+    } catch {
+      setError(t("report.loadFailedNoKeep"));
+    }
+  }, [questions, period, reloadNeeded, stashKey, t]);
 
   useEffect(() => {
     if (!active?.id) return;
@@ -57,6 +75,7 @@ export default function Report() {
       const bytes = await mod.buildReport(active, obs, { periodDays: period, questions });
       const date = new Date().toISOString().slice(0, 10);
       mod.downloadPdf(bytes, `owly-report-${active.name.toLowerCase()}-${date}.pdf`);
+      if (stashKey) try { sessionStorage.removeItem(stashKey); } catch { /* denied */ }
     } catch (e) {
       const chars = (e as { chars?: unknown }).chars;
       if (e instanceof Error && e.name === "UnsupportedCharsError" && Array.isArray(chars)) {
@@ -65,11 +84,8 @@ export default function Report() {
         setError(t("report.unsupported", { chars: chars.join(" ") }));
       } else if (e instanceof TypeError && /dynamically imported|import\(i?\)|fetch/i.test(e.message)) {
         // A failed lazy-chunk fetch is cached by the browser — a plain retry
-        // cannot recover. Stash unsaved inputs, then offer an honest reload.
-        try {
-          sessionStorage.setItem("owly-report-draft", JSON.stringify({ questions, period }));
-        } catch { /* storage can be denied */ }
-        setError(t("report.loadFailed"));
+        // cannot recover. The synced-stash effect writes inputs and picks the
+        // honest message (kept vs could-not-be-kept) once reloadNeeded flips.
         setReloadNeeded(true);
       } else {
         setError(t("report.error"));

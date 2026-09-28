@@ -14,17 +14,17 @@ export function FlaccPicker({ category, child, value, onChange }: Props) {
   const { t, i18n } = useTranslation();
   const cat = FLACC[category];
   const custom = child.customDescriptors?.[category];
-  // Scale wording ships in en (licensed) and fr (pre-existing internal
-  // translation, unvalidated). Other locales fall back to English — mark the
-  // foreign-language text so assistive tech pronounces it correctly, and
-  // explain the situation once above the options.
+  // Scale wording ships in en (published wording; redistribution authorization
+  // unverified) and fr (pre-existing internal translation, unvalidated). Other
+  // locales fall back to English — mark the foreign-language text so assistive
+  // tech pronounces it correctly, and explain the situation once above the options.
   const sl = scaleLang();
   const note = i18n.language === "en" ? null : t("observe.scaleNote");
 
   return (
     <fieldset className="space-y-2">
       <legend className="text-lg font-semibold text-neutral-900" lang={sl !== i18n.language ? sl : undefined} dir={sl !== i18n.language ? "ltr" : undefined}>{t(`flacc.${category}`)}</legend>
-      {note ? <p className="text-xs text-neutral-500">{note}</p> : null}
+      {note ? <p className="text-xs text-neutral-600">{note}</p> : null}
       {custom ? (
         <p className="text-sm text-teal-700 italic">
           {t("observe.theirs", { name: child.name })} <span dir="auto">{custom}</span>

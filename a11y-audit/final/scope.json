@@ -27,6 +27,7 @@
     "storage-denied-boot",
     "ls-denied-boot",
     "state:fr",
+    "state:fr-observe",
     "state:rtl",
     "empty-dashboard",
     "empty-history",

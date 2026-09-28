@@ -1,33 +1,168 @@
 {
   "note": "Audited scope for scripts/a11y/audit.mjs. Every reachable screen is listed; scope.json in each audit report must account for every entry — unaudited required states are reported as UNVERIFIED, never silently dropped.",
   "routes": [
-    { "path": "/", "role": "dashboard", "precondition": "demo seed (Léo) loaded", "expects": "child header, primary observe action, recent history" },
-    { "path": "/observe", "role": "wizard", "precondition": "active child", "expects": "8-step flow, radio-style FLACC pickers, next/back" },
-    { "path": "/history", "role": "list", "precondition": "active child", "expects": "observation rows with delete + inline confirm" },
-    { "path": "/patterns", "role": "report", "precondition": "active child", "expects": "insight card, charts, report link" },
-    { "path": "/report", "role": "form", "precondition": "active child", "expects": "period picker, questions, PDF generate" },
-    { "path": "/settings", "role": "settings", "precondition": "none", "expects": "children, language, data, PIN sections" },
-    { "path": "/redflags", "role": "emergency", "precondition": "none", "expects": "static warning list" },
-    { "path": "/child/new", "role": "form", "precondition": "none", "expects": "child profile form" },
-    { "path": "/welcome", "role": "onboarding", "precondition": "none", "expects": "intro + CTA" }
+    {
+      "path": "/",
+      "role": "dashboard",
+      "precondition": "demo seed (Léo) loaded",
+      "expects": "child header, primary observe action, recent history"
+    },
+    {
+      "path": "/observe",
+      "role": "wizard",
+      "precondition": "active child",
+      "expects": "8-step flow, radio-style FLACC pickers, next/back"
+    },
+    {
+      "path": "/history",
+      "role": "list",
+      "precondition": "active child",
+      "expects": "observation rows with delete + inline confirm"
+    },
+    {
+      "path": "/patterns",
+      "role": "report",
+      "precondition": "active child",
+      "expects": "insight card, charts, report link"
+    },
+    {
+      "path": "/report",
+      "role": "form",
+      "precondition": "active child",
+      "expects": "period picker, questions, PDF generate"
+    },
+    {
+      "path": "/settings",
+      "role": "settings",
+      "precondition": "none",
+      "expects": "children, language, data, PIN sections"
+    },
+    {
+      "path": "/redflags",
+      "role": "emergency",
+      "precondition": "none",
+      "expects": "static warning list"
+    },
+    {
+      "path": "/child/new",
+      "role": "form",
+      "precondition": "none",
+      "expects": "child profile form"
+    },
+    {
+      "path": "/welcome",
+      "role": "onboarding",
+      "precondition": "none",
+      "expects": "intro + CTA"
+    }
   ],
   "states": [
-    { "id": "empty-dashboard", "description": "dashboard with a brand-new child (no observations)", "route": "/", "setup": "fresh child, no seed" },
-    { "id": "empty-history", "description": "history list with zero observations", "route": "/history", "setup": "fresh child, no seed" },
-    { "id": "empty-patterns", "description": "patterns view with zero observations", "route": "/patterns", "setup": "fresh child, no seed" },
-    { "id": "draft-resume", "description": "resume/discard offer shown when a stored draft exists", "route": "/observe", "setup": "partially fill wizard, leave route, return" },
-    { "id": "observe-edit", "description": "observation edit mode (preseeded record, draft prompt off)", "route": "/observe/:id/edit", "setup": "history row edit link" },
-    { "id": "draft-save-error", "description": "autosave failure surfaced (IndexedDB quota/denied fault injection)", "route": "/observe", "setup": "IDBObjectStore.put throws QuotaExceededError, then edit a field" },
-    { "id": "pdf-unsupported", "description": "unsupported-character PDF error surfaced accessibly, no silent boxes", "route": "/report", "setup": "child name with emoji, click generate" },
-    { "id": "storage-denied-boot", "description": "boot with IndexedDB+localStorage denied → recovery screen role=alert", "route": "/", "setup": "fresh context, init script breaks storage APIs" },
-    { "id": "ls-denied-boot", "description": "boot with only localStorage denied → app still boots", "route": "/welcome", "setup": "fresh context, init script breaks localStorage only" },
-    { "id": "child-edit", "description": "edit form for an existing child", "route": "/child/:id/edit", "setup": "open edit of seeded child" },
-    { "id": "fr", "description": "settings page in French", "route": "/settings", "setup": "click Français button" },
-    { "id": "rtl", "description": "app shell in a RTL locale once wired (ar)", "route": "/", "setup": "language=ar after locale wiring lands — UNVERIFIED until then" },
-    { "id": "import-preview", "description": "replacement-preview alertdialog on settings", "route": "/settings", "setup": "file input upload of a valid backup" },
-    { "id": "delete-confirm", "description": "inline delete confirmation on a history row", "route": "/history", "setup": "click a row's delete button" },
-    { "id": "pin-locked", "description": "lock screen after a PIN is set", "route": "any", "setup": "set PIN then reload" },
-    { "id": "pin-error", "description": "lock screen after a wrong PIN attempt", "route": "any", "setup": "set PIN, reload, enter wrong PIN" },
-    { "id": "observe-step0..step7", "description": "every wizard step (context, 5 FLACC radios, zones, interventions, note/summary)", "route": "/observe", "setup": "advance with Next, audit each step" }
+    {
+      "id": "empty-dashboard",
+      "description": "dashboard with a brand-new child (no observations)",
+      "route": "/",
+      "setup": "fresh child, no seed"
+    },
+    {
+      "id": "empty-history",
+      "description": "history list with zero observations",
+      "route": "/history",
+      "setup": "fresh child, no seed"
+    },
+    {
+      "id": "empty-patterns",
+      "description": "patterns view with zero observations",
+      "route": "/patterns",
+      "setup": "fresh child, no seed"
+    },
+    {
+      "id": "draft-resume",
+      "description": "resume/discard offer shown when a stored draft exists",
+      "route": "/observe",
+      "setup": "partially fill wizard, leave route, return"
+    },
+    {
+      "id": "observe-edit",
+      "description": "observation edit mode (preseeded record, draft prompt off)",
+      "route": "/observe/:id/edit",
+      "setup": "history row edit link"
+    },
+    {
+      "id": "draft-save-error",
+      "description": "autosave failure surfaced (IndexedDB quota/denied fault injection)",
+      "route": "/observe",
+      "setup": "IDBObjectStore.put throws QuotaExceededError, then edit a field"
+    },
+    {
+      "id": "pdf-unsupported",
+      "description": "unsupported-character PDF error surfaced accessibly, no silent boxes",
+      "route": "/report",
+      "setup": "child name with emoji, click generate"
+    },
+    {
+      "id": "storage-denied-boot",
+      "description": "boot with IndexedDB+localStorage denied → recovery screen role=alert",
+      "route": "/",
+      "setup": "fresh context, init script breaks storage APIs"
+    },
+    {
+      "id": "ls-denied-boot",
+      "description": "boot with only localStorage denied → app still boots",
+      "route": "/welcome",
+      "setup": "fresh context, init script breaks localStorage only"
+    },
+    {
+      "id": "child-edit",
+      "description": "edit form for an existing child",
+      "route": "/child/:id/edit",
+      "setup": "open edit of seeded child"
+    },
+    {
+      "id": "fr",
+      "description": "settings page in French",
+      "route": "/settings",
+      "setup": "click Français button"
+    },
+    {
+      "id": "rtl",
+      "description": "app shell in a RTL locale once wired (ar)",
+      "route": "/",
+      "setup": "language=ar after locale wiring lands — UNVERIFIED until then"
+    },
+    {
+      "id": "import-preview",
+      "description": "replacement-preview alertdialog on settings",
+      "route": "/settings",
+      "setup": "file input upload of a valid backup"
+    },
+    {
+      "id": "delete-confirm",
+      "description": "inline delete confirmation on a history row",
+      "route": "/history",
+      "setup": "click a row's delete button"
+    },
+    {
+      "id": "pin-locked",
+      "description": "lock screen after a PIN is set",
+      "route": "any",
+      "setup": "set PIN then reload"
+    },
+    {
+      "id": "pin-error",
+      "description": "lock screen after a wrong PIN attempt",
+      "route": "any",
+      "setup": "set PIN, reload, enter wrong PIN"
+    },
+    {
+      "id": "observe-step0..step7",
+      "description": "every wizard step (context, 5 FLACC radios, zones, interventions, note/summary)",
+      "route": "/observe",
+      "setup": "advance with Next, audit each step"
+    },
+    {
+      "id": "fr-observe",
+      "description": "a FLACC wizard step in French — the scaleNote translation notice only renders outside EN and must meet contrast",
+      "precondition": "locale=fr, observe wizard at step 2/8"
+    }
   ]
 }

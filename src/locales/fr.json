@@ -24,8 +24,8 @@
     "cta": "Créer le profil de votre enfant",
     "demo": "Explorer la démo",
     "points": [
-      "Relevés de 60 secondes, même à 3 h du matin",
-      "Échelle validée (FLACC), individualisée à votre enfant",
+      "Des relevés rapides, même à 3 h du matin",
+      "Observation structurée basée sur l'échelle FLACC publiée, adaptable à votre enfant",
       "Tout reste sur cet appareil — rien n'est envoyé"
     ],
     "restore": "Restaurer une sauvegarde",
@@ -92,7 +92,7 @@
     "summary": "Résumé",
     "saveError": "Enregistrement impossible — réessayez.",
     "pickTime": "Choisir l'heure",
-    "scaleNote": "Les descriptions de l'échelle FLACC sont une traduction interne non validée — une version agréée est en attente.",
+    "scaleNote": "Les descriptions de l'échelle FLACC sont une traduction interne non validée — aucune version agréée n'est confirmée.",
     "editTitle": "Modifier l'observation",
     "draftPrompt": "Vous avez une observation non terminée. Reprenez là où vous étiez, ou supprimez-la.",
     "resume": "Reprendre",
@@ -113,7 +113,7 @@
   },
   "history": {
     "title": "Historique",
-    "empty": "Pas encore d'observation. La première prend environ une minute.",
+    "empty": "Pas encore d'observation. La première ne prend qu'un moment.",
     "emptyCta": "Enregistrer la première observation",
     "baseline": "baseline",
     "deleteConfirm": "Supprimer cette observation ?"
@@ -199,7 +199,8 @@
     "allTime": "Tous les épisodes enregistrés",
     "entryTitle": "Préparer le rapport",
     "entryDesc": "Choisissez la période et le contenu, puis générez le PDF pour le clinicien.",
-    "unsupported": "Ce rapport ne peut pas afficher le ou les caractères : {{chars}}. Corrigez-les dans le journal, ou conservez les données et exportez une sauvegarde JSON — rien n'a été envoyé."
+    "unsupported": "Ce rapport ne peut pas afficher le ou les caractères : {{chars}}. Corrigez-les dans le journal, ou conservez les données et exportez une sauvegarde JSON — rien n'a été envoyé.",
+    "loadFailedNoKeep": "Le rapport n'a pas pu se charger — rechargez pour réessayer. Vos questions non enregistrées n'ont pas pu être conservées ; le journal n'est pas affecté."
   },
   "settings": {
     "title": "Réglages",
@@ -236,7 +237,7 @@
     "demoBody": "Charger « Léo » — un enfant fictif de 9 ans avec 3 semaines d'observations, pour tout essayer immédiatement.",
     "demoLoad": "Charger les données de démo",
     "demoLoaded": "Enfant de démo chargé — explorez librement",
-    "license": "Owly est gratuit et open source (MIT). Les formulations d'observation suivent l'échelle FLACC publiée (Merkel et al., 1997) et la rFLACC (Malviya et al., 2006). Owly est un journal d'observation, pas un dispositif médical.",
+    "license": "Owly est gratuit et open source (MIT). Les formulations d'observation suivent l'échelle FLACC publiée (Merkel et al., 1997) et la rFLACC (Malviya et al., 2006). Owly est un journal d'observation et n'a pas fait l'objet d'une évaluation réglementaire comme dispositif médical.",
     "unlockWait": "Trop de tentatives — patientez 30 secondes",
     "forgotPin": "Code oublié ?",
     "forgotPinWarning": "Le code ne peut pas être récupéré — Owly n'a aucun mécanisme de réinitialisation. Vous pouvez tout effacer et recommencer — cela supprime tous les profils et observations de cet appareil.",

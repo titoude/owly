@@ -2,7 +2,7 @@
   "name": "owly",
   "private": true,
   "version": "0.1.0",
-  "description": "Local-first pain observation journal for nonverbal children — FLACC scale check-ins, pattern insights, one-page doctor PDF. 100% on-device, EN/FR.",
+  "description": "Local-first pain observation journal for nonverbal children — FLACC check-ins, pattern insights, doctor-ready PDF. 100% on-device, 9 locales.",
   "license": "MIT",
   "repository": {
     "type": "git",

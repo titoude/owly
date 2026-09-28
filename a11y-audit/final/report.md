@@ -31,6 +31,7 @@ Tags: wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa, best-practice
 | storage-denied-boot | PASS | 0 | 0 |
 | ls-denied-boot | PASS | 0 | 1 |
 | state:fr | PASS | 0 | 1 |
+| state:fr-observe | PASS | 0 | 0 |
 | state:rtl | PASS | 0 | 1 |
 | empty-dashboard | PASS | 0 | 0 |
 | empty-history | PASS | 0 | 0 |
@@ -38,4 +39,4 @@ Tags: wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa, best-practice
 | pin-locked | PASS | 0 | 0 |
 | pin-error | PASS | 0 | 0 |
 
-**32 PASS · 0 FAIL · 0 UNVERIFIED**
+**33 PASS · 0 FAIL · 0 UNVERIFIED**

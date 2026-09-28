@@ -11,7 +11,7 @@ production build (`vite preview`). The audited scope is fixed by
 `scripts/a11y/manifest.json` — every reachable route plus the interactive
 states that a route crawl misses. Reports land in `a11y-audit/*/`.
 
-Coverage (32 scenarios, all PASS — 0 violations):
+Coverage (33 scenarios, all PASS — 0 violations):
 
 - All 9 routes: `/` `/welcome` `/observe` `/history` `/patterns` `/report`
   `/settings` `/redflags` `/child/new` (+ `/child/:id/edit`).

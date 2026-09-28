@@ -8,7 +8,7 @@ requirement, not a compliance exercise.
 
 **Automated checks**: 0 violations across the full route/state manifest
 (`scripts/a11y/audit.mjs`, axe-core with WCAG 2.0/2.1/2.2 A+AA and
-best-practice tags, 32 scenarios — see `docs/accessibility-evidence.md`
+best-practice tags, 33 scenarios — see `docs/accessibility-evidence.md`
 for the audited scope and the honest limits of what was verified).
 
 **Manual checks**: full keyboard traversal of the observation wizard is

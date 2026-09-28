@@ -199,7 +199,7 @@ export default function Settings() {
         <h2 className="text-sm font-semibold text-neutral-600">{t("settings.data")}</h2>
         <button type="button" className="btn-ghost w-full" onClick={() => void doExport()}>{t("settings.export")}</button>
         <button ref={importBtnRef} type="button" className="btn-ghost w-full" onClick={() => fileRef.current?.click()}>{t("settings.import")}</button>
-        <p className="text-xs text-neutral-500">{t("settings.importWarn")}</p>
+        <p className="text-xs text-neutral-600">{t("settings.importWarn")}</p>
         <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void pickImport(f); }} />
         {pendingImport && (
           // Native dialog: showModal() supplies focus entry, Tab containment,

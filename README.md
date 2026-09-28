@@ -63,8 +63,8 @@ npm run preview    # serve the production build
 - pdf-lib — on-device PDF generation
 - vite-plugin-pwa — offline, installable
 - Vitest + Testing Library + fake-indexeddb (34 unit/integration tests)
-- Playwright e2e against the production build: `npm run e2e` (9 golden-path scenarios), `npm run e2e:full` (41 scenarios: PDF download incl. chunk-failure recovery, PIN lock, import/export incl. cancel/reject paths, drafts, demo data…), `npm run e2e:keys` (17 keyboard checks: radio groups, skip link, dialog focus), `node e2e/offline.mjs` (offline cold reload + PDF bytes)
-- axe-core accessibility audit over the full route/state manifest: `node scripts/a11y/audit.mjs` — 32 scenarios, 0 violations
+- Playwright e2e against the production build: `npm run e2e` (9 golden-path scenarios), `npm run e2e:full` (44 scenarios: PDF download incl. chunk-failure recovery, PIN lock, import/export incl. cancel/reject paths, drafts, demo data…), `npm run e2e:keys` (17 keyboard checks: radio groups, skip link, dialog focus), `node e2e/offline.mjs` (offline cold reload + PDF bytes)
+- axe-core accessibility audit over the full route/state manifest: `node scripts/a11y/audit.mjs` — 33 scenarios, 0 violations
 - oxlint + `tsc -b` in CI
 - i18next — 9 languages: English, French, Spanish, Portuguese, German, Italian, Arabic (RTL), Hindi, Simplified Chinese
 
@@ -107,7 +107,7 @@ FLACC is a published clinical instrument. Redistribution and translation terms v
 
 Owly ships the English wording in every locale **except French**, which carries a pre-existing French translation whose provenance and validation status are unverified — it is marked `lang="fr"` on screen and flagged for review (see `docs/i18n-review.md`). We do **not** claim the scale is public domain or that its translation is authorized. Whether a license already exists for this redistribution is **unknown — no licensor has been contacted**; machine-translated clinical wording is not shipped as a validated scale.
 
-**Owly is an observation journal, not a medical device.** It records what caregivers observe — it does not diagnose. The red-flags screen is there for a reason: when in doubt, call a doctor.
+**Owly is an observation journal** — it records what caregivers observe; it does not diagnose, and it has not undergone any medical-device regulatory assessment. The red-flags screen is there for a reason: when in doubt, call a doctor.
 
 ## Third-party notices
 

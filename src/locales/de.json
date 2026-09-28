@@ -24,8 +24,8 @@
     "cta": "Profil deines Kindes anlegen",
     "demo": "Stattdessen die Demo ansehen",
     "points": [
-      "60-Sekunden-Einträge, selbst um 3 Uhr nachts",
-      "Validierte Schmerzskala (FLACC), individuell auf dein Kind angepasst",
+      "Schnelle Einträge, selbst um 3 Uhr nachts",
+      "Strukturierte Beobachtung auf Basis der veröffentlichten FLACC-Skala, an dein Kind anpassbar",
       "Alles bleibt auf diesem Gerät — nichts wird irgendwohin gesendet"
     ],
     "restore": "Backup wiederherstellen",
@@ -113,7 +113,7 @@
   },
   "history": {
     "title": "Verlauf",
-    "empty": "Noch keine Beobachtungen. Die erste dauert etwa eine Minute.",
+    "empty": "Noch keine Beobachtungen. Die erste dauert nur einen Moment.",
     "emptyCta": "Erste Beobachtung erfassen",
     "baseline": "Baseline",
     "deleteConfirm": "Diese Beobachtung löschen?"
@@ -199,7 +199,8 @@
     "allTime": "Alle erfassten Episoden",
     "entryTitle": "Bericht vorbereiten",
     "entryDesc": "Zeitraum und Inhalt wählen, dann das PDF für die Praxis erstellen.",
-    "unsupported": "Dieser Bericht kann das/die Zeichen nicht darstellen: {{chars}}. Passe sie im Tagebuch an oder behalte die Daten und exportiere stattdessen ein JSON-Backup — nichts wurde irgendwohin gesendet."
+    "unsupported": "Dieser Bericht kann das/die Zeichen nicht darstellen: {{chars}}. Passe sie im Tagebuch an oder behalte die Daten und exportiere stattdessen ein JSON-Backup — nichts wurde irgendwohin gesendet.",
+    "loadFailedNoKeep": "Der Bericht konnte nicht geladen werden — zum Wiederholen neu laden. Deine nicht gespeicherten Fragen konnten nicht erhalten bleiben; das Tagebuch ist nicht betroffen."
   },
   "settings": {
     "title": "Einstellungen",
@@ -236,7 +237,7 @@
     "demoBody": "Lade „Léo“ — ein fiktives 9-jähriges Kind mit 3 Wochen Beobachtungen, um sofort alles auszuprobieren.",
     "demoLoad": "Demo-Daten laden",
     "demoLoaded": "Demo geladen — viel Spaß beim Erkunden",
-    "license": "Owly ist frei und Open Source (MIT). Der Beobachtungstext folgt der veröffentlichten FLACC-Skala (Merkel et al., 1997) und rFLACC (Malviya et al., 2006). Owly ist ein Beobachtungstagebuch, kein Medizinprodukt.",
+    "license": "Owly ist frei und Open Source (MIT). Der Beobachtungstext folgt der veröffentlichten FLACC-Skala (Merkel et al., 1997) und rFLACC (Malviya et al., 2006). Owly ist ein Beobachtungstagebuch und wurde nicht als Medizinprodukt regulatorisch bewertet.",
     "unlockWait": "Zu viele Versuche — 30 Sekunden warten",
     "forgotPin": "Code vergessen?",
     "forgotPinWarning": "Die PIN kann nicht wiederhergestellt werden — Owly hat keinen Zurücksetzmechanismus. Du kannst alles löschen und neu beginnen — das entfernt alle Profile und Beobachtungen auf diesem Gerät.",

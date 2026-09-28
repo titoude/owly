@@ -68,6 +68,9 @@ async function audit(page, id, description) {
 
 const browser = await launchBrowser();
 const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+// Deterministic base locale: Chromium's navigator locale differs per machine
+// (FR on Adrien's box, EN here), which changed which text the audit saw.
+await ctx.addInitScript(() => localStorage.setItem("owly-lang", "en"));
 const page = await ctx.newPage();
 
 // --- Seed demo child (Léo) ---
@@ -168,7 +171,7 @@ await go(page, "#/settings");
   if (await offer.count()) {
     await req(page, "#draft-title", "draft-resume", "draft offer");
     if (results.at(-1).status !== "UNVERIFIED") await audit(page, "draft-resume", "draft resume/discard offer on wizard entry");
-    await page.locator("button", { hasText: /discard|ignorer/i }).first().click().catch(() => {});
+    await page.locator("button", { hasText: /discard|supprimer|ignorer/i }).first().click().catch(() => {});
     await page.waitForTimeout(300);
   } else { results.push({ id: "draft-resume", status: "UNVERIFIED", error: "no draft offer after partial wizard" }); unverified++; }
 }
@@ -193,7 +196,7 @@ await go(page, "#/settings");
   // discard a leftover draft offer first, then change a real step-0 field —
   // clicking at a radio that doesn't exist at step 0 is a false precondition.
   if (await page.locator("#draft-title").count()) {
-    await page.locator("button", { hasText: /discard|ignorer/i }).first().click().catch(() => {});
+    await page.locator("button", { hasText: /discard|supprimer|ignorer/i }).first().click().catch(() => {});
     await page.waitForTimeout(300);
   }
   await page.locator("button", { hasText: /15\s*min|il y a\s*15/i }).first().click().catch(() => {});
@@ -277,12 +280,29 @@ await go(page, "#/settings");
     await fr.click(); await page.waitForTimeout(300);
     const lang = await page.evaluate(() => document.documentElement.lang);
     if (lang !== "fr") { results.push({ id: "state:fr", status: "UNVERIFIED", error: `lang=${lang}, expected fr` }); unverified++; }
-    else await audit(page, "state:fr", "settings in French");
+    else {
+      await audit(page, "state:fr", "settings in French");
+      // Non-EN wizard step: the scale translation notice (scaleNote) only
+      // renders outside EN — audit a FLACC step under FR for real coverage.
+      await go(page, "#/observe");
+      await page.waitForSelector('[role="status"]', { timeout: 6000 }).catch(() => {});
+      if (await page.locator("#draft-title").count()) {
+        await page.locator("button", { hasText: /discard|supprimer|ignorer/i }).first().click().catch(() => {});
+        await page.waitForTimeout(300);
+      }
+      await page.locator("button", { hasText: /suivant|next|continuer/i }).last().click().catch(() => {});
+      await page.waitForTimeout(400);
+      const stepTxt = await page.locator('[role="status"]').first().innerText().catch(() => "");
+      if (stepTxt.trim().startsWith("2/")) await audit(page, "state:fr-observe", "FLACC step in French (scaleNote rendered)");
+      else { results.push({ id: "state:fr-observe", status: "UNVERIFIED", error: `step indicator "${stepTxt.trim()}", expected 2/8` }); unverified++; }
+    }
   }
   else { results.push({ id: "state:fr", status: "UNVERIFIED", error: "no FR button" }); unverified++; }
 }
 
-// rtl state: switch to Arabic
+// rtl state: switch to Arabic — the language buttons live in Settings, and
+// the page may currently sit on #/observe after the FR wizard audit.
+await go(page, "#/settings");
 {
   const ar = page.locator("button", { hasText: /العربية/ }).first();
   if (await ar.count()) {

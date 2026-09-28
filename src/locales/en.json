@@ -24,8 +24,8 @@
     "cta": "Set up your child's profile",
     "demo": "Explore the demo instead",
     "points": [
-      "60-second check-ins, even at 3 a.m.",
-      "Validated pain scale (FLACC), individualized to your child",
+      "Quick check-ins, even at 3 a.m.",
+      "Structured observation based on the published FLACC scale, adaptable to your child",
       "Everything stays on this device — nothing is sent anywhere"
     ],
     "restore": "Restore a backup",
@@ -113,7 +113,7 @@
   },
   "history": {
     "title": "History",
-    "empty": "No observations yet. The first one takes about a minute.",
+    "empty": "No observations yet. The first one only takes a moment.",
     "emptyCta": "Record first observation",
     "baseline": "baseline",
     "deleteConfirm": "Delete this observation?"
@@ -199,7 +199,8 @@
     "allTime": "All recorded episodes",
     "entryTitle": "Prepare the report",
     "entryDesc": "Pick the period and what to include, then generate the clinician PDF.",
-    "unsupported": "This report can't display the character(s): {{chars}}. Edit or remove them in the journal, or keep the data and export a JSON backup instead — nothing was sent anywhere."
+    "unsupported": "This report can't display the character(s): {{chars}}. Edit or remove them in the journal, or keep the data and export a JSON backup instead — nothing was sent anywhere.",
+    "loadFailedNoKeep": "The report couldn't load — reload to retry. Your unsaved questions could not be kept; the journal itself is unaffected."
   },
   "settings": {
     "title": "Settings",
@@ -236,7 +237,7 @@
     "demoBody": "Load “Léo” — a fictional 9-year-old with 3 weeks of observations, to try every feature instantly.",
     "demoLoad": "Load demo data",
     "demoLoaded": "Demo child loaded — explore away",
-    "license": "Owly is free and open source (MIT). Observation wording follows the published FLACC scale (Merkel et al., 1997) and rFLACC (Malviya et al., 2006). Owly is an observation journal, not a medical device.",
+    "license": "Owly is free and open source (MIT). Observation wording follows the published FLACC scale (Merkel et al., 1997) and rFLACC (Malviya et al., 2006). Owly is an observation journal and has not undergone medical-device regulatory assessment.",
     "unlockWait": "Too many attempts — wait 30 seconds",
     "forgotPin": "Forgot the code?",
     "forgotPinWarning": "The PIN cannot be recovered — Owly has no reset mechanism. You can erase everything and start over — this deletes all profiles and observations on this device.",

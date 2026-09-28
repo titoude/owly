@@ -139,19 +139,106 @@ try {
     const reloadBtn = p2.locator("button", { hasText: /reload|recharger/i }).first();
     const reloadShown = await reloadBtn.count();
     ok("aborted report chunk → alert + reload offered", alerts > 0 && enabled && reloadShown > 0, `alerts=${alerts} enabled=${enabled} reload=${reloadShown} pageerrors=${perr.length}`);
-    // reload recovery: after the aborted route is cleared, reload → preserved
-    // unsaved input → generate succeeds.
-    await p2.unroute("**/assets/report-*.js");
-    await reloadBtn.click();
-    await p2.waitForLoadState("domcontentloaded");
+    // post-failure edits are what the stash keeps
+    await p2.locator("input.input").first().fill("kept question v2");
+    await p2.waitForTimeout(400);
+
+    // cross-child isolation: A's pending stash must not appear on B's report.
+    // Seed a second child (+1 observation so the report form renders) and
+    // switch active child at the storage level, then reload.
+    const aId = await p2.evaluate(() => new Promise((res, rej) => {
+      const r = indexedDB.open("owly");
+      r.onerror = () => rej(r.error);
+      r.onsuccess = () => {
+        const g = r.result.transaction("settings").objectStore("settings").get("activeChildId");
+        g.onsuccess = () => res(g.result?.value ?? null);
+      };
+    }));
+    await p2.evaluate(() => new Promise((res, rej) => {
+      const r = indexedDB.open("owly");
+      r.onerror = () => rej(r.error);
+      r.onsuccess = () => {
+        const tx = r.result.transaction(["children", "observations", "settings"], "readwrite");
+        const add = tx.objectStore("children").add({
+          name: "Kid B", birthYear: 2020, conditions: "", communicates: "",
+          customDescriptors: { face: "", legs: "", activity: "", cry: "", consolability: "" }, createdAt: Date.now(),
+        });
+        add.onsuccess = () => {
+          tx.objectStore("observations").add({
+            childId: add.result, startedAt: Date.now() - 864e5, recordedAt: Date.now() - 864e5,
+            scores: { face: 1, legs: 0, activity: 1, cry: 0, consolability: 0 }, total: 2,
+            durationMinutes: 20, bodyZones: [], suspectedCause: "", interventions: [], note: "", baseline: false,
+          });
+          tx.objectStore("settings").put({ key: "activeChildId", value: add.result });
+        };
+        tx.oncomplete = () => res(true);
+        tx.onerror = () => rej(tx.error);
+      };
+    }));
+    await p2.reload();
+    await p2.goto(BASE + "/#/report");
     await p2.waitForSelector("button.btn-primary.w-full", { timeout: 10000 });
-    const kept = await p2.locator("input.input").first().inputValue();
+    const bVal = await p2.locator("input.input").first().inputValue();
+    ok("report stash is scoped per child", bVal === "", `B sees "${bVal}"`);
+    // back to A: the stash restores once, then is consumed — a second reload
+    // must show empty inputs, not resurrect the stale questions.
+    await p2.evaluate((id) => new Promise((res, rej) => {
+      const r = indexedDB.open("owly");
+      r.onerror = () => rej(r.error);
+      r.onsuccess = () => {
+        const tx = r.result.transaction("settings", "readwrite");
+        tx.objectStore("settings").put({ key: "activeChildId", value: id });
+        tx.oncomplete = () => res(true);
+        tx.onerror = () => rej(tx.error);
+      };
+    }), aId);
+    await p2.reload();
+    await p2.goto(BASE + "/#/report");
+    await p2.waitForSelector("button.btn-primary.w-full", { timeout: 10000 });
+    const aVal = await p2.locator("input.input").first().inputValue();
+    await p2.reload();
+    await p2.goto(BASE + "/#/report");
+    await p2.waitForSelector("button.btn-primary.w-full", { timeout: 10000 });
+    const aVal2 = await p2.locator("input.input").first().inputValue();
+    ok("stash restores for the right child, then is consumed", aVal === "kept question v2" && aVal2 === "", `first="${aVal}" second="${aVal2}"`);
+
+    // recovery: with the abort cleared, this fresh mount generates for real.
+    await p2.unroute("**/assets/report-*.js");
     const genBtn3 = p2.locator("button.btn-primary.w-full").first();
     const dlP = p2.waitForEvent("download", { timeout: 20000 });
     await genBtn3.click();
     const dl2 = await dlP.catch(() => null);
-    ok("reload recovers generation, unsaved input kept", kept === "kept question" && dl2 !== null && /\.pdf$/.test(dl2.suggestedFilename()), `kept="${kept}" dl=${dl2?.suggestedFilename()}`);
+    ok("generation succeeds after fresh reload", dl2 !== null && /\.pdf$/.test(dl2.suggestedFilename()), `dl=${dl2?.suggestedFilename()}`);
     await ctx2.close();
+  }
+
+  // ── 5c. Chunk failure with sessionStorage denied → honest no-keep message ──
+  {
+    const ctx3 = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block" });
+    await ctx3.addInitScript(() => {
+      // sessionStorage.setItem lives on Storage.prototype — shadowing the
+      // instance is silently ignored; patch the prototype for session only.
+      const orig = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        if (this === window.sessionStorage) throw new DOMException("denied", "SecurityError");
+        return orig.call(this, k, v);
+      };
+    });
+    const p3 = await ctx3.newPage();
+    await p3.goto(BASE + "/#/welcome");
+    await p3.locator("button", { hasText: /demo|démo/i }).first().click();
+    await p3.getByRole("heading", { name: /léo|leo/i }).waitFor({ timeout: 10000 });
+    await p3.route("**/assets/report-*.js", (r) => r.abort("failed"));
+    await p3.goto(BASE + "/#/report");
+    const genBtn4 = p3.locator("button.btn-primary.w-full").first();
+    await genBtn4.waitFor({ timeout: 8000 });
+    await p3.locator("input.input").first().fill("lost question");
+    await genBtn4.click();
+    await p3.locator('[role="alert"]').waitFor({ timeout: 8000 }).catch(() => {});
+    const alertTxt = await p3.locator('[role="alert"]').first().innerText().catch(() => "");
+    // must not falsely promise the inputs are kept
+    ok("denied storage → message does not promise preservation", /not be (kept|preserved)|could not be kept|cannot be saved|n'ont pas pu être/i.test(alertTxt), alertTxt.slice(0, 110));
+    await ctx3.close();
   }
 
   // ── 6. PIN lock roundtrip ──────────────────────────────────
@@ -295,7 +382,7 @@ try {
   await page.waitForSelector('[role="status"]');
   // discard any draft the earlier wizard run left, for a clean state
   if (await page.locator("#draft-title").count()) {
-    await page.locator("button", { hasText: /discard|ignorer/i }).first().click();
+    await page.locator("button", { hasText: /discard|supprimer|ignorer/i }).first().click();
     await page.waitForTimeout(300);
   }
   await page.locator("button", { hasText: /^15\s*min/i }).first().click(); // "15 min ago"
@@ -317,7 +404,7 @@ try {
   await page.goto(BASE + "/#/observe");
   await page.waitForSelector('[role="status"]');
   if (await page.locator("#draft-title").count()) {
-    await page.locator("button", { hasText: /discard|ignorer/i }).first().click();
+    await page.locator("button", { hasText: /discard|supprimer|ignorer/i }).first().click();
     await page.waitForTimeout(300);
   }
   const openAt = await page.evaluate(() => Date.now());
