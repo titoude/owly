@@ -1,7 +1,8 @@
 {
   "app": {
     "name": "Owly",
-    "tagline": "Quand ils ne peuvent pas dire où ça fait mal"
+    "tagline": "Quand ils ne peuvent pas dire où ça fait mal",
+    "navLabel": "Navigation principale"
   },
   "nav": {
     "home": "Accueil",
@@ -126,7 +127,8 @@
     "scoreChartLabel": "Graphique : {{n}} épisodes récents, moyenne {{avg}}, max {{max}}",
     "insightZone_one": "« {{zone}} » est la zone la plus soupçonnée ({{n}} épisode).",
     "insightZone_other": "« {{zone}} » est la zone la plus soupçonnée ({{n}} épisodes).",
-    "note": "Les motifs décrivent ce que vous avez noté — ils suggèrent quoi discuter avec le médecin, ils ne prouvent ni cause ni efficacité."
+    "note": "Les motifs décrivent ce que vous avez noté — ils suggèrent quoi discuter avec le médecin, ils ne prouvent ni cause ni efficacité.",
+    "toReport": "Générer le rapport médecin →"
   },
   "report": {
     "title": "Rapport médecin",

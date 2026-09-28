@@ -64,6 +64,7 @@ export default function Dashboard() {
       {last ? (
         <section className="space-y-2">
           <h2 className="text-sm font-semibold text-neutral-600">{t("history.title")}</h2>
+          <div className="space-y-2 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0">
           {recent.map((o) => (
             <div key={o.id} className="card p-3 flex items-center justify-between">
               <div>
@@ -79,9 +80,15 @@ export default function Dashboard() {
               <ScoreBadge total={o.total} />
             </div>
           ))}
-          <Link to="/history" className="block text-sm text-teal-700 pt-1">
-            {t("history.title")} →
-          </Link>
+          </div>
+          <div className="flex items-center gap-5 pt-1">
+            <Link to="/history" className="text-sm font-medium text-teal-700">
+              {t("history.title")} →
+            </Link>
+            <Link to="/report" className="text-sm font-medium text-teal-700">
+              {t("patterns.toReport")}
+            </Link>
+          </div>
         </section>
       ) : (
         <p className="text-neutral-600 text-sm">{t("history.empty")}</p>

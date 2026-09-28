@@ -103,6 +103,14 @@ export default function Patterns() {
         </div>
       )}
 
+      <Link
+        to="/report"
+        className="card p-4 flex items-center justify-between text-sm font-semibold text-teal-700 hover:bg-teal-50/60 transition-colors"
+      >
+        {t("patterns.toReport")}
+      </Link>
+
+      <div className="space-y-6 lg:grid lg:grid-cols-2 lg:gap-5 lg:space-y-0">
       <section className="card p-4 space-y-3">
         <h2 className="text-sm font-semibold text-neutral-600">{t("patterns.scoreOverTime")}</h2>
         <div
@@ -169,6 +177,7 @@ export default function Patterns() {
           ))}
         </section>
       )}
+      </div>
     </div>
   );
 }

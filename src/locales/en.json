@@ -1,7 +1,8 @@
 {
   "app": {
     "name": "Owly",
-    "tagline": "When they can't say where it hurts"
+    "tagline": "When they can't say where it hurts",
+    "navLabel": "Main navigation"
   },
   "nav": {
     "home": "Home",
@@ -119,6 +120,7 @@
     "worked": "What you recorded as helping",
     "workedRate": "{{yes}}/{{n}} reported helped",
     "note": "Patterns describe what you recorded — they suggest what to discuss with the doctor, they do not prove cause or treatment effect.",
+    "toReport": "Generate the doctor report →",
     "episodes": "episodes",
     "avgScore": "Avg. score",
     "insight": "Insights",
