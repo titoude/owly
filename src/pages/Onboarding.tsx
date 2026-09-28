@@ -45,7 +45,7 @@ export default function Onboarding() {
           </li>
         ))}
       </ul>
-      <p className="text-xs text-neutral-600 border-l-2 border-neutral-300 pl-3">{t("onboarding.notdiagnosis")}</p>
+      <p className="text-[13px] text-neutral-600 border-s-2 border-neutral-300 ps-3">{t("onboarding.notdiagnosis")}</p>
       <div className="space-y-3 pt-2">
         <button type="button" className="btn-primary w-full" onClick={() => void nav("/child/new")}>
           {t("onboarding.cta")}

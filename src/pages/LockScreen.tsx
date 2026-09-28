@@ -92,14 +92,14 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
           className={`input text-center text-2xl tracking-[0.5em] w-40 ${error ? "border-red-500" : ""}`}
           aria-label={t("settings.unlock")}
         />
-        {error && <p className="text-xs text-red-700" role="alert">{t("settings.wrongPin")}</p>}
+        {error && <p className="text-[13px] text-red-700" role="alert">{t("settings.wrongPin")}</p>}
         {!confirmWipe ? (
-          <button type="button" className="text-xs text-neutral-700 underline underline-offset-2" onClick={() => setConfirmWipe(true)}>
+          <button type="button" className="inline-flex min-h-11 items-center text-[13px] text-neutral-700 underline underline-offset-2" onClick={() => setConfirmWipe(true)}>
             {t("settings.forgotPin")}
           </button>
         ) : (
-          <div className="card p-4 space-y-2 text-left">
-            <p className="text-xs text-neutral-600">{t("settings.forgotPinWarning")}</p>
+          <div className="card p-4 space-y-2 text-start">
+            <p className="text-[13px] text-neutral-600">{t("settings.forgotPinWarning")}</p>
             <div className="flex gap-2">
               <button type="button" className="btn-ghost flex-1 text-sm" onClick={() => setConfirmWipe(false)}>
                 {t("common.cancel")}

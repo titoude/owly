@@ -264,7 +264,7 @@ try {
   // ── 7. French switch ───────────────────────────────────────
   await page.goto(BASE + "/#/settings");
   await page.waitForTimeout(400);
-  await page.locator("button", { hasText: /français/i }).first().click();
+  await page.locator("main select").first().selectOption("fr");
   await page.waitForTimeout(500);
   ok("french switch", /paramètres|enfant|journal/i.test(await page.locator("body").innerText()));
   await shot("12-settings-fr");
@@ -276,7 +276,7 @@ try {
   // back to EN
   await page.goto(BASE + "/#/settings");
   await page.waitForTimeout(400);
-  await page.locator("button", { hasText: /english/i }).first().click();
+  await page.locator("main select").first().selectOption("en");
   await page.waitForTimeout(400);
 
   // ── 8. Red flags ───────────────────────────────────────────

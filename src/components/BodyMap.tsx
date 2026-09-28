@@ -93,7 +93,7 @@ export function BodyMap({ selected, onToggle }: Props) {
               type="button"
               onClick={() => onToggle(z.id)}
               aria-pressed={sel}
-              className={`rounded-xl border px-3 py-2.5 min-h-11 text-left text-sm leading-tight transition
+              className={`rounded-xl border px-3 py-2.5 min-h-11 text-start text-sm leading-tight transition
                 ${sel ? "bg-accent-50 text-accent-800 border-accent-600 font-medium" : "bg-white text-neutral-700 border-neutral-300 hover:bg-neutral-100"}`}
             >
               {t(`zones.${z.id}`)}

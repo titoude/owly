@@ -25,14 +25,17 @@ export default function History() {
       .then(setObs);
   }, [active]);
 
-  // Deep links from the journal point at one record — scroll it into view
-  // and ring it once the list has loaded.
+  // Deep links from the journal point at one record — scroll it into view,
+  // ring it, and hand it focus so keyboard/AT users land on the record they
+  // chose. Ordinary History visits never get this treatment.
   useEffect(() => {
     if (didFocus.current || !focusId || obs.length === 0) return;
     const el = document.getElementById(`obs-${focusId}`);
     if (!el) return;
     didFocus.current = true;
-    el.scrollIntoView({ block: "center", behavior: "smooth" });
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" });
+    el.focus({ preventScroll: true });
   }, [focusId, obs]);
 
   async function remove(id: number) {
@@ -46,7 +49,7 @@ export default function History() {
     return (
       <div className="text-center space-y-4 pt-20">
         <img src="/icon.svg" alt="" className="mx-auto size-16 rounded-2xl opacity-70" />
-        <h1 className="text-xl font-bold">{t("history.title")}</h1>
+        <h1 className="page-title">{t("history.title")}</h1>
         <p className="text-neutral-600">{t("history.empty")}</p>
         <Link to="/observe" className="btn-primary inline-block">
           {t("history.emptyCta")}
@@ -57,12 +60,18 @@ export default function History() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold">{t("history.title")}</h1>
+      <div>
+        <h1 className="page-title">{t("history.title")}</h1>
+        <p className="mt-1 text-sm text-neutral-600">
+          <span dir="auto">{active.name}</span> · {obs.length} {t("report.included")}
+        </p>
+      </div>
       {obs.map((o) => (
         <div
           key={o.id}
           id={`obs-${o.id}`}
-          className={`card p-4 space-y-2 scroll-mt-24 ${focusId === o.id ? "ring-2 ring-accent-600" : ""}`}
+          tabIndex={focusId === o.id ? -1 : undefined}
+          className={`card p-4 space-y-2 scroll-mt-24 focus:outline-none ${focusId === o.id ? "ring-2 ring-accent-600" : ""}`}
         >
           <div className="flex items-start justify-between gap-2">
             <div>
@@ -70,10 +79,10 @@ export default function History() {
                 {new Date(o.startedAt).toLocaleDateString(loc)}{" "}
                 {new Date(o.startedAt).toLocaleTimeString(loc, { hour: "2-digit", minute: "2-digit" })}
                 {o.baseline && (
-                  <span className="ml-2 text-xs text-emerald-700">· {t("history.baseline")}</span>
+                  <span className="ms-2 text-[13px] text-emerald-700">· {t("history.baseline")}</span>
                 )}
               </div>
-              <div className="text-xs text-neutral-600">
+              <div className="text-[13px] text-neutral-600">
                 {o.durationMinutes ? `${o.durationMinutes} min` : ""}
                 {o.bodyZones.length > 0 && ` · ${o.bodyZones.map((z) => t(`zones.${z}`)).join(", ")}`}
                 {o.suspectedCause && ` · ${o.suspectedCause}`}
@@ -82,7 +91,7 @@ export default function History() {
             <ScoreBadge total={o.total} />
           </div>
           {o.interventions.length > 0 && (
-            <div className="text-xs text-neutral-600">
+            <div className="text-[13px] text-neutral-600">
               {o.interventions.map((i) => t(`interventions.${i.type}`)).join(", ")}
               {o.interventions.some((i) => i.helped === "yes") && " ✓"}
             </div>
@@ -93,27 +102,30 @@ export default function History() {
               <button
                 type="button"
                 onClick={() => o.id && void remove(o.id)}
-                className="text-xs font-semibold text-red-700"
+                className="min-h-11 rounded-lg px-3 text-sm font-semibold text-red-700"
               >
                 {t("history.deleteConfirm")}
               </button>
               <button
                 type="button"
                 onClick={() => setConfirmId(null)}
-                className="text-xs text-neutral-600"
+                className="min-h-11 rounded-lg px-3 text-sm text-neutral-700"
               >
                 {t("common.cancel")}
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-3">
-              <Link to={`/observe/${o.id}/edit`} className="text-xs text-neutral-600 underline hover:text-accent-700">
+            <div className="flex items-center gap-1">
+              <Link
+                to={`/observe/${o.id}/edit`}
+                className="inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-neutral-700 underline-offset-2 hover:bg-neutral-50 hover:text-accent-700 hover:underline"
+              >
                 {t("common.edit")}
               </Link>
               <button
                 type="button"
                 onClick={() => setConfirmId(o.id ?? null)}
-                className="text-xs text-neutral-600 hover:text-red-700"
+                className="min-h-11 rounded-lg px-3 text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-red-700"
               >
                 {t("common.delete")}
               </button>

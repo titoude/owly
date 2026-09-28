@@ -52,7 +52,7 @@ export function ObsRow({ o, to }: { o: Observation; to: string }) {
           {t(`band.${band}`)}
         </span>
       </span>
-      <span className="min-w-0 truncate text-[13px] text-neutral-600 text-end" dir="auto">
+      <span className="min-w-0 truncate text-[13px] text-neutral-600 text-start" dir="auto">
         {details}
         {o.baseline && <span className="ms-2 text-emerald-700">· {t("history.baseline")}</span>}
       </span>

@@ -43,7 +43,10 @@
     "title": "Profil de votre enfant",
     "saveError": "Enregistrement impossible — réessayez.",
     "delete": "Supprimer ce profil",
-    "deleteConfirm": "Supprime cet enfant et toutes ses observations. Irréversible."
+    "deleteConfirm": "Supprime cet enfant et toutes ses observations. Irréversible.",
+    "editTitle": "Modifier le profil",
+    "optionalTitle": "Détails facultatifs",
+    "birthYearInvalid": "Indiquez une année de naissance entre 1900 et {{max}}"
   },
   "customDescriptors": {
     "title": "Comment {{name}} montre sa douleur ?",

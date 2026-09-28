@@ -6,6 +6,7 @@ import { db } from "../db";
 import { BAND_COLOR } from "../flacc";
 import { bandFor, type Observation } from "../types";
 import { intlLocale } from "../i18n";
+import { IconChevronRight } from "../components/icons";
 
 function bucket(hour: number): "night" | "morning" | "afternoon" | "evening" {
   if (hour >= 22 || hour < 6) return "night";
@@ -76,7 +77,7 @@ export default function Patterns() {
             <path d="M4 19.5V10M9.5 19.5V4.5M15 19.5v-8M20.5 19.5V8" />
           </svg>
         </div>
-        <h1 className="text-xl font-bold">{t("patterns.title")}</h1>
+        <h1 className="page-title">{t("patterns.title")}</h1>
         <p className="text-neutral-600">{t("patterns.empty")}</p>
         <Link to="/observe" className="btn-primary inline-block">{t("observe.start")}</Link>
       </div>
@@ -88,11 +89,11 @@ export default function Patterns() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-baseline justify-between">
-        <h1 className="text-xl font-bold">{t("patterns.title")}</h1>
-        <span className="text-sm text-neutral-600">
-          {episodes.length} {t("patterns.episodes")} · {t("patterns.avgScore")} {avg.toFixed(1)}
-        </span>
+      <div>
+        <h1 className="page-title">{t("patterns.title")}</h1>
+        <p className="mt-1 text-sm text-neutral-600">
+          <span dir="auto">{active.name}</span> · {episodes.length} {t("patterns.episodes")} · {t("patterns.avgScore")} {avg.toFixed(1)}/10
+        </p>
       </div>
 
       {insights.length > 0 && (
@@ -113,12 +114,12 @@ export default function Patterns() {
           <span className="block text-sm font-semibold text-accent-700">{t("report.entryTitle")}</span>
           <span className="block text-sm text-neutral-600">{t("report.entryDesc")}</span>
         </span>
-        <span aria-hidden className="text-accent-700">→</span>
+        <span aria-hidden className="text-accent-700 rtl:-scale-x-100"><IconChevronRight /></span>
       </Link>
 
       <div className="space-y-6 lg:grid lg:grid-cols-2 lg:gap-5 lg:space-y-0">
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-600">{t("patterns.scoreOverTime")}</h2>
+        <h2 className="section-title">{t("patterns.scoreOverTime")}</h2>
         <div
           className="flex items-end gap-1 h-24"
           role="img"
@@ -133,25 +134,25 @@ export default function Patterns() {
             />
           ))}
         </div>
-        <div className="flex justify-between text-[10px] text-neutral-600">
+        <div className="flex justify-between text-[13px] text-neutral-600">
           <span>{episodes.length > 0 && fmtD(episodes[Math.max(0, episodes.length - 30)].startedAt)}</span>
           <span>{episodes.length > 0 && fmtD(episodes[episodes.length - 1].startedAt)}</span>
         </div>
       </section>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-600">{t("patterns.byTimeOfDay")}</h2>
+        <h2 className="section-title">{t("patterns.byTimeOfDay")}</h2>
         <div className="space-y-2">
           {(["night", "morning", "afternoon", "evening"] as const).map((k) => (
             <div key={k} className="flex items-center gap-2 text-sm">
               <span className="w-28 text-neutral-600">{t(`patterns.${k}`)}</span>
               <div className="flex-1 h-4 rounded-full bg-neutral-100 overflow-hidden">
                 <div
-                  className="h-full bg-indigo-400 rounded-full"
+                  className="h-full bg-accent-500 rounded-full"
                   style={{ width: `${episodes.length ? (byTime[k] / episodes.length) * 100 : 0}%` }}
                 />
               </div>
-              <span className="w-6 text-right text-neutral-600">{byTime[k]}</span>
+              <span className="w-6 text-end tabular-nums text-neutral-600">{byTime[k]}</span>
             </div>
           ))}
         </div>
@@ -159,10 +160,10 @@ export default function Patterns() {
 
       {zones.length > 0 && (
         <section className="card p-4 space-y-2">
-          <h2 className="text-sm font-semibold text-neutral-600">{t("patterns.zones")}</h2>
+          <h2 className="section-title">{t("patterns.zones")}</h2>
           <div className="flex flex-wrap gap-2">
             {zones.map(([z, n]) => (
-              <span key={z} className="badge bg-orange-100 text-orange-800 border border-orange-200">
+              <span key={z} className="badge bg-accent-50 text-accent-800 border border-accent-100">
                 {t(`zones.${z}`)} ×{n}
               </span>
             ))}
@@ -172,7 +173,7 @@ export default function Patterns() {
 
       {helped.length > 0 && (
         <section className="card p-4 space-y-2">
-          <h2 className="text-sm font-semibold text-neutral-600">{t("patterns.worked")}</h2>
+          <h2 className="section-title">{t("patterns.worked")}</h2>
           {helped.map(([type, v]) => (
             <div key={type} className="flex items-center justify-between text-sm">
               <span className="text-neutral-600">{t(`interventions.${type}`)}</span>

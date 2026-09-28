@@ -125,55 +125,56 @@ export default function Settings() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold">{t("settings.title")}</h1>
+      <h1 className="page-title">{t("settings.title")}</h1>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-600">{t("settings.children")}</h2>
+        <h2 className="section-title">{t("settings.children")}</h2>
         {children.map((c) => (
-          <div key={c.id} className="flex items-center justify-between">
+          <div key={c.id} className="flex items-center justify-between gap-2">
             <button
               type="button"
               onClick={() => void setActive(c.id!)}
-              className={`text-left ${c.id === active?.id ? "font-semibold text-accent-700" : "text-neutral-600"}`}
+              className={`min-h-11 rounded-lg px-2 py-1.5 text-start text-[15px] transition-colors hover:bg-neutral-50 ${c.id === active?.id ? "font-semibold text-accent-700" : "text-neutral-700"}`}
             >
               <span dir="auto">{c.name}</span>{" "}
               {c.isDemo ? (
-                <span className="ml-1 rounded-full bg-accent-50 text-accent-700 border border-accent-500 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+                <span className="ms-1 rounded-full bg-amber-100 px-2 py-0.5 text-[13px] font-semibold text-amber-800">
                   demo
                 </span>
               ) : null}
             </button>
-            <Link to={`/child/${c.id}/edit`} className="text-xs text-neutral-600 underline">{t("common.edit")}</Link>
+            <Link
+              to={`/child/${c.id}/edit`}
+              className="inline-flex min-h-11 shrink-0 items-center rounded-lg px-3 text-sm font-medium text-neutral-700 underline-offset-2 hover:bg-neutral-50 hover:text-accent-700 hover:underline"
+            >
+              {t("common.edit")}
+            </Link>
           </div>
         ))}
         <Link to="/child/new" className="btn-ghost block text-center">{t("settings.addChild")}</Link>
       </section>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-600">{t("settings.language")}</h2>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <h2 className="section-title">{t("settings.language")}</h2>
+        {/* One compact native select for 9 locales — keeps each label in its
+            own lang/dir and stays readable at 320px. */}
+        <select
+          className="input w-full"
+          value={i18n.language}
+          onChange={(e) => changeLang(e.target.value as Lang)}
+          aria-label={t("settings.language")}
+        >
           {LANGS.map((l) => (
-            <button
-              key={l}
-              type="button"
-              lang={l}
-              dir={isRtl(l) ? "rtl" : "ltr"}
-              onClick={() => changeLang(l)}
-              className={`touch-target rounded-xl font-medium transition-all duration-150 ${
-                i18n.language === l
-                  ? "bg-accent-700 text-white font-semibold shadow-[0_4px_14px_-4px_rgba(45,212,191,0.5)]"
-                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200/70"
-              }`}
-            >
+            <option key={l} value={l} lang={l} dir={isRtl(l) ? "rtl" : "ltr"}>
               {LANG_LABEL[l]}
-            </button>
+            </option>
           ))}
-        </div>
+        </select>
       </section>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-600">{t("settings.pin")}</h2>
-        <p className="text-xs text-neutral-600">{t("settings.pinBody")}</p>
+        <h2 className="section-title">{t("settings.pin")}</h2>
+        <p className="text-[13px] text-neutral-600">{t("settings.pinBody")}</p>
         {pinSet ? (
           <button type="button" className="btn-ghost w-full" onClick={() => void clearPasscode()}>{t("settings.pinRemove")}</button>
         ) : (
@@ -196,10 +197,10 @@ export default function Settings() {
       </section>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-600">{t("settings.data")}</h2>
+        <h2 className="section-title">{t("settings.data")}</h2>
         <button type="button" className="btn-ghost w-full" onClick={() => void doExport()}>{t("settings.export")}</button>
         <button ref={importBtnRef} type="button" className="btn-ghost w-full" onClick={() => fileRef.current?.click()}>{t("settings.import")}</button>
-        <p className="text-xs text-neutral-600">{t("settings.importWarn")}</p>
+        <p className="text-[13px] text-neutral-600">{t("settings.importWarn")}</p>
         <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void pickImport(f); }} />
         {pendingImport && (
           // Native dialog: showModal() supplies focus entry, Tab containment,
@@ -213,7 +214,7 @@ export default function Settings() {
             className="rounded-xl border border-amber-300 bg-amber-50 p-3 space-y-2 w-full max-w-sm backdrop:bg-neutral-900/40"
           >
             <p id="import-preview-title" className="text-sm font-semibold text-amber-900">{t("settings.importPreviewTitle")}</p>
-            <p className="text-xs text-amber-900">
+            <p className="text-[13px] text-amber-900">
               {t("settings.importPreview", {
                 children: pendingImport.summary.children,
                 observations: pendingImport.summary.observations,
@@ -246,8 +247,8 @@ export default function Settings() {
       </section>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-600">{t("settings.demo")}</h2>
-        <p className="text-xs text-neutral-600">{t("settings.demoBody")}</p>
+        <h2 className="section-title">{t("settings.demo")}</h2>
+        <p className="text-[13px] text-neutral-600">{t("settings.demoBody")}</p>
         {hasDemo ? (
           !confirmDemoClear ? (
             <button type="button" className="btn-ghost w-full" onClick={() => setConfirmDemoClear(true)}>{t("settings.demoClear")}</button>
@@ -269,7 +270,7 @@ export default function Settings() {
       </section>
 
       <section className="card p-4 space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-600">{t("settings.about")}</h2>
+        <h2 className="section-title">{t("settings.about")}</h2>
         <div>
           <h3 className="text-sm font-semibold">{t("settings.privacy")}</h3>
           <p className="text-sm text-neutral-600 leading-relaxed">{t("settings.privacyBody")}</p>

@@ -66,12 +66,12 @@ try {
   await page.goto(BASE + "/#/settings");
   await page.waitForTimeout(500);
   ok("settings renders", /settings|réglages|paramètres|data/i.test(await page.locator("body").innerText()));
-  const fr = page.locator("button", { hasText: /français/i }).first();
-  if (await fr.count()) {
-    await fr.click();
+  const langSel = page.locator("main select").first();
+  if (await langSel.count()) {
+    await langSel.selectOption("fr");
     await page.waitForTimeout(500);
     ok("french switch", /paramètres|enfant|douleur|supprimer/i.test(await page.locator("body").innerText()));
-  } else ok("french switch", false, "no FR button");
+  } else ok("french switch", false, "no language select");
 
   // 7. Red flags
   await page.goto(BASE + "/#/redflags");

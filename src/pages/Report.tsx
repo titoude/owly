@@ -116,12 +116,14 @@ export default function Report() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-bold">{t("report.title")}</h1>
-        <p className="text-sm text-neutral-600">{t("report.subtitle")}</p>
+        <h1 className="page-title">{t("report.title")}</h1>
+        <p className="mt-1 text-sm text-neutral-600">
+          <span dir="auto">{active.name}</span> · {t("report.subtitle")}
+        </p>
       </div>
 
       <div>
-        <h2 className="label">{t("report.period")}</h2>
+        <h2 className="section-title">{t("report.period")}</h2>
         <div className="grid grid-cols-4 gap-2">
           {PERIODS.map((d) => (
             <button
@@ -139,13 +141,13 @@ export default function Report() {
             </button>
           ))}
         </div>
-        <p className="mt-2 text-xs text-neutral-600">
+        <p className="mt-2 text-[13px] text-neutral-600">
           {episodeCount} {t("report.included")}
         </p>
       </div>
 
       <div>
-        <h2 className="label">{t("report.questions")}</h2>
+        <h2 className="section-title">{t("report.questions")}</h2>
         <div className="space-y-2">
           {questions.map((q, i) => (
             <input
@@ -161,13 +163,13 @@ export default function Report() {
       </div>
 
       <div className="card p-4 space-y-2">
-        <h3 className="text-sm font-semibold text-neutral-600">{t("report.previewTitle")}</h3>
-        <ul className="text-xs text-neutral-600 space-y-1">
+        <h3 className="section-title">{t("report.previewTitle")}</h3>
+        <ul className="text-[13px] text-neutral-600 space-y-1">
           {(t("report.includes", { returnObjects: true }) as string[]).map((s, i) => (
             <li key={i}>• {s}</li>
           ))}
         </ul>
-        <p className="text-xs text-neutral-600 pt-1">
+        <p className="text-[13px] text-neutral-600 pt-1">
           {period == null
             ? t("report.allTime")
             : `${t("report.range")}: ${fmtD(Date.now() - period * 864e5)} → ${fmtD(Date.now())}`}
@@ -183,7 +185,7 @@ export default function Report() {
           {t("report.reloadRetry")}
         </button>
       )}
-      <p className="text-xs text-neutral-600 text-center">{t("report.localNote")}</p>
+      <p className="text-[13px] text-neutral-600 text-center">{t("report.localNote")}</p>
     </div>
   );
 }

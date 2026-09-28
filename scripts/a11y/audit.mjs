@@ -276,9 +276,9 @@ await go(page, "#/settings");
 // fr state: switch to French
 await go(page, "#/settings");
 {
-  const fr = page.locator("button", { hasText: /Français/ }).first();
-  if (await fr.count()) {
-    await fr.click(); await page.waitForTimeout(300);
+  const langSel = page.locator("main select").first();
+  if (await langSel.count()) {
+    await langSel.selectOption("fr"); await page.waitForTimeout(300);
     const lang = await page.evaluate(() => document.documentElement.lang);
     if (lang !== "fr") { results.push({ id: "state:fr", status: "UNVERIFIED", error: `lang=${lang}, expected fr` }); unverified++; }
     else {
@@ -298,23 +298,22 @@ await go(page, "#/settings");
       else { results.push({ id: "state:fr-observe", status: "UNVERIFIED", error: `step indicator "${stepTxt.trim()}", expected step 2 of 8` }); unverified++; }
     }
   }
-  else { results.push({ id: "state:fr", status: "UNVERIFIED", error: "no FR button" }); unverified++; }
+  else { results.push({ id: "state:fr", status: "UNVERIFIED", error: "no language select" }); unverified++; }
 }
 
 // rtl state: switch to Arabic — the language buttons live in Settings, and
 // the page may currently sit on #/observe after the FR wizard audit.
 await go(page, "#/settings");
 {
-  const ar = page.locator("button", { hasText: /العربية/ }).first();
-  if (await ar.count()) {
-    await ar.click(); await page.waitForTimeout(300);
+  const langSel = page.locator("main select").first();
+  if (await langSel.count()) {
+    await langSel.selectOption("ar"); await page.waitForTimeout(300);
     await go(page, "#/");
     const dir = await page.evaluate(() => document.documentElement.dir);
     if (dir !== "rtl") { results.push({ id: "state:rtl", status: "UNVERIFIED", error: `dir=${dir}, expected rtl` }); unverified++; }
     else await audit(page, "state:rtl", "app shell RTL (ar)");
-    await page.locator("button", { hasText: /English/ }).first().click().catch(() => {});
-    await go(page, "#/settings"); await page.locator("button", { hasText: /English/ }).first().click().catch(() => {});
-  } else { results.push({ id: "state:rtl", status: "UNVERIFIED", error: "no AR button" }); unverified++; }
+    await go(page, "#/settings"); await page.locator("main select").first().selectOption("en").catch(() => {});
+  } else { results.push({ id: "state:rtl", status: "UNVERIFIED", error: "no language select" }); unverified++; }
 }
 
 // empty-dashboard: new child with zero observations (before PIN set — the

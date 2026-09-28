@@ -43,7 +43,10 @@
     "title": "Profilo del bambino",
     "saveError": "Impossibile salvare — riprova.",
     "delete": "Elimina questo profilo",
-    "deleteConfirm": "Elimina questo bambino e tutte le sue osservazioni. Non si può annullare."
+    "deleteConfirm": "Elimina questo bambino e tutte le sue osservazioni. Non si può annullare.",
+    "editTitle": "Modifica profilo",
+    "optionalTitle": "Dettagli opzionali",
+    "birthYearInvalid": "Inserisci un anno di nascita tra il 1900 e il {{max}}"
   },
   "customDescriptors": {
     "title": "Come mostra il dolore {{name}}?",

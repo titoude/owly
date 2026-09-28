@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useApp } from "../appContext";
 import { db } from "../db";
-import { clearDraft, draftEditKey, draftKey, loadDraft, saveDraft, type ObsDraft } from "../drafts";
+import { clearDraft, draftEditKey, draftKey, latestWriteGate, loadDraft, saveDraft, type ObsDraft } from "../drafts";
 import { INTERVENTION_TYPES, totalFlacc } from "../flacc";
 import { FLACC_CATEGORIES, type FlaccScores, type Intervention, type Observation } from "../types";
 import { FlaccPicker } from "../components/FlaccPicker";
@@ -55,6 +55,7 @@ export default function Observe() {
   const [offerSeen, setOfferSeen] = useState(false); // true once resolved
   const [draftFailed, setDraftFailed] = useState(false); // draft write rejected (quota/denied)
   const [draftSaved, setDraftSaved] = useState(false); // a draft write actually completed
+  const writeGate = useRef(latestWriteGate()); // overlapping-write order — latest wins
   const seeded = useRef<string>(""); // JSON of the seeded fields
   const orig = useRef<Observation | null>(null); // edited record, for timestamp preservation
   const seededWhen = useRef<string | null>(null); // customAt string the form was seeded with
@@ -126,9 +127,19 @@ export default function Observe() {
     if (JSON.stringify(fields) === seeded.current) return;
     // The draft records the instant pinned by the last explicit "when"
     // change — recomputing it here would let clock drift shift the episode.
+    const ticket = writeGate.current.begin();
+    setDraftSaved(false); // a write is in flight — nothing is durably saved yet
     saveDraft(key, { ...fields, savedAt: Date.now() })
-      .then(() => { setDraftFailed(false); setDraftSaved(true); })
-      .catch(() => setDraftFailed(true));
+      .then(() => {
+        // Only the newest write may mark fields saved — a delayed older
+        // resolution must not resurrect a stale "saved" status.
+        if (!writeGate.current.isCurrent(ticket)) return;
+        setDraftFailed(false);
+        setDraftSaved(true);
+      })
+      .catch(() => {
+        if (writeGate.current.isCurrent(ticket)) setDraftFailed(true);
+      });
   }, [key, offerSeen, offer, fields]);
 
   // Each step change resets the viewport to the step region (below the
@@ -284,18 +295,18 @@ export default function Observe() {
                 type="button"
                 onClick={() => setBaseline(false)}
                 aria-pressed={!baseline}
-                className={`card p-4 text-left font-semibold transition-all duration-150 ${!baseline ? "!border-orange-300 !bg-orange-50 text-orange-800" : "text-neutral-600"}`}
+                className={`card p-4 text-start font-semibold transition-all duration-150 ${!baseline ? "!border-orange-300 !bg-orange-50 text-orange-800" : "text-neutral-600"}`}
               >
-                <span className="mr-1.5 inline-block size-2.5 rounded-full bg-orange-400 align-middle" />
+                <span className="me-1.5 inline-block size-2.5 rounded-full bg-orange-400 align-middle" />
                 {t("observe.episode")}
               </button>
               <button
                 type="button"
                 onClick={() => setBaseline(true)}
                 aria-pressed={baseline}
-                className={`card p-4 text-left font-semibold transition-all duration-150 ${baseline ? "!border-emerald-300 !bg-emerald-50 text-emerald-700" : "text-neutral-600"}`}
+                className={`card p-4 text-start font-semibold transition-all duration-150 ${baseline ? "!border-emerald-300 !bg-emerald-50 text-emerald-700" : "text-neutral-600"}`}
               >
-                <span className="mr-1.5 inline-block size-2.5 rounded-full bg-emerald-400 align-middle" />
+                <span className="me-1.5 inline-block size-2.5 rounded-full bg-emerald-400 align-middle" />
                 {t("observe.baseline")}
               </button>
             </div>
@@ -419,7 +430,7 @@ export default function Observe() {
                         )
                       }
                       aria-pressed={!!it}
-                      className={`flex-1 text-left text-[15px] min-h-11 flex items-center gap-2 py-2 ${it ? "text-accent-700 font-semibold" : "text-neutral-700"}`}
+                      className={`flex-1 text-start text-[15px] min-h-11 flex items-center gap-2 py-2 ${it ? "text-accent-700 font-semibold" : "text-neutral-700"}`}
                     >
                       {it && <span aria-hidden className="leading-none"><IconCheck size={15} /></span>}{t(`interventions.${type}`)}
                     </button>

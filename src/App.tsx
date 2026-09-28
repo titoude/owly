@@ -137,7 +137,10 @@ function Shell() {
             <span className="text-[15px] font-semibold tracking-tight">Owly</span>
           </Link>
 
-          <nav className="mx-auto hidden items-center gap-0.5 md:flex" aria-label={t("app.navLabel")}>
+          {/* Full nav only once every destination + child + Emergency actually
+              fits (long DE/AR labels overflow below lg) — compact bottom nav
+              covers md. */}
+          <nav className="mx-auto hidden items-center gap-0.5 lg:flex" aria-label={t("app.navLabel")}>
             {TOP_NAV.map((n) => {
               const selected = loc.pathname === n.to;
               return (
@@ -155,7 +158,7 @@ function Shell() {
             })}
           </nav>
 
-          <div className="ms-auto flex min-w-0 items-center gap-2 md:ms-0">
+          <div className="ms-auto flex min-w-0 items-center gap-2 lg:ms-0">
             {active && (
               <Link
                 to="/settings"
@@ -183,7 +186,7 @@ function Shell() {
       </header>
 
       <div className="flex min-h-[calc(100dvh-3.5rem)] flex-col">
-        <main id="main" tabIndex={-1} className="mx-auto w-full max-w-lg flex-1 px-4 pb-28 pt-6 focus:outline-none md:max-w-5xl md:pb-14 md:pt-8">
+        <main id="main" tabIndex={-1} className="mx-auto w-full max-w-lg flex-1 px-4 pb-28 pt-6 focus:outline-none md:max-w-5xl md:pt-8 lg:pb-14">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/welcome" element={<Onboarding />} />
@@ -201,7 +204,7 @@ function Shell() {
       </div>
 
       {/* Mobile: 5 calm tabs — flat bottom bar, no floating pill */}
-      <nav className="fixed bottom-0 inset-x-0 z-40 border-t border-neutral-200 bg-neutral-50 pb-[env(safe-area-inset-bottom)] md:hidden" aria-label={t("app.navLabel")}>
+      <nav className="fixed bottom-0 inset-x-0 z-40 border-t border-neutral-200 bg-neutral-50 pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label={t("app.navLabel")}>
         <div className="mx-auto max-w-lg grid grid-cols-5">
           {NAV.map((n) => {
             const selected = loc.pathname === n.to;

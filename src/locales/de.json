@@ -43,7 +43,10 @@
     "title": "Profil deines Kindes",
     "saveError": "Speichern nicht möglich — bitte erneut versuchen.",
     "delete": "Dieses Profil löschen",
-    "deleteConfirm": "Löscht dieses Kind und alle seine Beobachtungen. Das kann nicht rückgängig gemacht werden."
+    "deleteConfirm": "Löscht dieses Kind und alle seine Beobachtungen. Das kann nicht rückgängig gemacht werden.",
+    "editTitle": "Profil bearbeiten",
+    "optionalTitle": "Optionale Angaben",
+    "birthYearInvalid": "Gib ein Geburtsjahr zwischen 1900 und {{max}} ein"
   },
   "customDescriptors": {
     "title": "Wie zeigt {{name}} Schmerz?",

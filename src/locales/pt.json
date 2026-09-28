@@ -43,7 +43,10 @@
     "title": "Perfil da criança",
     "saveError": "Não foi possível guardar — tente novamente.",
     "delete": "Eliminar este perfil",
-    "deleteConfirm": "Elimina esta criança e todas as suas observações. Não pode ser anulado."
+    "deleteConfirm": "Elimina esta criança e todas as suas observações. Não pode ser anulado.",
+    "editTitle": "Editar perfil",
+    "optionalTitle": "Detalhes opcionais",
+    "birthYearInvalid": "Introduz um ano de nascimento entre 1900 e {{max}}"
   },
   "customDescriptors": {
     "title": "Como é que {{name}} mostra a dor?",

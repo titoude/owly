@@ -43,7 +43,10 @@
     "title": "孩子的档案",
     "saveError": "无法保存——请重试。",
     "delete": "删除此档案",
-    "deleteConfirm": "将删除此孩子及其全部观察记录，无法撤销。"
+    "deleteConfirm": "将删除此孩子及其全部观察记录，无法撤销。",
+    "editTitle": "编辑资料",
+    "optionalTitle": "可选信息",
+    "birthYearInvalid": "请输入 1900 至 {{max}} 之间的出生年份"
   },
   "customDescriptors": {
     "title": "{{name}}如何表现疼痛？",
