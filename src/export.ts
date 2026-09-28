@@ -1,4 +1,4 @@
-import { db, setSetting } from "./db";
+import { db } from "./db";
 import { totalFlacc } from "./flacc";
 import { FLACC_CATEGORIES, type Child, type Intervention, type Observation } from "./types";
 
@@ -30,13 +30,21 @@ function strField(v: unknown, what: string): string {
   return v;
 }
 
+// Epoch-ms timestamps must be representable by Date: a finite number like
+// 9e18 is not, and would corrupt sorting/labels downstream.
+function tsField(v: unknown, bad: () => never): void {
+  if (typeof v !== "number" || !Number.isFinite(v) || Math.abs(v) > 8.64e15 || Number.isNaN(new Date(v).getTime())) {
+    bad();
+  }
+}
+
 function normalizeChild(c: Child, i: number): Child {
   const bad = (what: string): never => {
     throw new Error(`Invalid Owly backup file: ${what} (child #${i + 1})`);
   };
   if (!c || typeof c !== "object") bad("malformed record");
   if (typeof c.name !== "string" || c.name.trim() === "") bad("missing name");
-  if (typeof c.createdAt !== "number" || !Number.isFinite(c.createdAt)) bad("missing createdAt");
+  tsField(c.createdAt, () => bad("invalid createdAt"));
   if (c.id != null && (typeof c.id !== "number" || !Number.isInteger(c.id) || c.id <= 0)) bad("invalid id");
   if (c.birthYear != null && (typeof c.birthYear !== "number" || !Number.isFinite(c.birthYear))) bad("invalid birthYear");
   const raw: unknown = c.customDescriptors ?? {};
@@ -61,8 +69,8 @@ function normalizeChild(c: Child, i: number): Child {
 function normalizeObservation(o: Observation, i: number): Observation {
   const fail = (): never => { throw new Error(`Invalid Owly backup file: malformed observation #${i + 1}`); };
   if (!o || typeof o.childId !== "number" || !Number.isFinite(o.childId)) fail();
-  if (typeof o.recordedAt !== "number" || !Number.isFinite(o.recordedAt)) fail();
-  if (typeof o.startedAt !== "number" || !Number.isFinite(o.startedAt)) fail();
+  tsField(o.recordedAt, fail);
+  tsField(o.startedAt, fail);
   if (!o.scores || typeof o.scores !== "object") fail();
   for (const cat of FLACC_CATEGORIES) {
     const v = (o.scores as unknown as Record<string, unknown>)[cat];
@@ -125,15 +133,16 @@ export function inspectBackup(json: string): BackupSummary {
 
 export async function importAll(json: string): Promise<void> {
   const { children, observations } = validateDump(json);
-  // Atomic: never leave the user with a half-restored database.
-  await db.transaction("rw", [db.children, db.observations], async () => {
+  // Fully atomic — including the active-child pointer: a failure anywhere
+  // rolls the whole restore back rather than leaving a partial database.
+  await db.transaction("rw", [db.children, db.observations, db.settings], async () => {
     await db.children.clear();
     await db.observations.clear();
     await db.children.bulkAdd(children);
     await db.observations.bulkAdd(observations);
+    // The previous active child id may not exist in the restored set.
+    await db.settings.put({ key: "activeChildId", value: children[0]?.id ?? null });
   });
-  // The previous active child id may not exist in the restored set.
-  await setSetting("activeChildId", children[0]?.id ?? null);
 }
 
 export async function deleteAll(): Promise<void> {

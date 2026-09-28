@@ -103,4 +103,27 @@ describe("buildReport", () => {
     }
     expect(Math.min(...drawnY(calls))).toBeGreaterThanOrEqual(30);
   });
+
+  it("splits an episode taller than a page across pages, repeating its identity", async () => {
+    const obs = {
+      ...mkObs(7, 1),
+      note:
+        "EPISODE_MARKER_60 " +
+        "Long note without lost content. ".repeat(350) +
+        " END_OF_FINAL_NOTE",
+    };
+    const spy = spyOnDraw();
+    const bytes = await buildReport(child, [obs], { periodDays: null, questions: [] });
+    const calls = spy.calls();
+    const doc = await PDFDocument.load(bytes);
+    expect(doc.getPageCount()).toBeGreaterThan(2);
+    const all = drawnText(calls);
+    // Nothing drawn below the footer zone / off-page — every line is visible.
+    expect(Math.min(...drawnY(calls))).toBeGreaterThanOrEqual(30);
+    // The whole note is rendered, first word to last — not truncated or capped.
+    expect(all).toContain("EPISODE_MARKER_60");
+    expect(all).toContain("END_OF_FINAL_NOTE");
+    // The split episode stays identifiable on its continuation page(s).
+    expect(all).toContain("continued");
+  });
 });

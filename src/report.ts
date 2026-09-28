@@ -199,8 +199,8 @@ export async function buildReport(child: Child, observations: Observation[], opt
         7.6, font, COL_W[5],
       );
       const areaLines = wrapText(areas, 7.6, font, COL_W[4]);
-      const rowH = Math.max(10.5, Math.max(noteLines.length, areaLines.length) * 9 + 1.5);
-      if (ensureSpace(ctx, rowH + 2)) drawTableHeader(ctx, headerRow);
+      const rows = Math.max(1, noteLines.length, areaLines.length);
+      if (ensureSpace(ctx, 12.5)) drawTableHeader(ctx, headerRow);
       const cells = [
         fmtDate(o.startedAt),
         `${o.total}/10`,
@@ -210,13 +210,35 @@ export async function buildReport(child: Child, observations: Observation[], opt
       cells.forEach((c, i) => {
         ctx.page.drawText(truncToWidth(font, c, 7.6, COL_W[i]), { x: ctx.left + COLS[i], y: ctx.y, size: 7.6, font, color: INK });
       });
-      areaLines.forEach((l, i) => {
-        ctx.page.drawText(truncToWidth(font, l, 7.6, COL_W[4]), { x: ctx.left + COLS[4], y: ctx.y - i * 9, size: 7.6, font, color: INK });
-      });
-      noteLines.forEach((l, i) => {
-        ctx.page.drawText(truncToWidth(font, l, 7.6, COL_W[5]), { x: ctx.left + COLS[5], y: ctx.y - i * 9, size: 7.6, font, color: INK });
-      });
-      ctx.y -= rowH;
+      // Draw line-by-line so a row taller than a page splits across pages.
+      // ctx.y is the baseline of the current chunk's first line; a break
+      // re-heads the table and repeats the episode's date + "continued".
+      let chunk = 0;
+      for (let i = 0; i < rows; i++) {
+        if (ctx.y - chunk * 9 - 10 < BOTTOM_Y) {
+          newPage(ctx);
+          drawTableHeader(ctx, headerRow);
+          chunk = 0;
+          // Repeat the episode's date plus "(continued)" — identity survives
+          // the page break even in the columns that are empty on continuation.
+          ctx.page.drawText(
+            truncToWidth(font, fmtDate(o.startedAt), 7.6, COL_W[0]),
+            { x: ctx.left + COLS[0], y: ctx.y, size: 7.6, font, color: MUTED },
+          );
+          ctx.page.drawText(
+            `(${t("continued")})`,
+            { x: ctx.left + COLS[2], y: ctx.y, size: 7.6, font, color: MUTED },
+          );
+        }
+        if (i < areaLines.length) {
+          ctx.page.drawText(truncToWidth(font, areaLines[i], 7.6, COL_W[4]), { x: ctx.left + COLS[4], y: ctx.y - chunk * 9, size: 7.6, font, color: INK });
+        }
+        if (i < noteLines.length) {
+          ctx.page.drawText(truncToWidth(font, noteLines[i], 7.6, COL_W[5]), { x: ctx.left + COLS[5], y: ctx.y - chunk * 9, size: 7.6, font, color: INK });
+        }
+        chunk++;
+      }
+      ctx.y -= chunk * 9 + 1.5;
     }
   }
 

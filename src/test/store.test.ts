@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db, getSetting, setSetting } from "../db";
 import { seedDemo, clearDemo } from "../demo";
 import { exportAll, importAll, deleteAll } from "../export";
@@ -64,6 +64,7 @@ describe("export/import", () => {
   const dbRows = async () => ({
     children: await db.children.toArray(),
     observations: await db.observations.toArray(),
+    settings: await db.settings.toArray(),
   });
 
   it("rejects a backup with a non-string custom descriptor and preserves existing data", async () => {
@@ -98,6 +99,35 @@ describe("export/import", () => {
     await setSetting("activeChildId", 9999); // stale id, no longer exists
     await importAll(dump);
     expect(await getSetting("activeChildId")).toBe(importedId);
+  });
+
+  it("rejects timestamps a Date cannot represent and preserves all rows", async () => {
+    await seedDemo();
+    const before = await dbRows();
+    const base = await exportAll();
+    for (const mutate of [
+      (d: Record<string, never>) => { (d.observations as { startedAt: number }[])[0].startedAt = 9e18; },
+      (d: Record<string, never>) => { (d.observations as { recordedAt: number }[])[0].recordedAt = 9e18; },
+      (d: Record<string, never>) => { (d.children as { createdAt: number }[])[0].createdAt = -9e18; },
+    ]) {
+      const dump = JSON.parse(base);
+      mutate(dump);
+      await expect(importAll(JSON.stringify(dump))).rejects.toThrow();
+    }
+    expect(await dbRows()).toEqual(before);
+  });
+
+  it("rolls back the whole import if the active-child write fails", async () => {
+    await seedDemo();
+    const dump = await exportAll();
+    await deleteAll();
+    const put = vi.spyOn(db.settings, "put").mockRejectedValueOnce(new Error("disk full"));
+    await expect(importAll(dump)).rejects.toThrow();
+    put.mockRestore();
+    // Nothing half-restored: children, observations and settings all empty.
+    expect(await db.children.count()).toBe(0);
+    expect(await db.observations.count()).toBe(0);
+    expect(await getSetting("activeChildId")).toBeUndefined();
   });
 });
 

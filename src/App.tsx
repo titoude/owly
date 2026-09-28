@@ -64,9 +64,12 @@ const NAV = [
   { to: "/observe", Icon: IconObserve, label: "nav.observe" },
   { to: "/history", Icon: IconHistory, label: "nav.history" },
   { to: "/patterns", Icon: IconPatterns, label: "nav.patterns" },
-  { to: "/report", Icon: IconReport, label: "nav.report" },
   { to: "/settings", Icon: IconSettings, label: "nav.settings" },
 ];
+
+// Report is a destination, not a daily tab — reachable in the desktop rail
+// and from Dashboard/Patterns entry points on mobile.
+const REPORT_NAV = { to: "/report", Icon: IconReport, label: "nav.report" };
 
 function Shell() {
   const { t } = useTranslation();
@@ -118,24 +121,63 @@ function Shell() {
     );
   }
 
+  const railItems = [...NAV.slice(0, 4), REPORT_NAV, NAV[4]];
+
   return (
-    <div className="min-h-dvh flex flex-col">
-      <main className="flex-1 mx-auto w-full max-w-lg px-4 pb-28 pt-6">
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/welcome" element={<Onboarding />} />
-          <Route path="/observe" element={<Observe />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/patterns" element={<Patterns />} />
-          <Route path="/report" element={<Report />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/redflags" element={<RedFlags />} />
-          <Route path="/child/new" element={<ChildForm />} />
-          <Route path="/child/:id/edit" element={<ChildForm />} />
-        </Routes>
-      </main>
-      <nav className="fixed bottom-0 inset-x-0 z-40 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-2 px-4">
-        <div className="mx-auto max-w-lg grid grid-cols-6 rounded-[1.75rem] border border-neutral-200 bg-white/85 backdrop-blur-xl shadow-[0_12px_32px_-8px_rgba(0,0,0,0.65)]">
+    <div className="min-h-dvh">
+      {/* Desktop / tablet: left rail */}
+      <aside className="hidden md:flex md:flex-col fixed inset-y-0 left-0 w-56 z-40 border-r border-neutral-200 bg-white/75 backdrop-blur-xl px-3 py-6">
+        <div className="px-2 pb-5">
+          <span className="text-lg font-bold tracking-tight">Owly</span>
+          <p className="text-[11px] text-neutral-500">{t("app.tagline")}</p>
+        </div>
+        <nav className="flex-1 space-y-0.5" aria-label={t("app.navLabel")}>
+          {railItems.map((n) => {
+            const selected = loc.pathname === n.to;
+            return (
+              <button
+                key={n.to}
+                onClick={() => void nav(n.to)}
+                aria-current={selected ? "page" : undefined}
+                className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-left transition-colors duration-150 min-h-11
+                  ${selected ? "bg-teal-50 text-teal-700 font-semibold" : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"}`}
+              >
+                <span aria-hidden className="leading-none shrink-0"><n.Icon /></span>
+                {t(n.label)}
+              </button>
+            );
+          })}
+        </nav>
+        <div className="border-t border-neutral-200 pt-3">
+          <button
+            onClick={() => void nav("/redflags")}
+            className="w-full flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-700 hover:bg-red-50 transition-colors min-h-11"
+          >
+            ⚠ {t("nav.redflags")}
+          </button>
+        </div>
+      </aside>
+
+      <div className="md:pl-56 flex flex-col min-h-dvh">
+        <main className="flex-1 mx-auto w-full max-w-lg md:max-w-2xl px-4 pb-28 md:pb-14 pt-6 md:pt-10">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/welcome" element={<Onboarding />} />
+            <Route path="/observe" element={<Observe />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/patterns" element={<Patterns />} />
+            <Route path="/report" element={<Report />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/redflags" element={<RedFlags />} />
+            <Route path="/child/new" element={<ChildForm />} />
+            <Route path="/child/:id/edit" element={<ChildForm />} />
+          </Routes>
+        </main>
+      </div>
+
+      {/* Mobile: 5 calm tabs */}
+      <nav className="fixed bottom-0 inset-x-0 z-40 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-2 px-4 md:hidden" aria-label={t("app.navLabel")}>
+        <div className="mx-auto max-w-lg grid grid-cols-5 rounded-3xl border border-neutral-200 bg-white/90 backdrop-blur-xl shadow-[0_8px_24px_-12px_rgba(0,0,0,0.25)]">
           {NAV.map((n) => {
             const selected = loc.pathname === n.to;
             return (
@@ -143,7 +185,7 @@ function Shell() {
                 key={n.to}
                 onClick={() => void nav(n.to)}
                 aria-current={selected ? "page" : undefined}
-                className={`flex flex-col items-center gap-1 py-2.5 text-[10.5px] font-medium touch-target transition-colors duration-150
+                className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium touch-target transition-colors duration-150 rounded-3xl
                   ${selected ? "text-teal-700" : "text-neutral-600 hover:text-neutral-900"}`}
               >
                 <span aria-hidden className="leading-none"><n.Icon /></span>
