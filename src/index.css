@@ -55,6 +55,12 @@
   --color-accent-800: #234999;
 }
 
+html {
+  /* Focus/anchor scrolls park targets clear of the sticky action bar
+     and the fixed bottom nav. */
+  scroll-padding-bottom: 12rem;
+}
+
 body {
   @apply bg-white text-neutral-900 antialiased;
   min-height: 100dvh;

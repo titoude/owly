@@ -492,7 +492,7 @@ export default function Observe() {
           field or chip peeks through); its in-flow slot still reserves
           clearance at the end of the form. Errors live inside the bar so
           a late save/draft failure can't be hidden offscreen. */}
-      <div className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] lg:bottom-4 z-30 -mx-2 space-y-2 border-t border-neutral-200 bg-white px-2 pb-3 pt-4
+      <div className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] lg:bottom-0 z-30 -mx-2 space-y-2 border-t border-neutral-200 bg-white px-2 pb-3 pt-4
                       after:absolute after:inset-x-0 after:top-full after:h-[calc(4.5rem+env(safe-area-inset-bottom))] after:bg-white after:content-[''] lg:after:hidden">
         {(saveError || draftFailed) && (
           <div className="space-y-1">
