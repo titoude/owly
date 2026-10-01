@@ -8,7 +8,7 @@
     "wcag22aa",
     "best-practice"
   ],
-  "when": "2026-09-28T20:54:10.458Z",
+  "when": "2026-10-01T16:12:27.849Z",
   "results": [
     {
       "id": "route:/",
@@ -89,7 +89,15 @@
       "description": "observe wizard step 0",
       "status": "PASS",
       "violations": [],
-      "incomplete": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-primary"
+          ]
+        }
+      ],
       "passes": 37
     },
     {
@@ -97,7 +105,15 @@
       "description": "observe wizard step 1",
       "status": "PASS",
       "violations": [],
-      "incomplete": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-ghost"
+          ]
+        }
+      ],
       "passes": 40
     },
     {
@@ -105,7 +121,15 @@
       "description": "observe wizard step 2",
       "status": "PASS",
       "violations": [],
-      "incomplete": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-ghost"
+          ]
+        }
+      ],
       "passes": 40
     },
     {
@@ -113,7 +137,15 @@
       "description": "observe wizard step 3",
       "status": "PASS",
       "violations": [],
-      "incomplete": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-ghost"
+          ]
+        }
+      ],
       "passes": 40
     },
     {
@@ -121,7 +153,15 @@
       "description": "observe wizard step 4",
       "status": "PASS",
       "violations": [],
-      "incomplete": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-ghost"
+          ]
+        }
+      ],
       "passes": 40
     },
     {
@@ -129,7 +169,15 @@
       "description": "observe wizard step 5",
       "status": "PASS",
       "violations": [],
-      "incomplete": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-ghost"
+          ]
+        }
+      ],
       "passes": 40
     },
     {
@@ -137,7 +185,16 @@
       "description": "observe wizard step 6",
       "status": "PASS",
       "violations": [],
-      "incomplete": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2,
+          "targets": [
+            ".btn-ghost.flex-1[type=\"button\"]",
+            ".btn-primary"
+          ]
+        }
+      ],
       "passes": 41
     },
     {
@@ -145,7 +202,16 @@
       "description": "observe wizard step 7",
       "status": "PASS",
       "violations": [],
-      "incomplete": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2,
+          "targets": [
+            ".btn-ghost",
+            ".btn-primary"
+          ]
+        }
+      ],
       "passes": 41
     },
     {
@@ -186,7 +252,15 @@
       "description": "draft resume/discard offer on wizard entry",
       "status": "PASS",
       "violations": [],
-      "incomplete": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-primary.flex-1[type=\"button\"]"
+          ]
+        }
+      ],
       "passes": 38
     },
     {
@@ -194,7 +268,15 @@
       "description": "observation edit mode (preseeded)",
       "status": "PASS",
       "violations": [],
-      "incomplete": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-primary"
+          ]
+        }
+      ],
       "passes": 40
     },
     {
@@ -202,7 +284,16 @@
       "description": "autosave failure surfaced (quota/denied)",
       "status": "PASS",
       "violations": [],
-      "incomplete": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2,
+          "targets": [
+            "p[role=\"alert\"]",
+            ".btn-primary"
+          ]
+        }
+      ],
       "passes": 37
     },
     {
@@ -252,7 +343,15 @@
       "description": "FLACC step in French (scaleNote rendered)",
       "status": "PASS",
       "violations": [],
-      "incomplete": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-ghost"
+          ]
+        }
+      ],
       "passes": 40
     },
     {

@@ -1,8 +1,32 @@
 @import "@fontsource-variable/inter/wght.css";
 @import "tailwindcss";
 
+/* Same OFL-licensed Noto faces the PDF embeds — registered for the DOM so
+   Arabic/Devanagari/CJK locales render on font-poor systems too (Inter is
+   Latin/Greek/Cyrillic only). unicode-range means each file downloads only
+   when a matching character actually appears; bundled locally, no CDN. */
+@font-face {
+  font-family: "Noto Sans Arabic";
+  src: url("./assets/fonts/NotoSansArabic-Regular.ttf") format("truetype");
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: "Noto Sans Devanagari";
+  src: url("./assets/fonts/NotoSansDevanagari-Regular.ttf") format("truetype");
+  font-display: swap;
+  unicode-range: U+0900-097F, U+1CD0-1CFF, U+A8E0-A8FF;
+}
+@font-face {
+  font-family: "Noto Sans SC";
+  src: url("./assets/fonts/NotoSansSC-GB.otf") format("opentype");
+  font-display: swap;
+  unicode-range: U+4E00-9FFF, U+3400-4DBF, U+3000-303F, U+FF00-FFEF;
+}
+
 @theme {
-  --font-sans: "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont,
+  --font-sans: "Inter Variable", "Inter", "Noto Sans Arabic",
+    "Noto Sans Devanagari", "Noto Sans SC", -apple-system, BlinkMacSystemFont,
     "SF Pro Display", "SF Pro Text", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
 
   /* Neutral scale pinned to sRGB hex — the Tailwind default oklch(... 0 none)

@@ -211,7 +211,7 @@ export default function Settings() {
             role="alertdialog"
             aria-labelledby="import-preview-title"
             onCancel={() => setPendingImport(null)}
-            className="rounded-xl border border-amber-300 bg-amber-50 p-3 space-y-2 w-full max-w-sm backdrop:bg-neutral-900/40"
+            className="m-auto rounded-xl border border-amber-300 bg-amber-50 p-3 space-y-2 w-full max-w-sm backdrop:bg-neutral-900/40"
           >
             <p id="import-preview-title" className="text-sm font-semibold text-amber-900">{t("settings.importPreviewTitle")}</p>
             <p className="text-[13px] text-amber-900">
