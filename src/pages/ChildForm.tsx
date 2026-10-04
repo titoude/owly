@@ -40,6 +40,9 @@ export default function ChildForm() {
   const maxYear = new Date().getFullYear();
   const parsedYear = Number(birthYear);
   const yearValid = birthYear === "" || (Number.isInteger(parsedYear) && parsedYear >= 1900 && parsedYear <= maxYear);
+  // Zero-width/format chars are invisible — a name made only of them must
+  // not validate. trim() alone doesn't strip them.
+  const nameOk = name.replace(/[\u200B-\u200D\uFEFF\u00AD]/g, "").trim().length > 0;
 
   async function save() {
     if (!yearValid) {
@@ -152,7 +155,7 @@ export default function ChildForm() {
       </fieldset>
 
       {saveError && <p className="text-sm text-red-700 text-center" role="alert">{saveError}</p>}
-      <button type="button" className="btn-primary w-full" disabled={!name.trim() || saving} onClick={() => void save()}>
+      <button type="button" className="btn-primary w-full" disabled={!nameOk || saving} onClick={() => void save()}>
         {saving ? t("common.loading") : id ? t("common.save") : t("child.create")}
       </button>
       {id && !confirmDel && (
