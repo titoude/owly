@@ -63,7 +63,7 @@ export default function History() {
       <div>
         <h1 className="page-title">{t("history.title")}</h1>
         <p className="mt-1 text-sm text-neutral-600">
-          <span dir="auto">{active.name}</span> · {t("history.observationsCount", { count: obs.length })}
+          <span dir="auto" className="break-words">{active.name}</span> · {t("history.observationsCount", { count: obs.length })}
         </p>
       </div>
       {obs.map((o) => (

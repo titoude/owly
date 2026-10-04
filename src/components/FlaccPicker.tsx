@@ -26,8 +26,8 @@ export function FlaccPicker({ category, child, value, onChange }: Props) {
       <legend className="text-lg font-semibold text-neutral-900" lang={sl !== i18n.language ? sl : undefined} dir={sl !== i18n.language ? "ltr" : undefined}>{t(`flacc.${category}`)}</legend>
       {note ? <p className="text-[13px] text-neutral-600">{note}</p> : null}
       {custom ? (
-        <p className="text-sm text-accent-700 italic">
-          {t("observe.theirs", { name: child.name })} <span dir="auto">{custom}</span>
+        <p className="text-sm text-accent-700 italic break-words">
+          {t("observe.theirs", { name: child.name })} <span dir="auto" className="break-words">{custom}</span>
         </p>
       ) : null}
       <div className="space-y-2">

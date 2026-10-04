@@ -134,7 +134,7 @@ export default function Report() {
       <div>
         <h1 className="page-title">{t("report.title")}</h1>
         <p className="mt-1 text-sm text-neutral-600">
-          <span dir="auto">{active.name}</span> · {t("report.subtitle")}
+          <span dir="auto" className="break-words">{active.name}</span> · {t("report.subtitle")}
         </p>
       </div>
 

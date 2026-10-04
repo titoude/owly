@@ -300,7 +300,7 @@ export default function Observe() {
       {/* Focused form header — explicit child identity, named progress. */}
       <div ref={stepHeading} tabIndex={-1} className="scroll-mt-20 focus:outline-none">
         <div className="flex items-center gap-2 text-[13px] text-neutral-600">
-          <span dir="auto" className="font-medium text-neutral-700">{active.name}</span>
+          <span dir="auto" className="min-w-0 break-words font-medium text-neutral-700">{active.name}</span>
           {active.isDemo && (
             <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-[11px] font-semibold text-amber-800">
               {t("app.demoBadgeShort")}
