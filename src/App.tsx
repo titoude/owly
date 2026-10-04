@@ -213,7 +213,7 @@ function Shell() {
                 key={n.to}
                 onClick={() => void nav(n.to)}
                 aria-current={selected ? "page" : undefined}
-                className={`flex flex-col items-center gap-1 py-2 text-[12px] font-medium touch-target transition-colors duration-150
+                className={`flex flex-col items-center gap-1 py-2 text-[12px] font-medium touch-target !min-w-0 transition-colors duration-150
                   ${selected ? "text-accent-700" : "text-neutral-600 hover:text-neutral-900"}`}
               >
                 <span aria-hidden className="leading-none"><n.Icon /></span>

@@ -178,7 +178,7 @@ export default function Settings() {
         {pinSet ? (
           <button type="button" className="btn-ghost w-full" onClick={() => void clearPasscode()}>{t("settings.pinRemove")}</button>
         ) : (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <input
               type="password"
               inputMode="numeric"
