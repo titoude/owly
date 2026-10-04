@@ -135,7 +135,8 @@
     "emptyCta": "Record first observation",
     "baseline": "baseline",
     "deleteConfirm": "Delete this observation?",
-    "observations": "observations"
+    "observationsCount_one": "{{count}} observation",
+    "observationsCount_other": "{{count}} observations"
   },
   "patterns": {
     "title": "Patterns",
@@ -151,16 +152,18 @@
     "workedRate": "{{yes}}/{{n}} reported helped",
     "note": "Patterns describe what you recorded — they suggest what to discuss with the doctor, they do not prove cause or treatment effect.",
     "toReport": "Generate the doctor report →",
-    "episodes": "episodes",
     "avgScore": "Avg. score",
     "insight": "Insights",
     "insightNight": "Most episodes happen at night — worth mentioning to the doctor.",
     "insightWorked": "\"{{label}}\" was recorded as helping in {{yes}} of {{n}} uses.",
-    "scoreChartLabel": "Bar chart: {{n}} most recent episodes, average {{avg}}, max {{max}}",
     "insightZone_one": "\"{{zone}}\" is the most suspected area ({{n}} episode).",
     "insightZone_other": "\"{{zone}}\" is the most suspected area ({{n}} episodes).",
     "entryDesc": "See when episodes cluster and what you recorded as helping.",
-    "values": "Show values"
+    "values": "Show values",
+    "episodeCount_one": "{{count}} episode",
+    "episodeCount_other": "{{count}} episodes",
+    "scoreChartLabel_one": "Bar chart: {{count}} most recent episode, average {{avg}}, max {{max}}",
+    "scoreChartLabel_other": "Bar chart: {{count}} most recent episodes, average {{avg}}, max {{max}}"
   },
   "report": {
     "title": "Doctor report",
@@ -170,7 +173,6 @@
     "generate": "Generate PDF report",
     "subtitle": "Generate a PDF to bring to the appointment.",
     "days": "{{n}}d",
-    "included": "episodes included",
     "questions": "Your questions for the clinician",
     "q0": "e.g. Could this be an ear infection?",
     "q1": "e.g. Is the medication plan still right?",
@@ -191,7 +193,6 @@
     "pdf": {
       "title": "PAIN OBSERVATION REPORT",
       "born": "born",
-      "prepared": "Prepared {{date}} · {{count}} episode(s) observed",
       "howTheySignal": "How they usually signal discomfort",
       "individualBehaviours": "Individual pain behaviours (rFLACC)",
       "whatShows": "What the observations show",
@@ -206,24 +207,31 @@
       "colDuration": "duration",
       "colAreas": "areas",
       "colCause": "cause / note",
-      "earlierEpisodes": "… plus {{count}} older episodes not shown",
-      "baselineLine": "Baseline (calm) observations: {{count}} — FLACC {{scores}}",
       "questions": "Questions for the clinician",
       "footer1": "Recorded with Owly — a free, open-source observation journal (FLACC: Merkel 1997; individualised rFLACC: Malviya 2006).",
       "footer2": "Observations are caregiver-reported and are not a diagnosis.",
       "continued": "continued",
       "episodesLine_one": "{{count}} episode, average FLACC {{avg}}/10 (max {{max}})",
       "episodesLine_other": "{{count}} episodes, average FLACC {{avg}}/10 (max {{max}})",
-      "nightLine": "{{night}}/{{count}} occurred at night (22:00–06:00)",
       "demoTag": "demo",
       "periodAll": "all recorded observations",
-      "periodLast": "last {{n}} days"
+      "periodLast": "last {{n}} days",
+      "prepared_one": "Prepared {{date}} · {{count}} episode observed",
+      "prepared_other": "Prepared {{date}} · {{count}} episodes observed",
+      "earlierEpisodes_one": "… plus {{count}} older episode not shown",
+      "earlierEpisodes_other": "… plus {{count}} older episodes not shown",
+      "baselineLine_one": "Baseline (calm) observation: {{count}} — FLACC {{scores}}",
+      "baselineLine_other": "Baseline (calm) observations: {{count}} — FLACC {{scores}}",
+      "nightLine_one": "{{night}}/{{count}} occurred at night (22:00–06:00)",
+      "nightLine_other": "{{night}}/{{count}} occurred at night (22:00–06:00)"
     },
     "allTime": "All recorded episodes",
     "entryTitle": "Prepare the report",
     "entryDesc": "Pick the period and what to include, then generate the clinician PDF.",
     "unsupported": "This report can't display the character(s): {{chars}}. Edit or remove them in the journal, or keep the data and export a JSON backup instead — nothing was sent anywhere.",
-    "loadFailedNoKeep": "The report couldn't load — reload to retry. Your unsaved questions could not be kept; the journal itself is unaffected."
+    "loadFailedNoKeep": "The report couldn't load — reload to retry. Your unsaved questions could not be kept; the journal itself is unaffected.",
+    "included_one": "{{count}} episode included",
+    "included_other": "{{count}} episodes included"
   },
   "settings": {
     "title": "Settings",

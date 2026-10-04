@@ -135,7 +135,7 @@
     "emptyCta": "记录第一条观察",
     "baseline": "基线",
     "deleteConfirm": "删除这条观察？",
-    "observations": "次观察"
+    "observationsCount_other": "{{count}} 条观察"
   },
   "patterns": {
     "title": "规律",
@@ -151,15 +151,15 @@
     "workedRate": "{{yes}}/{{n}} 次记录为有效",
     "note": "规律只是描述你所记录的内容——它们提示你可以和医生讨论什么，并不能证明原因或疗效。",
     "toReport": "生成医生报告 →",
-    "episodes": "次发作",
     "avgScore": "平均评分",
     "insight": "值得注意",
     "insightNight": "大多数发作发生在夜间——值得向医生提及。",
     "insightWorked": "“{{label}}”在 {{n}} 次使用中 {{yes}} 次被记录为有效。",
-    "scoreChartLabel": "柱状图：最近 {{n}} 次发作，平均 {{avg}}，最高 {{max}}",
     "insightZone_other": "“{{zone}}”是最常怀疑的部位（{{n}} 次发作）。",
     "entryDesc": "查看发作集中的时段以及哪些安抚有效。",
-    "values": "查看数值"
+    "values": "查看数值",
+    "episodeCount_other": "{{count}} 次发作",
+    "scoreChartLabel_other": "柱状图：最近 {{count}} 次发作，平均 {{avg}}，最高 {{max}}"
   },
   "report": {
     "title": "医生报告",
@@ -169,7 +169,6 @@
     "generate": "生成 PDF 报告",
     "subtitle": "生成一份 PDF 带去就诊。",
     "days": "{{n}} 天",
-    "included": "次发作已包含",
     "questions": "你要问医生的问题",
     "q0": "例如：会不会是耳部感染？",
     "q1": "例如：目前的用药方案还合适吗？",
@@ -190,7 +189,6 @@
     "pdf": {
       "title": "疼痛观察报告",
       "born": "出生于",
-      "prepared": "生成于 {{date}} · 共 {{count}} 次观察发作",
       "howTheySignal": "通常如何表达不适",
       "individualBehaviours": "个体化疼痛表现（rFLACC）",
       "whatShows": "观察显示",
@@ -205,23 +203,25 @@
       "colDuration": "时长",
       "colAreas": "部位",
       "colCause": "原因 / 备注",
-      "earlierEpisodes": "…另有 {{count}} 次更早的发作未列出",
-      "baselineLine": "基线（平静）观察：{{count}} 次 — FLACC {{scores}}",
       "questions": "要问医生的问题",
       "footer1": "使用 Owly 记录——一款免费开源的观察日志（FLACC：Merkel 1997；个体化 rFLACC：Malviya 2006）。",
       "footer2": "观察内容由照护者提供，并非诊断。",
       "continued": "续",
       "episodesLine_other": "{{count}} 次发作，FLACC 平均 {{avg}}/10（最高 {{max}}）",
-      "nightLine": "{{count}} 次中有 {{night}} 次发生在夜间（22:00–06:00）",
       "demoTag": "演示",
       "periodAll": "全部已记录的观察",
-      "periodLast": "最近 {{n}} 天"
+      "periodLast": "最近 {{n}} 天",
+      "prepared_other": "生成于 {{date}} · 共 {{count}} 次观察发作",
+      "earlierEpisodes_other": "…另有 {{count}} 次更早的发作未列出",
+      "baselineLine_other": "基线（平静）观察：{{count}} 条 — FLACC {{scores}}",
+      "nightLine_other": "{{count}} 次中有 {{night}} 次发生在夜间（22:00–06:00）"
     },
     "allTime": "全部已记录发作",
     "entryTitle": "准备报告",
     "entryDesc": "选择时间范围和内容，然后为医生生成 PDF。",
     "unsupported": "此报告无法显示以下字符：{{chars}}。请在日志中修改或删除它们，或保留数据并导出 JSON 备份——没有内容被发送到任何地方。",
-    "loadFailedNoKeep": "报告加载失败——请重新加载以重试。您未保存的问题无法保留；日志本身不受影响。"
+    "loadFailedNoKeep": "报告加载失败——请重新加载以重试。您未保存的问题无法保留；日志本身不受影响。",
+    "included_other": "已包含 {{count}} 次发作"
   },
   "settings": {
     "title": "设置",

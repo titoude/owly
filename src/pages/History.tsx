@@ -5,7 +5,7 @@ import { useApp } from "../appContext";
 import { db, saneObs } from "../db";
 import type { Observation } from "../types";
 import { ScoreBadge } from "../components/ScoreBadge";
-import { intlLocale } from "../i18n";
+import { fmtMinutes, intlLocale } from "../i18n";
 
 export default function History() {
   const { t } = useTranslation();
@@ -63,7 +63,7 @@ export default function History() {
       <div>
         <h1 className="page-title">{t("history.title")}</h1>
         <p className="mt-1 text-sm text-neutral-600">
-          <span dir="auto">{active.name}</span> · {obs.length} {t("history.observations")}
+          <span dir="auto">{active.name}</span> · {t("history.observationsCount", { count: obs.length })}
         </p>
       </div>
       {obs.map((o) => (
@@ -83,7 +83,7 @@ export default function History() {
                 )}
               </div>
               <div className="text-[13px] text-neutral-600">
-                {o.durationMinutes ? `${o.durationMinutes} min` : ""}
+                {o.durationMinutes ? fmtMinutes(o.durationMinutes) : ""}
                 {o.bodyZones.length > 0 && ` · ${o.bodyZones.map((z) => t(`zones.${z}`)).join(", ")}`}
                 {o.suspectedCause && ` · ${o.suspectedCause}`}
               </div>

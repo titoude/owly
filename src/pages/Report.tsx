@@ -114,6 +114,7 @@ export default function Report() {
             <path d="M13.5 3.5V9H19M9 13h6.5M9 16.5h4" />
           </svg>
         </div>
+        <h1 className="page-title">{t("report.title")}</h1>
         <p className="text-neutral-600">{t("report.empty")}</p>
         <Link to="/observe" className="btn-primary inline-block">{t("observe.start")}</Link>
       </div>
@@ -149,7 +150,7 @@ export default function Report() {
           ))}
         </div>
         <p className="mt-2 text-[13px] text-neutral-600">
-          {episodeCount} {t("report.included")}
+          {t("report.included", { count: episodeCount })}
         </p>
       </div>
 

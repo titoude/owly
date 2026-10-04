@@ -135,7 +135,8 @@
     "emptyCta": "Registrar la primera observación",
     "baseline": "referencia",
     "deleteConfirm": "¿Eliminar esta observación?",
-    "observations": "observaciones"
+    "observationsCount_one": "{{count}} observación",
+    "observationsCount_other": "{{count}} observaciones"
   },
   "patterns": {
     "title": "Patrones",
@@ -151,16 +152,18 @@
     "workedRate": "{{yes}}/{{n}} registrado como útil",
     "note": "Los patrones describen lo que registraste — sugieren de qué hablar con el médico, no prueban causa ni efecto del tratamiento.",
     "toReport": "Generar el informe para el médico →",
-    "episodes": "episodios",
     "avgScore": "Puntuación media",
     "insight": "Observaciones destacadas",
     "insightNight": "La mayoría de los episodios ocurren de noche — conviene mencionarlo al médico.",
     "insightWorked": "«{{label}}» se registró como útil en {{yes}} de {{n}} usos.",
-    "scoreChartLabel": "Gráfico de barras: {{n}} episodios más recientes, media {{avg}}, máximo {{max}}",
     "insightZone_one": "«{{zone}}» es la zona más sospechada ({{n}} episodio).",
     "insightZone_other": "«{{zone}}» es la zona más sospechada ({{n}} episodios).",
     "entryDesc": "Cuándo se agrupan los episodios y qué ayudó.",
-    "values": "Ver valores"
+    "values": "Ver valores",
+    "episodeCount_one": "{{count}} episodio",
+    "episodeCount_other": "{{count}} episodios",
+    "scoreChartLabel_one": "Gráfico de barras: {{count}} episodio más reciente, media {{avg}}, máximo {{max}}",
+    "scoreChartLabel_other": "Gráfico de barras: {{count}} episodios más recientes, media {{avg}}, máximo {{max}}"
   },
   "report": {
     "title": "Informe para el médico",
@@ -170,7 +173,6 @@
     "generate": "Generar informe PDF",
     "subtitle": "Genera un PDF para llevar a la cita.",
     "days": "{{n}}d",
-    "included": "episodios incluidos",
     "questions": "Tus preguntas para el clínico",
     "q0": "p. ej. ¿Podría ser una otitis?",
     "q1": "p. ej. ¿Sigue siendo adecuada la medicación?",
@@ -191,7 +193,6 @@
     "pdf": {
       "title": "INFORME DE OBSERVACIÓN DE DOLOR",
       "born": "nacido en",
-      "prepared": "Preparado el {{date}} · {{count}} episodio(s) observado(s)",
       "howTheySignal": "Cómo suele mostrar el malestar",
       "individualBehaviours": "Comportamientos individuales de dolor (rFLACC)",
       "whatShows": "Lo que muestran las observaciones",
@@ -206,24 +207,31 @@
       "colDuration": "duración",
       "colAreas": "zonas",
       "colCause": "causa / nota",
-      "earlierEpisodes": "… más {{count}} episodios anteriores no mostrados",
-      "baselineLine": "Observaciones baseline (tranquilas): {{count}} — FLACC {{scores}}",
       "questions": "Preguntas para el clínico",
       "footer1": "Registrado con Owly — un diario de observación libre y de código abierto (FLACC: Merkel 1997; rFLACC individualizada: Malviya 2006).",
       "footer2": "Las observaciones las registra el cuidador y no son un diagnóstico.",
       "continued": "continuación",
       "episodesLine_one": "{{count}} episodio, media FLACC {{avg}}/10 (máx. {{max}})",
       "episodesLine_other": "{{count}} episodios, media FLACC {{avg}}/10 (máx. {{max}})",
-      "nightLine": "{{night}}/{{count}} ocurrieron de noche (22:00–06:00)",
       "demoTag": "demo",
       "periodAll": "todas las observaciones registradas",
-      "periodLast": "últimos {{n}} días"
+      "periodLast": "últimos {{n}} días",
+      "prepared_one": "Preparado el {{date}} · {{count}} episodio observado",
+      "prepared_other": "Preparado el {{date}} · {{count}} episodios observados",
+      "earlierEpisodes_one": "… más {{count}} episodio anterior no mostrado",
+      "earlierEpisodes_other": "… más {{count}} episodios anteriores no mostrados",
+      "baselineLine_one": "Observación baseline (tranquila): {{count}} — FLACC {{scores}}",
+      "baselineLine_other": "Observaciones baseline (tranquilas): {{count}} — FLACC {{scores}}",
+      "nightLine_one": "{{night}}/{{count}} ocurrió de noche (22:00–06:00)",
+      "nightLine_other": "{{night}}/{{count}} ocurrieron de noche (22:00–06:00)"
     },
     "allTime": "Todos los episodios registrados",
     "entryTitle": "Preparar el informe",
     "entryDesc": "Elige el periodo y qué incluir, y luego genera el PDF para el clínico.",
     "unsupported": "Este informe no puede mostrar el/los carácter(es): {{chars}}. Corrígelos en el diario, o conserva los datos y exporta una copia JSON — nada se ha enviado a ningún sitio.",
-    "loadFailedNoKeep": "El informe no se pudo cargar — recarga para reintentar. Tus preguntas sin guardar no se pudieron conservar; el diario no se ve afectado."
+    "loadFailedNoKeep": "El informe no se pudo cargar — recarga para reintentar. Tus preguntas sin guardar no se pudieron conservar; el diario no se ve afectado.",
+    "included_one": "{{count}} episodio incluido",
+    "included_other": "{{count}} episodios incluidos"
   },
   "settings": {
     "title": "Ajustes",

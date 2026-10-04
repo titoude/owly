@@ -135,7 +135,8 @@
     "emptyCta": "Enregistrer la première observation",
     "baseline": "référence",
     "deleteConfirm": "Supprimer cette observation ?",
-    "observations": "observations"
+    "observationsCount_one": "{{count}} observation",
+    "observationsCount_other": "{{count}} observations"
   },
   "patterns": {
     "title": "Tendances",
@@ -149,18 +150,20 @@
     "zones": "Zones soupçonnées",
     "worked": "Ce qui a été noté comme aidant",
     "workedRate": "{{yes}}/{{n}} noté aidant",
-    "episodes": "épisodes",
     "avgScore": "Score moyen",
     "insight": "Points d'attention",
     "insightNight": "La plupart des épisodes arrivent la nuit — à mentionner au médecin.",
     "insightWorked": "« {{label}} » a été noté comme aidant {{yes}} fois sur {{n}} — constat déclaré, pas une preuve d'efficacité.",
-    "scoreChartLabel": "Graphique : {{n}} épisodes récents, moyenne {{avg}}, max {{max}}",
     "insightZone_one": "« {{zone}} » est la zone la plus soupçonnée ({{n}} épisode).",
     "insightZone_other": "« {{zone}} » est la zone la plus soupçonnée ({{n}} épisodes).",
     "note": "Les motifs décrivent ce que vous avez noté — ils suggèrent quoi discuter avec le médecin, ils ne prouvent ni cause ni efficacité.",
     "toReport": "Générer le rapport médecin →",
     "entryDesc": "Quand les épisodes se concentrent et ce qui a aidé.",
-    "values": "Afficher les valeurs"
+    "values": "Afficher les valeurs",
+    "episodeCount_one": "{{count}} épisode",
+    "episodeCount_other": "{{count}} épisodes",
+    "scoreChartLabel_one": "Graphique : {{count}} épisode récent, moyenne {{avg}}, max {{max}}",
+    "scoreChartLabel_other": "Graphique : {{count}} épisodes récents, moyenne {{avg}}, max {{max}}"
   },
   "report": {
     "title": "Rapport médecin",
@@ -170,7 +173,6 @@
     "generate": "Générer le rapport PDF",
     "subtitle": "Génère un PDF à apporter au rendez-vous.",
     "days": "{{n}} j",
-    "included": "épisodes inclus",
     "questions": "Vos questions pour le clinicien",
     "q0": "ex. Et si c'était une otite ?",
     "q1": "ex. Le traitement actuel est-il adapté ?",
@@ -191,7 +193,6 @@
     "pdf": {
       "title": "RAPPORT D'OBSERVATION DE LA DOULEUR",
       "born": "né(e) en",
-      "prepared": "Préparé le {{date}} · {{count}} épisode(s) observé(s)",
       "howTheySignal": "Comment l'enfant signale son inconfort",
       "individualBehaviours": "Comportements douloureux individuels (rFLACC)",
       "whatShows": "Ce que montrent les observations",
@@ -206,24 +207,31 @@
       "colDuration": "durée",
       "colAreas": "zones",
       "colCause": "cause / note",
-      "earlierEpisodes": "… plus {{count}} épisodes plus anciens non affichés",
-      "baselineLine": "Observations de base (calme) : {{count}} — FLACC {{scores}}",
       "questions": "Questions pour le clinicien",
       "footer1": "Enregistré avec Owly — journal d'observation libre et gratuit (FLACC : Merkel 1997 ; rFLACC individualisé : Malviya 2006).",
       "footer2": "Les observations sont rapportées par l'aidant et ne constituent pas un diagnostic.",
       "continued": "suite",
       "episodesLine_one": "{{count}} épisode, FLACC moyen {{avg}}/10 (max {{max}})",
       "episodesLine_other": "{{count}} épisodes, FLACC moyen {{avg}}/10 (max {{max}})",
-      "nightLine": "{{night}}/{{count}} survenus la nuit (22h00–06h00)",
       "demoTag": "démo",
       "periodAll": "toutes les observations enregistrées",
-      "periodLast": "les {{n}} derniers jours"
+      "periodLast": "les {{n}} derniers jours",
+      "prepared_one": "Préparé le {{date}} · {{count}} épisode observé",
+      "prepared_other": "Préparé le {{date}} · {{count}} épisodes observés",
+      "earlierEpisodes_one": "… plus {{count}} épisode plus ancien non affiché",
+      "earlierEpisodes_other": "… plus {{count}} épisodes plus anciens non affichés",
+      "baselineLine_one": "Observation de base (calme) : {{count}} — FLACC {{scores}}",
+      "baselineLine_other": "Observations de base (calme) : {{count}} — FLACC {{scores}}",
+      "nightLine_one": "{{night}}/{{count}} survenue la nuit (22h00–06h00)",
+      "nightLine_other": "{{night}}/{{count}} survenues la nuit (22h00–06h00)"
     },
     "allTime": "Tous les épisodes enregistrés",
     "entryTitle": "Préparer le rapport",
     "entryDesc": "Choisissez la période et le contenu, puis générez le PDF pour le clinicien.",
     "unsupported": "Ce rapport ne peut pas afficher le ou les caractères : {{chars}}. Corrigez-les dans le journal, ou conservez les données et exportez une sauvegarde JSON — rien n'a été envoyé.",
-    "loadFailedNoKeep": "Le rapport n'a pas pu se charger — rechargez pour réessayer. Vos questions non enregistrées n'ont pas pu être conservées ; le journal n'est pas affecté."
+    "loadFailedNoKeep": "Le rapport n'a pas pu se charger — rechargez pour réessayer. Vos questions non enregistrées n'ont pas pu être conservées ; le journal n'est pas affecté.",
+    "included_one": "{{count}} épisode inclus",
+    "included_other": "{{count}} épisodes inclus"
   },
   "settings": {
     "title": "Réglages",

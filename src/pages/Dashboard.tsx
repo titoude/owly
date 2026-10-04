@@ -40,7 +40,7 @@ export default function Dashboard() {
           <h1 className="page-title">{t("dashboard.journal")}</h1>
           <p className="mt-1 text-[15px] text-neutral-600">
             <span dir="auto" className="font-medium text-neutral-800">{active.name}</span>
-            {" · "}{count} {t("patterns.episodes")}
+            {" · "}{t("patterns.episodeCount", { count })}
           </p>
         </div>
         <Link to="/observe" className="btn-primary">

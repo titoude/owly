@@ -135,7 +135,8 @@
     "emptyCta": "Erste Beobachtung erfassen",
     "baseline": "Baseline",
     "deleteConfirm": "Diese Beobachtung löschen?",
-    "observations": "Beobachtungen"
+    "observationsCount_one": "{{count}} Beobachtung",
+    "observationsCount_other": "{{count}} Beobachtungen"
   },
   "patterns": {
     "title": "Muster",
@@ -151,16 +152,18 @@
     "workedRate": "{{yes}}/{{n}} als hilfreich notiert",
     "note": "Muster beschreiben, was du festgehalten hast — sie liefern Gesprächsanlässe für den Arzt, beweisen aber weder Ursache noch Wirkung.",
     "toReport": "Arztbericht erstellen →",
-    "episodes": "Episoden",
     "avgScore": "Ø-Score",
     "insight": "Auffälligkeiten",
     "insightNight": "Die meisten Episoden passieren nachts — für den Arzt erwähnenswert.",
     "insightWorked": "„{{label}}“ wurde bei {{yes}} von {{n}} Anwendungen als hilfreich notiert.",
-    "scoreChartLabel": "Balkendiagramm: {{n}} neueste Episoden, Mittelwert {{avg}}, Maximum {{max}}",
     "insightZone_one": "„{{zone}}“ ist der am häufigsten vermutete Bereich ({{n}} Episode).",
     "insightZone_other": "„{{zone}}“ ist der am häufigsten vermutete Bereich ({{n}} Episoden).",
     "entryDesc": "Wann Episoden häufig sind und was geholfen hat.",
-    "values": "Werte anzeigen"
+    "values": "Werte anzeigen",
+    "episodeCount_one": "{{count}} Episode",
+    "episodeCount_other": "{{count}} Episoden",
+    "scoreChartLabel_one": "Balkendiagramm: {{count}} neueste Episode, Mittelwert {{avg}}, Maximum {{max}}",
+    "scoreChartLabel_other": "Balkendiagramm: {{count}} neueste Episoden, Mittelwert {{avg}}, Maximum {{max}}"
   },
   "report": {
     "title": "Arztbericht",
@@ -170,7 +173,6 @@
     "generate": "PDF-Bericht erstellen",
     "subtitle": "Erstelle ein PDF zum Mitnehmen zum Termin.",
     "days": "{{n}}T",
-    "included": "enthaltene Episoden",
     "questions": "Deine Fragen an die Praxis",
     "q0": "z. B. Könnte es eine Ohrenentzündung sein?",
     "q1": "z. B. Passt der Medikationsplan noch?",
@@ -191,7 +193,6 @@
     "pdf": {
       "title": "SCHMERZ-BEOBACHTUNGSBERICHT",
       "born": "geboren",
-      "prepared": "Erstellt am {{date}} · {{count}} beobachtete Episode(n)",
       "howTheySignal": "Wie es Unbehagen gewöhnlich zeigt",
       "individualBehaviours": "Individuelle Schmerzverhaltensweisen (rFLACC)",
       "whatShows": "Was die Beobachtungen zeigen",
@@ -206,24 +207,31 @@
       "colDuration": "Dauer",
       "colAreas": "Bereiche",
       "colCause": "Ursache / Notiz",
-      "earlierEpisodes": "… plus {{count}} ältere, nicht gezeigte Episoden",
-      "baselineLine": "Baseline-Beobachtungen (ruhig): {{count}} — FLACC {{scores}}",
       "questions": "Fragen an die Praxis",
       "footer1": "Aufgezeichnet mit Owly — einem freien Open-Source-Beobachtungstagebuch (FLACC: Merkel 1997; individualisierte rFLACC: Malviya 2006).",
       "footer2": "Die Beobachtungen stammen von den Betreuern und sind keine Diagnose.",
       "continued": "Fortsetzung",
       "episodesLine_one": "{{count}} Episode, FLACC-Mittelwert {{avg}}/10 (max. {{max}})",
       "episodesLine_other": "{{count}} Episoden, FLACC-Mittelwert {{avg}}/10 (max. {{max}})",
-      "nightLine": "{{night}}/{{count}} traten nachts auf (22:00–06:00)",
       "demoTag": "Demo",
       "periodAll": "alle erfassten Beobachtungen",
-      "periodLast": "letzte {{n}} Tage"
+      "periodLast": "letzte {{n}} Tage",
+      "prepared_one": "Erstellt am {{date}} · {{count}} beobachtete Episode",
+      "prepared_other": "Erstellt am {{date}} · {{count}} beobachtete Episoden",
+      "earlierEpisodes_one": "… plus {{count}} ältere, nicht gezeigte Episode",
+      "earlierEpisodes_other": "… plus {{count}} ältere, nicht gezeigte Episoden",
+      "baselineLine_one": "Baseline-Beobachtung (ruhig): {{count}} — FLACC {{scores}}",
+      "baselineLine_other": "Baseline-Beobachtungen (ruhig): {{count}} — FLACC {{scores}}",
+      "nightLine_one": "{{night}}/{{count}} trat nachts auf (22:00–06:00)",
+      "nightLine_other": "{{night}}/{{count}} traten nachts auf (22:00–06:00)"
     },
     "allTime": "Alle erfassten Episoden",
     "entryTitle": "Bericht vorbereiten",
     "entryDesc": "Zeitraum und Inhalt wählen, dann das PDF für die Praxis erstellen.",
     "unsupported": "Dieser Bericht kann das/die Zeichen nicht darstellen: {{chars}}. Passe sie im Tagebuch an oder behalte die Daten und exportiere stattdessen ein JSON-Backup — nichts wurde irgendwohin gesendet.",
-    "loadFailedNoKeep": "Der Bericht konnte nicht geladen werden — zum Wiederholen neu laden. Deine nicht gespeicherten Fragen konnten nicht erhalten bleiben; das Tagebuch ist nicht betroffen."
+    "loadFailedNoKeep": "Der Bericht konnte nicht geladen werden — zum Wiederholen neu laden. Deine nicht gespeicherten Fragen konnten nicht erhalten bleiben; das Tagebuch ist nicht betroffen.",
+    "included_one": "{{count}} Episode enthalten",
+    "included_other": "{{count}} Episoden enthalten"
   },
   "settings": {
     "title": "Einstellungen",

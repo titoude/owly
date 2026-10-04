@@ -135,7 +135,8 @@
     "emptyCta": "पहला अवलोकन दर्ज करें",
     "baseline": "बेसलाइन",
     "deleteConfirm": "यह अवलोकन हटाएँ?",
-    "observations": "अवलोकन"
+    "observationsCount_one": "{{count}} अवलोकन",
+    "observationsCount_other": "{{count}} अवलोकन"
   },
   "patterns": {
     "title": "पैटर्न",
@@ -151,16 +152,18 @@
     "workedRate": "{{yes}}/{{n}} सहायक दर्ज",
     "note": "पैटर्न आपके रिकॉर्ड का वर्णन करते हैं — वे डॉक्टर से बात करने के सुझाव देते हैं, कारण या उपचार की प्रभावशीलता साबित नहीं करते।",
     "toReport": "डॉक्टर रिपोर्ट बनाएँ →",
-    "episodes": "घटनाएँ",
     "avgScore": "औसत स्कोर",
     "insight": "उल्लेखनीय बातें",
     "insightNight": "अधिकांश घटनाएँ रात में होती हैं — डॉक्टर को बताना उचित है।",
     "insightWorked": "«{{label}}» को {{n}} में से {{yes}} बार सहायक दर्ज किया गया।",
-    "scoreChartLabel": "बार चार्ट: {{n}} हाल की घटनाएँ, औसत {{avg}}, अधिकतम {{max}}",
     "insightZone_one": "«{{zone}}» सबसे ज़्यादा संदिग्ध क्षेत्र है ({{n}} घटना)।",
     "insightZone_other": "«{{zone}}» सबसे ज़्यादा संदिग्ध क्षेत्र है ({{n}} घटनाएँ)।",
     "entryDesc": "कब एपिसोड बढ़ते हैं और क्या मदद मिली.",
-    "values": "मान देखें"
+    "values": "मान देखें",
+    "episodeCount_one": "{{count}} घटना",
+    "episodeCount_other": "{{count}} घटनाएँ",
+    "scoreChartLabel_one": "बार चार्ट: {{count}} हाल की घटना, औसत {{avg}}, अधिकतम {{max}}",
+    "scoreChartLabel_other": "बार चार्ट: {{count}} हाल की घटनाएँ, औसत {{avg}}, अधिकतम {{max}}"
   },
   "report": {
     "title": "डॉक्टर रिपोर्ट",
@@ -170,7 +173,6 @@
     "generate": "PDF रिपोर्ट बनाएँ",
     "subtitle": "अपॉइंटमेंट में ले जाने के लिए PDF बनाएँ।",
     "days": "{{n}} दिन",
-    "included": "घटनाएँ शामिल",
     "questions": "डॉक्टर से आपके सवाल",
     "q0": "जैसे क्या यह कान का संक्रमण हो सकता है?",
     "q1": "जैसे क्या दवा की योजना अभी भी सही है?",
@@ -191,7 +193,6 @@
     "pdf": {
       "title": "दर्द अवलोकन रिपोर्ट",
       "born": "जन्म",
-      "prepared": "{{date}} को तैयार · {{count}} दर्ज घटना(एँ)",
       "howTheySignal": "आम तौर पर असुविधा कैसे दिखाते हैं",
       "individualBehaviours": "व्यक्तिगत दर्द व्यवहार (rFLACC)",
       "whatShows": "अवलोकन क्या दिखाते हैं",
@@ -206,24 +207,31 @@
       "colDuration": "अवधि",
       "colAreas": "क्षेत्र",
       "colCause": "कारण / नोट",
-      "earlierEpisodes": "… साथ ही {{count}} पुरानी घटनाएँ जो नहीं दिखाई गईं",
-      "baselineLine": "बेसलाइन (शांत) अवलोकन: {{count}} — FLACC {{scores}}",
       "questions": "डॉक्टर से सवाल",
       "footer1": "Owly से रिकॉर्ड किया गया — एक मुफ़्त ओपन-सोर्स अवलोकन-डायरी (FLACC: Merkel 1997; व्यक्तिगत rFLACC: Malviya 2006)।",
       "footer2": "अवलोकन देखभालकर्ता द्वारा दर्ज हैं; निदान नहीं।",
       "continued": "जारी",
       "episodesLine_one": "{{count}} घटना, FLACC औसत {{avg}}/10 (अधिकतम {{max}})",
       "episodesLine_other": "{{count}} घटनाएँ, FLACC औसत {{avg}}/10 (अधिकतम {{max}})",
-      "nightLine": "{{night}}/{{count}} रात में हुईं (22:00–06:00)",
       "demoTag": "डेमो",
       "periodAll": "सभी दर्ज टिप्पणियाँ",
-      "periodLast": "पिछले {{n}} दिन"
+      "periodLast": "पिछले {{n}} दिन",
+      "prepared_one": "{{date}} को तैयार · {{count}} घटना दर्ज",
+      "prepared_other": "{{date}} को तैयार · {{count}} घटनाएँ दर्ज",
+      "earlierEpisodes_one": "… साथ ही {{count}} पुरानी घटना जो नहीं दिखाई गई",
+      "earlierEpisodes_other": "… साथ ही {{count}} पुरानी घटनाएँ जो नहीं दिखाई गईं",
+      "baselineLine_one": "बेसलाइन (शांत) अवलोकन: {{count}} — FLACC {{scores}}",
+      "baselineLine_other": "बेसलाइन (शांत) अवलोकन: {{count}} — FLACC {{scores}}",
+      "nightLine_one": "{{night}}/{{count}} रात में हुई (22:00–06:00)",
+      "nightLine_other": "{{night}}/{{count}} रात में हुईं (22:00–06:00)"
     },
     "allTime": "सभी दर्ज घटनाएँ",
     "entryTitle": "रिपोर्ट तैयार करें",
     "entryDesc": "अवधि और सामग्री चुनें, फिर डॉक्टर के लिए PDF बनाएँ।",
     "unsupported": "यह रिपोर्ट इन अक्षरों को नहीं दिखा सकती: {{chars}}. उन्हें डायरी में सुधारें, या डेटा रखें और JSON बैकअप निर्यात करें — कुछ भी कहीं नहीं भेजा गया।",
-    "loadFailedNoKeep": "रिपोर्ट लोड नहीं हो सकी — फिर से कोशिश करने के लिए रीलोड करें। आपके सहेजे न गए प्रश्न रखे नहीं जा सके; डायरी पर कोई असर नहीं है।"
+    "loadFailedNoKeep": "रिपोर्ट लोड नहीं हो सकी — फिर से कोशिश करने के लिए रीलोड करें। आपके सहेजे न गए प्रश्न रखे नहीं जा सके; डायरी पर कोई असर नहीं है।",
+    "included_one": "{{count}} घटना शामिल",
+    "included_other": "{{count}} घटनाएँ शामिल"
   },
   "settings": {
     "title": "सेटिंग्स",

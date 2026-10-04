@@ -92,7 +92,7 @@ export default function Patterns() {
       <div>
         <h1 className="page-title">{t("patterns.title")}</h1>
         <p className="mt-1 text-sm text-neutral-600">
-          <span dir="auto">{active.name}</span> · {episodes.length} {t("patterns.episodes")} · {t("patterns.avgScore")} {avg.toFixed(1)}/10
+          <span dir="auto">{active.name}</span> · {t("patterns.episodeCount", { count: episodes.length })} · {t("patterns.avgScore")} {avg.toFixed(1)}/10
         </p>
       </div>
 
@@ -126,7 +126,7 @@ export default function Patterns() {
         <div
           className="flex items-end gap-1"
           role="img"
-          aria-label={t("patterns.scoreChartLabel", { n: Math.min(30, episodes.length), avg: avg.toFixed(1), max: maxScore })}
+          aria-label={t("patterns.scoreChartLabel", { count: Math.min(30, episodes.length), avg: avg.toFixed(1), max: maxScore })}
         >
           {episodes.slice(-30).map((o) => (
             <div key={o.id} className="flex min-w-0 flex-1 flex-col items-center justify-end gap-1" title={`${fmtD(o.startedAt)} — ${o.total}/10`}>

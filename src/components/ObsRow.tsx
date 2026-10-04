@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import type { Observation } from "../types";
 import { bandFor } from "../types";
 import { BAND_TEXT } from "../flacc";
-import { intlLocale, scaleLang } from "../i18n";
+import { fmtMinutes, intlLocale, scaleLang } from "../i18n";
 
 const DAY = 86_400_000;
 
@@ -28,7 +28,7 @@ export function ObsRow({ o, to }: { o: Observation; to: string }) {
   const details = [
     o.note || null,
     o.bodyZones.length ? o.bodyZones.map((z) => t(`zones.${z}`)).join(", ") : null,
-    o.durationMinutes != null ? `${o.durationMinutes} min` : null,
+    o.durationMinutes != null ? fmtMinutes(o.durationMinutes) : null,
     o.suspectedCause || null,
   ].filter(Boolean).join(" · ");
 

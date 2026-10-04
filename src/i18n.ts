@@ -93,6 +93,11 @@ export function intlLocale(): string {
   return INTL_LOCALE[(i18n.language as Lang) in INTL_LOCALE ? (i18n.language as Lang) : "en"];
 }
 
+/** Localized duration unit — Intl plural rules handle every language ("45 min", "45 دقيقة", "45分钟"). */
+export function fmtMinutes(n: number): string {
+  return new Intl.NumberFormat(intlLocale(), { style: "unit", unit: "minute", unitDisplay: "short" }).format(n);
+}
+
 /**
  * Language the FLACC scale wording is actually rendered in.
  * Licensed English ships everywhere; French has a pre-existing internal
