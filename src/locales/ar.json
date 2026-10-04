@@ -223,7 +223,9 @@
       "episodesLine_many": "{{count}} نوبة، متوسط FLACC {{avg}}/10 (الأقصى {{max}})",
       "episodesLine_other": "{{count}} نوبة، متوسط FLACC {{avg}}/10 (الأقصى {{max}})",
       "nightLine": "{{night}}/{{count}} حدثت ليلًا (22:00–06:00)",
-      "demoTag": "تجريبي"
+      "demoTag": "تجريبي",
+      "periodAll": "جميع الملاحظات المسجلة",
+      "periodLast": "آخر {{n}} أيام"
     },
     "allTime": "جميع النوبات المسجّلة",
     "entryTitle": "إعداد التقرير",

@@ -213,7 +213,9 @@
       "continued": "续",
       "episodesLine_other": "{{count}} 次发作，FLACC 平均 {{avg}}/10（最高 {{max}}）",
       "nightLine": "{{count}} 次中有 {{night}} 次发生在夜间（22:00–06:00）",
-      "demoTag": "演示"
+      "demoTag": "演示",
+      "periodAll": "全部已记录的观察",
+      "periodLast": "最近 {{n}} 天"
     },
     "allTime": "全部已记录发作",
     "entryTitle": "准备报告",

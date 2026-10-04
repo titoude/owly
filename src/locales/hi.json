@@ -215,7 +215,9 @@
       "episodesLine_one": "{{count}} घटना, FLACC औसत {{avg}}/10 (अधिकतम {{max}})",
       "episodesLine_other": "{{count}} घटनाएँ, FLACC औसत {{avg}}/10 (अधिकतम {{max}})",
       "nightLine": "{{night}}/{{count}} रात में हुईं (22:00–06:00)",
-      "demoTag": "डेमो"
+      "demoTag": "डेमो",
+      "periodAll": "सभी दर्ज टिप्पणियाँ",
+      "periodLast": "पिछले {{n}} दिन"
     },
     "allTime": "सभी दर्ज घटनाएँ",
     "entryTitle": "रिपोर्ट तैयार करें",

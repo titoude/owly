@@ -215,7 +215,9 @@
       "episodesLine_one": "{{count}} episode, average FLACC {{avg}}/10 (max {{max}})",
       "episodesLine_other": "{{count}} episodes, average FLACC {{avg}}/10 (max {{max}})",
       "nightLine": "{{night}}/{{count}} occurred at night (22:00–06:00)",
-      "demoTag": "demo"
+      "demoTag": "demo",
+      "periodAll": "all recorded observations",
+      "periodLast": "last {{n}} days"
     },
     "allTime": "All recorded episodes",
     "entryTitle": "Prepare the report",

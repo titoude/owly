@@ -377,7 +377,7 @@ export async function buildReport(child: Child, observations: Observation[], opt
   // Header
   line(ctx, t("title"), { bold: true, size: 15, color: INK, gap: 19 });
   line(ctx, `${child.name}${child.isDemo ? ` (${t("demoTag")})` : ""}${child.birthYear ? ` · ${t("born")} ${child.birthYear}` : ""}${child.conditions ? ` · ${child.conditions}` : ""}`, { size: 10, color: MUTED, gap: 14 });
-  line(ctx, t("prepared", { date: fmtDate(Date.now()), count: episodes.length }), { size: 8.5, color: MUTED, gap: 10 });
+  line(ctx, `${t("prepared", { date: fmtDate(Date.now()), count: episodes.length })} · ${opts.periodDays == null ? t("periodAll") : t("periodLast", { n: opts.periodDays })}`, { size: 8.5, color: MUTED, gap: 10 });
   rule(ctx, ACCENT, 1.4);
   ctx.y -= 6;
 
@@ -512,7 +512,7 @@ export async function buildReport(child: Child, observations: Observation[], opt
 }
 
 export function downloadPdf(bytes: Uint8Array, filename: string): void {
-  const safeName = filename.replace(/[^\w.-]+/g, "_");
+  const safeName = filename.normalize("NFC").replace(/[^\p{L}\p{N}._-]+/gu, "_");
   const blob = new Blob([bytes as BlobPart], { type: "application/pdf" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

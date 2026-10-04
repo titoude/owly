@@ -63,6 +63,20 @@ describe("buildReport", () => {
     expect(doc.getPageCount()).toBe(1);
   });
 
+  it("prints the reporting period on the document", async () => {
+    // A "last 7 days" report must be distinguishable from "all time" on the
+    // page itself, not only via the filename.
+    const spy = spyOnDraw();
+    await buildReport(child, [mkObs(8, 2)], { periodDays: 7, questions: [] });
+    const a = drawnText(spy.calls());
+    const spy2 = spyOnDraw();
+    await buildReport(child, [mkObs(8, 2)], { periodDays: null, questions: [] });
+    const b = drawnText(spy2.calls());
+    expect(a).toMatch(/last 7 days/i);
+    expect(b).toMatch(/all recorded observations/i);
+    expect(b).not.toMatch(/last \d+ days/i);
+  });
+
   it("handles zero episodes and no questions", async () => {
     const bytes = await buildReport(child, [], { periodDays: null, questions: [] });
     const doc = await PDFDocument.load(bytes);
