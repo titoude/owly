@@ -103,7 +103,7 @@
     "discard": "Entwurf verwerfen",
     "update": "Änderungen speichern",
     "draftSaveFailed": "Der Entwurf konnte nicht gespeichert werden — der Gerätespeicher ist möglicherweise voll oder blockiert. Ihre aufgezeichneten Daten sind sicher; beenden Sie die Beobachtung und speichern Sie sie, um sie zu behalten.",
-    "stepStatus": "Schritt {{n}} von {{total}} — {{name}}",
+    "stepStatusPrefix": "Schritt {{n}} von {{total}} —",
     "stepNames": {
       "when": "Wann",
       "details": "Details",

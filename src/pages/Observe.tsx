@@ -31,7 +31,12 @@ function toLocalInput(d: Date): string {
 }
 
 export default function Observe() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  // Licensed FLACC step names stay English in most locales — tag the name's
+  // real language for AT. Derived from the resolved string so the tag drops
+  // the moment a locale translates it.
+  const stepLang = (k: string) =>
+    i18n.language !== "en" && t(k) === i18n.getFixedT("en")(k) ? "en" : undefined;
   const { active } = useApp();
   const nav = useNavigate();
   const { id } = useParams();
@@ -66,6 +71,7 @@ export default function Observe() {
   // draft state so a same-value reselection still dirties the draft.
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const stepHeading = useRef<HTMLDivElement>(null);
+  const offerRef = useRef<HTMLDivElement>(null);
 
   const key = editId ? draftEditKey(editId) : active?.id ? draftKey(active.id) : null;
 
@@ -152,6 +158,12 @@ export default function Observe() {
     el.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
     el.focus({ preventScroll: true });
   }, [step]);
+
+  // The resume/discard offer is a pending decision — focus it when it
+  // appears so keyboard and AT users hear it rather than the step header.
+  useEffect(() => {
+    if (offer) offerRef.current?.focus({ preventScroll: true });
+  }, [offer]);
 
   const total = useMemo(() => {
     if (Object.values(scores).some((v) => v < 0)) return null;
@@ -270,13 +282,14 @@ export default function Observe() {
           </div>
           {/* One meaningful progress announcement — name + position together. */}
           <p className="mt-2 text-sm text-neutral-600" role="status">
-            {t("observe.stepStatus", { n: step + 1, total: STEPS, name: t(STEP_KEYS[step]) })}
+            {t("observe.stepStatusPrefix", { n: step + 1, total: STEPS })}{" "}
+            <span dir="auto" lang={stepLang(STEP_KEYS[step])}>{t(STEP_KEYS[step])}</span>
           </p>
         </div>
       </div>
 
       {offer && (
-        <div className="card p-4 flex items-center justify-between gap-3" role="group" aria-labelledby="draft-title">
+        <div className="card p-4 flex items-center justify-between gap-3" role="group" aria-labelledby="draft-title" tabIndex={-1} ref={offerRef}>
           <p id="draft-title" className="text-sm font-medium text-neutral-700">{t("observe.draftPrompt")}</p>
           <div className="flex gap-2">
             <button type="button" className="btn-primary text-sm px-3 py-1.5" onClick={resume}>{t("observe.resume")}</button>
@@ -295,7 +308,7 @@ export default function Observe() {
                 type="button"
                 onClick={() => setBaseline(false)}
                 aria-pressed={!baseline}
-                className={`card p-4 text-start font-semibold transition-all duration-150 ${!baseline ? "!border-orange-300 !bg-orange-50 text-orange-800" : "text-neutral-600"}`}
+                className={`card p-4 text-start font-semibold transition-all duration-150 ${!baseline ? "!border-orange-600 !bg-orange-50 text-orange-800" : "!border-neutral-500 text-neutral-600"}`}
               >
                 <span className="me-1.5 inline-block size-2.5 rounded-full bg-orange-400 align-middle" />
                 {t("observe.episode")}
@@ -304,7 +317,7 @@ export default function Observe() {
                 type="button"
                 onClick={() => setBaseline(true)}
                 aria-pressed={baseline}
-                className={`card p-4 text-start font-semibold transition-all duration-150 ${baseline ? "!border-emerald-300 !bg-emerald-50 text-emerald-700" : "text-neutral-600"}`}
+                className={`card p-4 text-start font-semibold transition-all duration-150 ${baseline ? "!border-emerald-600 !bg-emerald-50 text-emerald-700" : "!border-neutral-500 text-neutral-600"}`}
               >
                 <span className="me-1.5 inline-block size-2.5 rounded-full bg-emerald-400 align-middle" />
                 {t("observe.baseline")}
@@ -447,7 +460,7 @@ export default function Observe() {
                             }
                             aria-pressed={it.helped === h}
                             className={`rounded-lg px-3.5 py-2 text-sm min-h-11
-                              ${it.helped === h ? "bg-accent-700 text-white font-semibold" : "bg-neutral-100 border border-neutral-300 text-neutral-600"}`}
+                              ${it.helped === h ? "bg-accent-700 text-white font-semibold" : "bg-neutral-100 border border-neutral-500 text-neutral-600"}`}
                           >
                             {t(`observe.${h}`)}
                           </button>

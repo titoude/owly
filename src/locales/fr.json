@@ -103,7 +103,7 @@
     "discard": "Supprimer le brouillon",
     "update": "Enregistrer",
     "draftSaveFailed": "Impossible d'enregistrer le brouillon — le stockage de l'appareil est peut-être plein ou bloqué. Vos données enregistrées sont en sécurité ; terminez et enregistrez l'observation pour la conserver.",
-    "stepStatus": "Étape {{n}} sur {{total}} — {{name}}",
+    "stepStatusPrefix": "Étape {{n}} sur {{total}} —",
     "stepNames": {
       "when": "Quand",
       "details": "Détails",
@@ -127,7 +127,7 @@
     "title": "Historique",
     "empty": "Pas encore d'observation. La première ne prend qu'un moment.",
     "emptyCta": "Enregistrer la première observation",
-    "baseline": "baseline",
+    "baseline": "référence",
     "deleteConfirm": "Supprimer cette observation ?",
     "observations": "observations"
   },

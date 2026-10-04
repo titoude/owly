@@ -103,7 +103,7 @@
     "discard": "Descartar borrador",
     "update": "Guardar cambios",
     "draftSaveFailed": "No se pudo guardar el borrador: el almacenamiento del dispositivo puede estar lleno o bloqueado. Tus datos registrados están a salvo; termina y guarda la observación para conservarla.",
-    "stepStatus": "Paso {{n}} de {{total}} — {{name}}",
+    "stepStatusPrefix": "Paso {{n}} de {{total}} —",
     "stepNames": {
       "when": "Cuándo",
       "details": "Detalles",
@@ -127,7 +127,7 @@
     "title": "Historial",
     "empty": "Aún no hay observaciones. La primera solo lleva un momento.",
     "emptyCta": "Registrar la primera observación",
-    "baseline": "baseline",
+    "baseline": "referencia",
     "deleteConfirm": "¿Eliminar esta observación?",
     "observations": "observaciones"
   },

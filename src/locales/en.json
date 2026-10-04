@@ -103,7 +103,7 @@
     "discard": "Discard draft",
     "update": "Save changes",
     "draftSaveFailed": "Couldn't save the draft — device storage may be full or blocked. Your recorded data is safe; finish and save the observation to keep it.",
-    "stepStatus": "Step {{n}} of {{total}} — {{name}}",
+    "stepStatusPrefix": "Step {{n}} of {{total}} —",
     "stepNames": {
       "when": "When",
       "details": "Details",

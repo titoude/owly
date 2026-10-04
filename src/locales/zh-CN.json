@@ -103,7 +103,7 @@
     "discard": "丢弃草稿",
     "update": "保存更改",
     "draftSaveFailed": "无法保存草稿——设备存储空间可能已满或被阻止。您已记录的数据是安全的；完成并保存观察记录即可保留。",
-    "stepStatus": "第 {{n}} 步，共 {{total}} 步 — {{name}}",
+    "stepStatusPrefix": "第 {{n}} 步，共 {{total}} 步 —",
     "stepNames": {
       "when": "时间",
       "details": "详情",

@@ -11,11 +11,11 @@
     "changeChild": "Cambia"
   },
   "nav": {
-    "home": "Home",
+    "home": "Diario",
     "observe": "Osserva",
     "history": "Cronologia",
     "patterns": "Schemi",
-    "report": "Report",
+    "report": "Rapporto",
     "settings": "Impostazioni",
     "redflags": "Emergenza"
   },
@@ -103,7 +103,7 @@
     "discard": "Elimina bozza",
     "update": "Salva modifiche",
     "draftSaveFailed": "Impossibile salvare la bozza: lo spazio sul dispositivo potrebbe essere pieno o bloccato. I dati registrati sono al sicuro; completa e salva l'osservazione per conservarla.",
-    "stepStatus": "Passo {{n}} di {{total}} — {{name}}",
+    "stepStatusPrefix": "Passo {{n}} di {{total}} —",
     "stepNames": {
       "when": "Quando",
       "details": "Dettagli",
@@ -127,7 +127,7 @@
     "title": "Cronologia",
     "empty": "Ancora nessuna osservazione. La prima richiede solo un momento.",
     "emptyCta": "Registra la prima osservazione",
-    "baseline": "baseline",
+    "baseline": "riferimento",
     "deleteConfirm": "Eliminare questa osservazione?",
     "observations": "osservazioni"
   },
@@ -230,7 +230,7 @@
     "import": "Importa un backup",
     "delete": "Cancella tutto",
     "deleteConfirm": "Questo elimina definitivamente tutti i profili e le osservazioni su questo dispositivo.",
-    "privacy": "Privacy",
+    "privacy": "Riservatezza",
     "passcode": "Codice dell'app",
     "passcodeSet": "Imposta un codice a 4 cifre",
     "passcodeOn": "Codice attivo",

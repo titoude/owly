@@ -103,7 +103,7 @@
     "discard": "Descartar rascunho",
     "update": "Guardar alterações",
     "draftSaveFailed": "Não foi possível guardar o rascunho — o armazenamento do dispositivo pode estar cheio ou bloqueado. Os seus dados registados estão seguros; termine e guarde a observação para a conservar.",
-    "stepStatus": "Passo {{n}} de {{total}} — {{name}}",
+    "stepStatusPrefix": "Passo {{n}} de {{total}} —",
     "stepNames": {
       "when": "Quando",
       "details": "Detalhes",
@@ -127,7 +127,7 @@
     "title": "Histórico",
     "empty": "Ainda não há observações. A primeira leva apenas um momento.",
     "emptyCta": "Registar a primeira observação",
-    "baseline": "baseline",
+    "baseline": "referência",
     "deleteConfirm": "Eliminar esta observação?",
     "observations": "observações"
   },
