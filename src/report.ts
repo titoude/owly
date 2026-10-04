@@ -153,11 +153,32 @@ function layout(faces: Faces, s: string): { pieces: Piece[]; missing: Set<string
     if (same) {
       lo = Math.min(lo, idx); hi = Math.max(hi, idx);
     } else {
-      pieces.push({ text: clean.slice(lo, hi + 1), face: f });
+      pieces.push({ text: pieceText(clean, lo, hi, f, lv), face: f });
       lo = idx; hi = idx; f = perUnit[idx];
     }
   }
   return { pieces, missing, rtl };
+}
+
+// fontkit (HarfBuzz) renders any piece whose script resolves to Arabic with
+// direction rtl: it reverses the WHOLE glyph buffer. Letters need that, but
+// it also flips even-level runs (Arabic-Indic digits) that must stay LTR
+// inside the RTL flow per UAX#9 — "١٣ سبتمبر" was printing as "٣١ سبتمبر".
+// Pre-reversing each contiguous even-level run of the logical slice cancels
+// exactly that class of double-flip; level-1 text reverses correctly as-is.
+function pieceText(clean: string, lo: number, hi: number, face: FaceKey | null, lv: Uint8Array | null): string {
+  const slice = clean.slice(lo, hi + 1);
+  if (lv === null || face !== "arabic") return slice;
+  const chars = slice.split("");
+  for (let i = 0; i < chars.length;) {
+    if (lv[lo + i] % 2 === 0) {
+      let j = i;
+      while (j + 1 < chars.length && lv[lo + j + 1] % 2 === 0) j++;
+      for (let a = i, b = j; a < b; a++, b--) [chars[a], chars[b]] = [chars[b], chars[a]];
+      i = j + 1;
+    } else i++;
+  }
+  return chars.join("");
 }
 
 function measure(faces: Faces, s: string, size: number): number {
@@ -340,22 +361,33 @@ export function fontBytes(url: string): Promise<Uint8Array> {
   return p;
 }
 
-async function loadFaces(doc: PDFDocument): Promise<Faces> {
+// Script faces are fetched+embedded only when the report content needs them:
+// the CJK font alone is 4 MB whole-file (CFF can't be subsetted), so an EN/FR
+// report shouldn't pay for it. Unloaded faces advertise an empty charset —
+// a char landing there is reported via `missing`, never silently dropped.
+async function loadFaces(doc: PDFDocument, need: { arabic: boolean; deva: boolean; cjk: boolean }): Promise<Faces> {
   doc.registerFontkit(fontkit);
-  const [r, b, a, d, c] = await Promise.all(
-    [fontRegularUrl, fontBoldUrl, fontArabicUrl, fontDevaUrl, fontCjkUrl].map(fontBytes),
-  );
+  const urls: Record<FaceKey, string> = {
+    base: fontRegularUrl, bold: fontBoldUrl, arabic: fontArabicUrl, deva: fontDevaUrl, cjk: fontCjkUrl,
+  };
+  const bytes = {} as Record<FaceKey, Uint8Array | undefined>;
+  await Promise.all((Object.keys(urls) as FaceKey[]).map(async (k) => {
+    bytes[k] = k === "base" || k === "bold" || need[k as "arabic" | "deva" | "cjk"]
+      ? await fontBytes(urls[k]) : undefined;
+  }));
   const subset = { subset: true } as const;
-  const charset = (bytes: Uint8Array) => new Set<number>(fontkit.create(bytes).characterSet as number[]);
+  const charset = (b: Uint8Array | undefined) => new Set<number>(b ? fontkit.create(b).characterSet as number[] : []);
+  const base = await doc.embedFont(bytes.base!, subset);
+  const bold = await doc.embedFont(bytes.bold!, subset);
   return {
-    base: await doc.embedFont(r, subset),
-    bold: await doc.embedFont(b, subset),
-    arabic: await doc.embedFont(a, subset),
-    deva: await doc.embedFont(d, subset),
+    base, bold,
+    arabic: bytes.arabic ? await doc.embedFont(bytes.arabic, subset) : base,
+    deva: bytes.deva ? await doc.embedFont(bytes.deva, subset) : base,
     // CFF-outline OTF: fontkit's CFF subsetter crashes — embed whole.
-    cjk: await doc.embedFont(c),
+    cjk: bytes.cjk ? await doc.embedFont(bytes.cjk) : base,
     glyphs: {
-      base: charset(r), bold: charset(b), arabic: charset(a), deva: charset(d), cjk: charset(c),
+      base: charset(bytes.base), bold: charset(bytes.bold),
+      arabic: charset(bytes.arabic), deva: charset(bytes.deva), cjk: charset(bytes.cjk),
     },
   };
   // Throws on failure — Report.tsx surfaces it; we never silently strip text.
@@ -370,7 +402,20 @@ export async function buildReport(child: Child, observations: Observation[], opt
   const doc = await PDFDocument.create();
   doc.setTitle(`Owly pain report — ${sanitize(child.name)}`);
   doc.setCreator("Owly (open-source pain observation journal)");
-  const faces = await loadFaces(doc);
+  // Which script faces must this report embed? Scan every drawable source:
+  // child/profile text, all observations, the locale's own bundle (labels),
+  // and formatted dates (ar/hi/zh numbers land in script digits).
+  const blob = JSON.stringify({
+    child,
+    observations,
+    bundle: i18n.getResourceBundle(i18n.language, "translation") ?? null,
+    dates: observations.map((o) => fmtDate(o.startedAt)).concat(fmtDate(Date.now())),
+  });
+  const faces = await loadFaces(doc, {
+    arabic: RE_RTL.test(blob),
+    deva: RE_DEVA.test(blob),
+    cjk: RE_CJK.test(blob),
+  });
   const ctx: Ctx = { doc, page: undefined as unknown as PDFPage, font: faces.base, bold: faces.bold, faces, y: TOP_Y, left: 48, width: PAGE_W - 96, missing: new Set() };
   newPage(ctx);
 
