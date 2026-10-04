@@ -8,7 +8,7 @@
     "wcag22aa",
     "best-practice"
   ],
-  "when": "2026-10-04T08:33:56.792Z",
+  "when": "2026-10-04T12:27:30.602Z",
   "results": [
     {
       "id": "route:/",
@@ -74,7 +74,7 @@
           ]
         }
       ],
-      "passes": 35
+      "passes": 39
     },
     {
       "id": "route:/child/new",
@@ -327,7 +327,7 @@
           ]
         }
       ],
-      "passes": 35
+      "passes": 39
     },
     {
       "id": "state:fr",
