@@ -53,11 +53,12 @@ try {
   ok("first PDF generates fully offline", /\.pdf$/i.test(file.suggestedFilename()), file.suggestedFilename());
 
   // Verify real PDF bytes, not just a filename: %PDF header, EOF trailer,
-  // and a plausible size for a font-embedded multi-page report.
+  // and a sane floor. Script fonts embed lazily now (EN report ≈ 20 KB), so
+  // the floor catches empty/corrupt output, not the old always-embed size.
   const path = await file.path();
   const { readFileSync } = await import("node:fs");
   const bytes = readFileSync(path);
-  ok("download is a valid PDF", bytes.length > 50_000 && bytes.subarray(0, 5).toString() === "%PDF-" && bytes.includes("%%EOF"), `${bytes.length} bytes`);
+  ok("download is a valid PDF", bytes.length > 10_000 && bytes.subarray(0, 5).toString() === "%PDF-" && bytes.includes("%%EOF"), `${bytes.length} bytes`);
   ok("no page errors offline", errs.length === 0, errs.slice(0, 2).join(" | "));
 } catch (e) {
   ok("offline suite crashed", false, String(e).slice(0, 240));
