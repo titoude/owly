@@ -19,7 +19,7 @@
 }
 @font-face {
   font-family: "Noto Sans SC";
-  src: url("./assets/fonts/NotoSansSC-GB.otf") format("opentype");
+  src: url("./assets/fonts/NotoSansSC-GB.ttf") format("truetype");
   font-display: swap;
   unicode-range: U+4E00-9FFF, U+3400-4DBF, U+3000-303F, U+FF00-FFEF;
 }

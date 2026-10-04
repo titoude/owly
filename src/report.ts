@@ -10,7 +10,7 @@ import fontRegularUrl from "./assets/fonts/NotoSans-Regular.ttf?url";
 import fontBoldUrl from "./assets/fonts/NotoSans-Bold.ttf?url";
 import fontArabicUrl from "./assets/fonts/NotoSansArabic-Regular.ttf?url";
 import fontDevaUrl from "./assets/fonts/NotoSansDevanagari-Regular.ttf?url";
-import fontCjkUrl from "./assets/fonts/NotoSansSC-GB.otf?url";
+import fontCjkUrl from "./assets/fonts/NotoSansSC-GB.ttf?url";
 
 const INK = rgb(0.13, 0.15, 0.2);
 const MUTED = rgb(0.42, 0.45, 0.52);
@@ -362,9 +362,9 @@ export function fontBytes(url: string): Promise<Uint8Array> {
 }
 
 // Script faces are fetched+embedded only when the report content needs them:
-// the CJK font alone is 4 MB whole-file (CFF can't be subsetted), so an EN/FR
-// report shouldn't pay for it. Unloaded faces advertise an empty charset —
-// a char landing there is reported via `missing`, never silently dropped.
+// the CJK font is ~5 MB whole-file, so an EN/FR report shouldn't pay for it.
+// Unloaded faces advertise an empty charset — a char landing there is
+// reported via `missing`, never silently dropped.
 async function loadFaces(doc: PDFDocument, need: { arabic: boolean; deva: boolean; cjk: boolean }): Promise<Faces> {
   doc.registerFontkit(fontkit);
   const urls: Record<FaceKey, string> = {
@@ -383,8 +383,7 @@ async function loadFaces(doc: PDFDocument, need: { arabic: boolean; deva: boolea
     base, bold,
     arabic: bytes.arabic ? await doc.embedFont(bytes.arabic, subset) : base,
     deva: bytes.deva ? await doc.embedFont(bytes.deva, subset) : base,
-    // CFF-outline OTF: fontkit's CFF subsetter crashes — embed whole.
-    cjk: bytes.cjk ? await doc.embedFont(bytes.cjk) : base,
+    cjk: bytes.cjk ? await doc.embedFont(bytes.cjk, subset) : base,
     glyphs: {
       base: charset(bytes.base), bold: charset(bytes.bold),
       arabic: charset(bytes.arabic), deva: charset(bytes.deva), cjk: charset(bytes.cjk),
