@@ -224,8 +224,7 @@ function wrapText(ctx: Ctx, text: string, size: number, maxWidth: number): strin
         // base+modifier pair — a broken ZWJ just renders unjoined).
         let cps = [...w];
         while (width(cps.join("")) > maxWidth && cps.length > 1) {
-          let cut = cps.length - 1;
-          while (cut > 1 && width(cps.slice(0, cut).join("")) > maxWidth) cut--;
+          const cut = fitCount(cps, "", width, maxWidth);
           lines.push(cps.slice(0, cut).join(""));
           cps = cps.slice(cut);
         }
@@ -237,12 +236,29 @@ function wrapText(ctx: Ctx, text: string, size: number, maxWidth: number): strin
   return lines;
 }
 
+// Largest k in [1, cps.length] whose joined prefix + `extra` fits maxWidth.
+// Measured width only grows as codepoints are appended, so a binary search
+// finds the same cut a linear walk would — in O(log n) measures instead of
+// O(n) full-string measures per line (a 2000-char unbroken token froze the
+// PDF build for minutes). Always >=1 so callers keep making progress even
+// when a single codepoint overflows.
+function fitCount(cps: string[], extra: string, width: (s: string) => number, maxWidth: number): number {
+  const fits = (k: number) => width(cps.slice(0, k).join("") + extra) <= maxWidth;
+  if (fits(cps.length)) return cps.length;
+  let lo = 1, hi = cps.length; // hi never fits here; lo==1 is the floor
+  while (lo < hi - 1) {
+    const mid = (lo + hi) >> 1;
+    if (fits(mid)) lo = mid; else hi = mid;
+  }
+  return lo;
+}
+
 function truncToWidth(ctx: Ctx, s: string, size: number, maxWidth: number): string {
   const cps = [...sanitize(s)]; // codepoints — never split a surrogate pair
   const width = (x: string) => measure(ctx.faces, x, size);
   if (width(cps.join("")) <= maxWidth) return cps.join("");
-  while (cps.length > 1 && width(cps.join("") + "…") > maxWidth) cps.pop();
-  return cps.join("") + "…";
+  const keep = fitCount(cps, "…", width, maxWidth);
+  return cps.slice(0, keep).join("") + "…";
 }
 
 function newPage(ctx: Ctx): void {

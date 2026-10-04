@@ -144,6 +144,23 @@ describe("buildReport", () => {
     // The split episode stays identifiable on its continuation page(s).
     expect(all).toContain("continued");
   });
+
+  it("wraps a 10 000-char unbroken note without freezing, content intact", async () => {
+    // Regression: the wrap loop measured the whole remaining string once per
+    // codepoint (O(n²)) — a 2000-char token blocked the main thread ~3 min.
+    const note = "START_TOKEN" + "x".repeat(10000) + "END_TOKEN";
+    const spy = spyOnDraw();
+    const t0 = Date.now();
+    const bytes = await buildReport(child, [{ ...mkObs(6, 1), note }], { periodDays: null, questions: [] });
+    const elapsed = Date.now() - t0;
+    const calls = spy.calls();
+    const doc = await PDFDocument.load(bytes);
+    expect(doc.getPageCount()).toBeGreaterThan(1);
+    const all = drawnText(calls);
+    expect(all).toContain("START_TOKEN");
+    expect(all).toContain("END_TOKEN");
+    expect(elapsed).toBeLessThan(20000); // previously ~3 min for 1/5 this size
+  }, 30000);
 });
 
 describe("unicode rendering", () => {
