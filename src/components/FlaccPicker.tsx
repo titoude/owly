@@ -50,7 +50,7 @@ export function FlaccPicker({ category, child, value, onChange }: Props) {
                   peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent-700
                   ${sel
                     ? "border-accent-600 bg-accent-50 text-neutral-900"
-                    : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-400"}`}
+                    : "border-neutral-500 bg-white text-neutral-700 hover:border-neutral-600"}`}
               >
                 <span
                   className={`shrink-0 grid place-items-center size-8 rounded-full font-semibold text-sm tabular-nums

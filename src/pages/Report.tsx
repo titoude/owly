@@ -134,7 +134,7 @@ export default function Report() {
               className={`touch-target rounded-xl border text-sm font-medium transition-all duration-150 ${
                 period === d
                   ? "bg-accent-700 text-white font-semibold border-accent-700"
-                  : "bg-white border-neutral-300 text-neutral-600 hover:bg-neutral-100"
+                  : "bg-white border-neutral-500 text-neutral-600 hover:bg-neutral-100 hover:border-neutral-600"
               }`}
             >
               {d == null ? t("report.all") : t("report.days", { n: d })}

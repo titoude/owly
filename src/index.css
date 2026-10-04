@@ -102,14 +102,14 @@ input, textarea, select {
 }
 
 .btn-ghost {
-  @apply rounded-lg border border-neutral-300 bg-white text-neutral-800 px-4 py-2.5 min-h-11 font-medium
-    transition-colors duration-150 hover:bg-neutral-100 hover:border-neutral-400
+  @apply rounded-lg border border-neutral-500 bg-white text-neutral-800 px-4 py-2.5 min-h-11 font-medium
+    transition-colors duration-150 hover:bg-neutral-100 hover:border-neutral-600
     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-600;
 }
 
 /* Quiet inline action — bordered, ≥40px, for Edit/Delete-style controls. */
 .btn-quiet {
-  @apply inline-flex items-center justify-center rounded-lg border border-neutral-300
+  @apply inline-flex items-center justify-center rounded-lg border border-neutral-500
     bg-white px-3 py-2 text-sm font-medium text-neutral-700 min-h-10
     transition-colors duration-150 hover:bg-neutral-100
     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-600;
@@ -131,7 +131,7 @@ a:focus-visible {
 }
 
 .input {
-  @apply w-full rounded-lg bg-white border border-neutral-300 px-3.5 py-2.5 min-h-11 text-neutral-900
+  @apply w-full rounded-lg bg-white border border-neutral-500 px-3.5 py-2.5 min-h-11 text-neutral-900
     placeholder:text-neutral-500 focus:outline-none focus:border-accent-600
     focus:ring-4 focus:ring-accent-600/15 transition-colors;
 }
