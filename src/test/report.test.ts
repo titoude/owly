@@ -173,8 +173,12 @@ describe("buildReport", () => {
     const all = drawnText(calls);
     expect(all).toContain("START_TOKEN");
     expect(all).toContain("END_TOKEN");
-    expect(elapsed).toBeLessThan(20000); // previously ~3 min for 1/5 this size
-  }, 30000);
+    // Sentinel, not a benchmark: the O(n²) pathology took ~3 min for a FIFTH
+    // of this size (~15 min extrapolated). 90s bounds shared-CI slowdown
+    // (~23s measured on the GH runner) with ~4× margin while still catching
+    // the quadratic regression.
+    expect(elapsed).toBeLessThan(90000);
+  }, 120000);
 });
 
 describe("unicode rendering", () => {
