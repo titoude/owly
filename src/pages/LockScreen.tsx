@@ -44,6 +44,10 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
     const upgraded = await verifyPin(value, stored);
     if (upgraded) {
       if (upgraded !== stored) await setSetting("passcode", upgraded); // legacy → salted
+      // A correct PIN clears any accumulated strikes — old typos must not
+      // carry toward a future lockout.
+      attempts.current = 0;
+      void setSetting("pinAttempts", 0);
       onUnlock();
     } else {
       attempts.current += 1;
