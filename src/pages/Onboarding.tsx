@@ -4,9 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { useApp } from "../appContext";
 import { seedDemo } from "../demo";
 import { importAll } from "../export";
+import { isRtl, LANGS, LANG_LABEL, setLang, type Lang } from "../i18n";
 
 export default function Onboarding() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const nav = useNavigate();
   const { refresh } = useApp();
   const [loadingDemo, setLoadingDemo] = useState(false);
@@ -32,6 +33,22 @@ export default function Onboarding() {
   }
   return (
     <div className="pt-10 space-y-8">
+      {/* A wrong-detected language shouldn't trap first-run users — the
+          settings select is unreachable until a child exists. */}
+      <div className="flex justify-center">
+        <select
+          className="input sm:max-w-[16rem]"
+          value={i18n.language}
+          onChange={(e) => setLang(e.target.value as Lang)}
+          aria-label={t("settings.language")}
+        >
+          {LANGS.map((l) => (
+            <option key={l} value={l} lang={l} dir={isRtl(l) ? "rtl" : "ltr"}>
+              {LANG_LABEL[l]}
+            </option>
+          ))}
+        </select>
+      </div>
       <div className="text-center space-y-3">
         <img src="/icon.svg" alt="" className="mx-auto size-24 rounded-3xl" />
         <h1 className="text-3xl font-bold leading-tight">{t("onboarding.title")}</h1>

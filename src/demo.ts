@@ -60,5 +60,8 @@ export async function clearDemo(): Promise<void> {
         await clearChildDrafts(d.id, obsIds);
       }
     }
+    // Same rule as single-child delete: never leave activeChildId dangling.
+    const rest = await db.children.orderBy("createdAt").toArray();
+    await db.settings.put({ key: "activeChildId", value: rest[0]?.id ?? null });
   });
 }

@@ -202,6 +202,9 @@ function Shell() {
             <Route path="/report" element={<Report />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/redflags" element={<RedFlags />} />
+            {/* The emergency surface lives at /redflags; keep the intuitive
+                path working instead of silently landing home. */}
+            <Route path="/emergency" element={<Navigate to="/redflags" replace />} />
             <Route path="/child/new" element={<ChildForm />} />
             <Route path="/child/:id/edit" element={<ChildForm />} />
             {/* Unknown paths (incl. /observe/<id> without /edit) go home
