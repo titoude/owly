@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 import { useApp } from "../appContext";
-import { db } from "../db";
+import { db, saneObs } from "../db";
 import type { Observation } from "../types";
 import { ScoreBadge } from "../components/ScoreBadge";
 import { intlLocale } from "../i18n";
@@ -22,7 +22,7 @@ export default function History() {
     void db.observations
       .where("childId").equals(active.id)
       .reverse().sortBy("recordedAt")
-      .then(setObs);
+      .then((list) => setObs(list.map(saneObs)));
   }, [active]);
 
   // Deep links from the journal point at one record — scroll it into view,
@@ -96,7 +96,7 @@ export default function History() {
               {o.interventions.some((i) => i.helped === "yes") && " ✓"}
             </div>
           )}
-          {o.note && <div className="text-sm text-neutral-600 italic break-words" dir="auto">“{o.note}”</div>}
+          {o.note && <div className="text-sm text-neutral-600 italic break-words line-clamp-6" dir="auto">“{o.note}”</div>}
           {confirmId === o.id ? (
             <div className="flex items-center gap-2">
               <button

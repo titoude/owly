@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useApp } from "../appContext";
-import { db } from "../db";
+import { db, saneObs } from "../db";
 import type { Observation } from "../types";
 import { ObsRow } from "../components/ObsRow";
 import { IconReport, IconPatterns, IconChevronRight } from "../components/icons";
@@ -19,8 +19,9 @@ export default function Dashboard() {
       .where("childId").equals(active.id)
       .reverse().sortBy("recordedAt")
       .then((all) => {
-        setCount(all.filter((o) => !o.baseline).length);
-        setRecent(all.slice(0, 5));
+        const rows = all.map(saneObs);
+        setCount(rows.filter((o) => !o.baseline).length);
+        setRecent(rows.slice(0, 5));
       });
   }, [active]);
 

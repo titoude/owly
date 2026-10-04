@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useApp } from "../appContext";
-import { db } from "../db";
+import { db, saneObs } from "../db";
 // pdf-lib is heavy — report.ts is lazy-loaded on first Generate click
 // to keep the initial bundle small on low-end phones.
 import type { Observation } from "../types";
@@ -54,8 +54,9 @@ export default function Report() {
   useEffect(() => {
     if (!active?.id) return;
     void db.observations.where("childId").equals(active.id).sortBy("recordedAt").then((o) => {
-      setObs(o);
-      setReady(o.filter((x) => !x.baseline).length > 0);
+      const rows = o.map(saneObs);
+      setObs(rows);
+      setReady(rows.filter((x) => !x.baseline).length > 0);
     });
   }, [active]);
 

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { db, getSetting, setSetting } from "./db";
+import { db, getSetting, setSetting, saneChild } from "./db";
 import type { Child } from "./types";
 
 interface AppState {
@@ -29,7 +29,7 @@ export function AppProvider({ children: kids }: { children: ReactNode }) {
 
   async function refresh() {
     try {
-      const all = await db.children.orderBy("createdAt").toArray();
+      const all = (await db.children.orderBy("createdAt").toArray()).map(saneChild);
       const activeId = await getSetting<number>("activeChildId");
       setChildren(all);
       setActiveChild(all.find((c) => c.id === activeId) ?? all[0] ?? null);

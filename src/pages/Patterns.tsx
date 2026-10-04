@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useApp } from "../appContext";
-import { db } from "../db";
+import { db, saneObs } from "../db";
 import { BAND_COLOR } from "../flacc";
 import { bandFor, type Observation } from "../types";
 import { intlLocale } from "../i18n";
@@ -24,7 +24,7 @@ export default function Patterns() {
 
   useEffect(() => {
     if (!active?.id) return;
-    void db.observations.where("childId").equals(active.id).sortBy("recordedAt").then(setObs);
+    void db.observations.where("childId").equals(active.id).sortBy("recordedAt").then((list) => setObs(list.map(saneObs)));
   }, [active]);
 
   const episodes = useMemo(() => obs.filter((o) => !o.baseline), [obs]);

@@ -1,4 +1,4 @@
-import { Link, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AppProvider, useApp } from "./appContext";
 import Onboarding from "./pages/Onboarding";
@@ -11,6 +11,7 @@ import SettingsPage from "./pages/Settings";
 import RedFlags from "./pages/RedFlags";
 import ChildForm from "./pages/ChildForm";
 import LockScreen from "./pages/LockScreen";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { getSetting } from "./db";
 import { useEffect, useState } from "react";
 import {
@@ -187,6 +188,10 @@ function Shell() {
 
       <div className="flex min-h-[calc(100dvh-3.5rem)] flex-col">
         <main id="main" tabIndex={-1} className="mx-auto w-full max-w-lg flex-1 px-4 pb-28 pt-6 focus:outline-none md:max-w-5xl md:pt-8 lg:pb-14">
+          {/* Route-level crash containment: a broken page degrades to a
+              recoverable card keyed by pathname — the rest of the shell
+              stays mounted and navigating away clears the failed subtree. */}
+          <ErrorBoundary key={loc.pathname}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/welcome" element={<Onboarding />} />
@@ -199,7 +204,11 @@ function Shell() {
             <Route path="/redflags" element={<RedFlags />} />
             <Route path="/child/new" element={<ChildForm />} />
             <Route path="/child/:id/edit" element={<ChildForm />} />
+            {/* Unknown paths (incl. /observe/<id> without /edit) go home
+                rather than rendering an empty main. */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          </ErrorBoundary>
         </main>
       </div>
 
