@@ -83,10 +83,16 @@ export default function Report() {
         // Unsupported characters: name them so the user can fix or keep the
         // journal + export a JSON backup instead. Never ship a misleading PDF.
         setError(t("report.unsupported", { chars: chars.join(" ") }));
-      } else if (e instanceof TypeError && /dynamically imported|import\(i?\)|fetch/i.test(e.message)) {
-        // A failed lazy-chunk fetch is cached by the browser — a plain retry
-        // cannot recover. The synced-stash effect writes inputs and picks the
-        // honest message (kept vs could-not-be-kept) once reloadNeeded flips.
+      } else if (
+        (e instanceof TypeError && /dynamically imported|import\(i?\)|fetch/i.test(e.message)) ||
+        e instanceof SyntaxError
+      ) {
+        // A failed lazy-chunk fetch is cached by the browser, and a stale
+        // service worker can also answer it with an HTML 404 body — that
+        // fails the module parse (SyntaxError), not the fetch (TypeError).
+        // Both are unrecoverable in-page: only a reload refetches the chunk.
+        // The synced-stash effect writes inputs and picks the honest message
+        // (kept vs could-not-be-kept) once reloadNeeded flips.
         setReloadNeeded(true);
       } else {
         setError(t("report.error"));
