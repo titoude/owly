@@ -114,7 +114,7 @@
     },
     "stepsLabel": "观察步骤",
     "draftSaved": "草稿已保存",
-    "editConflict": "自您开始编辑以来，此记录已在另一个窗口中被修改。请选择要保留的版本：",
+    "editConflict": "自您开始编辑以来，此记录已在另一个窗口中被修改或删除。请选择要保留的版本：",
     "editConflictOverwrite": "保留我的修改",
     "editConflictDiscard": "放弃我的副本",
     "childGone": "此儿童档案已被删除（可能在另一个标签页中）。请复制你的记录，然后放弃此草稿——未保存任何内容。"

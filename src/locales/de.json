@@ -114,7 +114,7 @@
     },
     "stepsLabel": "Schritte der Beobachtung",
     "draftSaved": "Entwurf gespeichert",
-    "editConflict": "Dieser Eintrag wurde in einem anderen Fenster geändert, seit du mit dem Bearbeiten begonnen hast. Wähle, welche Version bleibt:",
+    "editConflict": "Dieser Eintrag wurde in einem anderen Fenster geändert oder gelöscht, seit du mit dem Bearbeiten begonnen hast. Wähle, welche Version bleibt:",
     "editConflictOverwrite": "Meine Änderungen behalten",
     "editConflictDiscard": "Meine Kopie verwerfen",
     "childGone": "Dieses Kinderprofil wurde gelöscht (möglicherweise in einem anderen Tab). Kopiere deine Notizen und verwirf dann diesen Entwurf — nichts wurde gespeichert."

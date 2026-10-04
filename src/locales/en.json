@@ -114,7 +114,7 @@
     },
     "stepsLabel": "Observation steps",
     "draftSaved": "Draft saved",
-    "editConflict": "This record was changed in another window since you started editing. Choose which version to keep:",
+    "editConflict": "This record was changed or deleted in another window since you started editing. Choose which version to keep:",
     "editConflictOverwrite": "Keep my changes",
     "editConflictDiscard": "Discard my copy",
     "childGone": "This child profile was deleted (possibly in another tab). Copy any notes you need, then discard this draft — nothing was saved."

@@ -76,6 +76,9 @@ export default function Observe() {
   const seeded = useRef<string>(""); // JSON of the seeded fields
   const orig = useRef<Observation | null>(null); // edited record, for timestamp preservation
   const seededWhen = useRef<string | null>(null); // customAt string the form was seeded with
+  // The child this wizard belongs to, pinned at seed: a same-id impostor
+  // (imported backup reusing the numeric id) must not accept our write.
+  const childFp = useRef<number | null>(null);
   // Absolute epoch-ms the "when" selection refers to. Written ONLY by an
   // explicit when interaction (chip click, custom-time edit, seed, resume)
   // plus the default-Now seed at mount — never recomputed per keystroke or
@@ -99,6 +102,7 @@ export default function Observe() {
   // stored draft. New observations seed empty.
   useEffect(() => {
     if (!active?.id) return;
+    childFp.current = active.createdAt;
     let cancelled = false;
     void (async () => {
       if (editId) {
@@ -222,8 +226,11 @@ export default function Observe() {
       await db.transaction("rw", [db.observations, db.settings, db.children], async () => {
         // A stale tab can outlive a deletion done in another tab: writing
         // for a child that no longer exists orphans the row, and the next
-        // export would ship a backup its own validator rejects.
-        if (!(await db.children.get(active.id))) throw new Error(CHILD_GONE);
+        // export would ship a backup its own validator rejects. A numeric id
+        // alone isn't proof of identity — an imported backup may reuse it for
+        // a different child, so compare the creation stamp pinned at seed.
+        const cur = await db.children.get(active.id);
+        if (!cur || (childFp.current != null && cur.createdAt !== childFp.current)) throw new Error(CHILD_GONE);
         if (editId && !force) {
           const cur = await db.observations.get(editId);
           // Another tab may have committed a different version (or deleted

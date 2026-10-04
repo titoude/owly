@@ -114,7 +114,7 @@
     },
     "stepsLabel": "Etapas da observação",
     "draftSaved": "Rascunho guardado",
-    "editConflict": "Este registo foi alterado noutra janela desde que começou a editá-lo. Escolha que versão manter:",
+    "editConflict": "Este registo foi alterado ou eliminado noutra janela desde que começou a editá-lo. Escolha que versão manter:",
     "editConflictOverwrite": "Manter as minhas alterações",
     "editConflictDiscard": "Descartar a minha cópia",
     "childGone": "Este perfil de criança foi eliminado (possivelmente noutro separador). Copie as suas notas e depois descarte este rascunho — nada foi guardado."

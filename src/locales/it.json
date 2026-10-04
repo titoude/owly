@@ -114,7 +114,7 @@
     },
     "stepsLabel": "Passaggi dell'osservazione",
     "draftSaved": "Bozza salvata",
-    "editConflict": "Questo record è stato modificato in un'altra finestra da quando hai iniziato a modificarlo. Scegli quale versione conservare:",
+    "editConflict": "Questo record è stato modificato o eliminato in un'altra finestra da quando hai iniziato a modificarlo. Scegli quale versione conservare:",
     "editConflictOverwrite": "Conserva le mie modifiche",
     "editConflictDiscard": "Scarta la mia copia",
     "childGone": "Questo profilo bambino è stato eliminato (forse in un'altra scheda). Copia le note e poi scarta questa bozza — non è stato salvato nulla."

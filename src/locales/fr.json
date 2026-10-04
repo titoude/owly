@@ -114,7 +114,7 @@
     },
     "stepsLabel": "Étapes de l'observation",
     "draftSaved": "Brouillon enregistré",
-    "editConflict": "Cet enregistrement a été modifié dans une autre fenêtre depuis le début de votre édition. Choisissez la version à conserver :",
+    "editConflict": "Cet enregistrement a été modifié ou supprimé dans une autre fenêtre depuis le début de votre édition. Choisissez la version à conserver :",
     "editConflictOverwrite": "Conserver mes modifications",
     "editConflictDiscard": "Abandonner ma copie",
     "childGone": "Ce profil enfant a été supprimé (peut-être dans un autre onglet). Copiez vos notes puis abandonnez ce brouillon — rien n'a été enregistré."

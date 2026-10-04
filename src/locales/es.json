@@ -114,7 +114,7 @@
     },
     "stepsLabel": "Pasos de la observación",
     "draftSaved": "Borrador guardado",
-    "editConflict": "Este registro se modificó en otra ventana desde que empezaste a editarlo. Elige qué versión conservar:",
+    "editConflict": "Este registro se modificó o eliminó en otra ventana desde que empezaste a editarlo. Elige qué versión conservar:",
     "editConflictOverwrite": "Conservar mis cambios",
     "editConflictDiscard": "Descartar mi copia",
     "childGone": "Este perfil de niño fue eliminado (posiblemente en otra pestaña). Copia tus notas y luego descarta este borrador — no se guardó nada."
