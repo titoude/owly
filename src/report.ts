@@ -383,7 +383,9 @@ async function loadFaces(doc: PDFDocument, need: { arabic: boolean; deva: boolea
     base, bold,
     arabic: bytes.arabic ? await doc.embedFont(bytes.arabic, subset) : base,
     deva: bytes.deva ? await doc.embedFont(bytes.deva, subset) : base,
-    cjk: bytes.cjk ? await doc.embedFont(bytes.cjk, subset) : base,
+    // Whole-embed: fontkit's subsetter mangles this converted TTF's glyph
+    // programs (decompile failures → blank renders). 4.8 MB but intact.
+    cjk: bytes.cjk ? await doc.embedFont(bytes.cjk) : base,
     glyphs: {
       base: charset(bytes.base), bold: charset(bytes.bold),
       arabic: charset(bytes.arabic), deva: charset(bytes.deva), cjk: charset(bytes.cjk),
