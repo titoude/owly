@@ -8,7 +8,7 @@
     "wcag22aa",
     "best-practice"
   ],
-  "when": "2026-10-01T16:12:27.849Z",
+  "when": "2026-10-04T08:13:22.441Z",
   "results": [
     {
       "id": "route:/",
@@ -238,10 +238,9 @@
       "incomplete": [
         {
           "id": "color-contrast",
-          "nodes": 2,
+          "nodes": 1,
           "targets": [
-            ".text-amber-900.text-\\[13px\\]",
-            ".bg-amber-800"
+            ".text-amber-900.text-\\[13px\\]"
           ]
         }
       ],
