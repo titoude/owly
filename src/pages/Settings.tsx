@@ -136,9 +136,9 @@ export default function Settings() {
             <button
               type="button"
               onClick={() => void setActive(c.id!)}
-              className={`min-h-11 rounded-lg px-2 py-1.5 text-start text-[15px] transition-colors hover:bg-neutral-50 ${c.id === active?.id ? "font-semibold text-accent-700" : "text-neutral-700"}`}
+              className={`min-w-0 flex-1 min-h-11 rounded-lg px-2 py-1.5 text-start text-[15px] transition-colors hover:bg-neutral-50 ${c.id === active?.id ? "font-semibold text-accent-700" : "text-neutral-700"}`}
             >
-              <span dir="auto">{c.name}</span>{" "}
+              <span dir="auto" className="break-words">{c.name}</span>{" "}
               {c.isDemo ? (
                 <span className="ms-1 rounded-full bg-amber-100 px-2 py-0.5 text-[13px] font-semibold text-amber-800">
                   {t("app.demoBadgeShort")}
