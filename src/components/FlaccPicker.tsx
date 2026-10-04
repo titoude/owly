@@ -22,7 +22,7 @@ export function FlaccPicker({ category, child, value, onChange }: Props) {
   const note = i18n.language === "en" ? null : t("observe.scaleNote");
 
   return (
-    <fieldset className="space-y-2">
+    <fieldset className="min-w-0 space-y-2">
       <legend className="text-lg font-semibold text-neutral-900" lang={sl !== i18n.language ? sl : undefined} dir={sl !== i18n.language ? "ltr" : undefined}>{t(`flacc.${category}`)}</legend>
       {note ? <p className="text-[13px] text-neutral-600">{note}</p> : null}
       {custom ? (

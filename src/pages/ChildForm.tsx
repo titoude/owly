@@ -135,7 +135,7 @@ export default function ChildForm() {
 
       {/* Optional context — grouped so the required identity fields read
           first and the submit action stays adjacent to them. */}
-      <fieldset className="space-y-4 rounded-xl border border-neutral-200 p-4">
+      <fieldset className="min-w-0 space-y-4 rounded-xl border border-neutral-200 p-4">
         <legend className="section-title px-1">{t("child.optionalTitle")}</legend>
         <div>
           <label className="label" htmlFor="cond">{t("child.conditions")}</label>
@@ -152,7 +152,7 @@ export default function ChildForm() {
           />
         </div>
         <div className="space-y-3 border-t border-neutral-100 pt-4">
-          <h2 className="text-sm font-semibold text-neutral-800">{t("customDescriptors.title", { name: name || "…" })}</h2>
+          <h2 className="text-sm font-semibold text-neutral-800 break-words">{t("customDescriptors.title", { name: name || "…" })}</h2>
           <p className="text-[13px] text-neutral-600">{t("customDescriptors.body")}</p>
           {FLACC_CATEGORIES.map((c) => (
             <div key={c}>
