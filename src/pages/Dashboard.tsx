@@ -39,7 +39,7 @@ export default function Dashboard() {
         <div className="min-w-0">
           <h1 className="page-title">{t("dashboard.journal")}</h1>
           <p className="mt-1 text-[15px] text-neutral-600">
-            <span dir="auto" className="font-medium text-neutral-800">{active.name}</span>
+            <span dir="auto" className="font-medium text-neutral-800 break-all">{active.name}</span>
             {" · "}{t("patterns.episodeCount", { count })}
           </p>
         </div>

@@ -58,7 +58,16 @@ function Shell() {
     });
     const arm = () => setLocked(true);
     window.addEventListener("owly:lock", arm);
-    return () => window.removeEventListener("owly:lock", arm);
+    // The CustomEvent only reaches this window — other open tabs get the
+    // localStorage `storage` event instead so the lock arms everywhere.
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "owly-lock-signal" && e.newValue) setLocked(true);
+    };
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("owly:lock", arm);
+      window.removeEventListener("storage", onStorage);
+    };
   }, []);
 
   // HashRouter preserves scroll across route changes — every new page

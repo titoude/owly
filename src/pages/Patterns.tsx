@@ -61,9 +61,9 @@ export default function Patterns() {
     const max = Math.max(...Object.values(byTime));
     const nightStrictlyTop = byTime.night === max && Object.values(byTime).filter((v) => v === max).length === 1;
     if (nightStrictlyTop && max >= 2 && max > episodes.length / 2) out.push(t("patterns.insightNight"));
-    if (zones.length > 0) out.push(t("patterns.insightZone", { zone: t(`zones.${zones[0][0]}`), n: zones[0][1], count: zones[0][1] }));
+    if (zones.length > 0) out.push(t("patterns.insightZone", { zone: t(`zones.${zones[0][0]}`, { defaultValue: zones[0][0] }), n: zones[0][1], count: zones[0][1] }));
     const w = helped.find(([, v]) => v.yes >= 2);
-    if (w) out.push(t("patterns.insightWorked", { label: t(`interventions.${w[0]}`), yes: w[1].yes, n: w[1].n }));
+    if (w) out.push(t("patterns.insightWorked", { label: t(`interventions.${w[0]}`, { defaultValue: w[0] }), yes: w[1].yes, n: w[1].n }));
     return out;
   }, [byTime, episodes.length, zones, helped, t]);
 
@@ -179,7 +179,7 @@ export default function Patterns() {
           <div className="flex flex-wrap gap-2">
             {zones.map(([z, n]) => (
               <span key={z} className="badge bg-accent-50 text-accent-800 border border-accent-100">
-                {t(`zones.${z}`)} ×{n}
+                {t(`zones.${z}`, { defaultValue: z })} ×{n}
               </span>
             ))}
           </div>
@@ -191,7 +191,7 @@ export default function Patterns() {
           <h2 className="section-title">{t("patterns.worked")}</h2>
           {helped.map(([type, v]) => (
             <div key={type} className="flex items-center justify-between text-sm">
-              <span className="text-neutral-600">{t(`interventions.${type}`)}</span>
+              <span className="text-neutral-600">{t(`interventions.${type}`, { defaultValue: type })}</span>
               <span className={v.yes / v.n >= 0.5 ? "text-emerald-700" : "text-neutral-600"}>
                 {t("patterns.workedRate", { yes: v.yes, n: v.n })}
               </span>

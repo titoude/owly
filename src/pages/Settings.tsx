@@ -70,7 +70,9 @@ export default function Settings() {
     setPin("");
     setPinSet(true);
     setMsg({ text: t("settings.pinSaved"), error: false });
-    // Arm the lock immediately — not "on next open".
+    // Arm the lock immediately — not "on next open". The storage write
+    // reaches already-open tabs; the event arms this one.
+    try { localStorage.setItem("owly-lock-signal", String(Date.now())); } catch { /* storage denied — this tab still locks */ }
     window.dispatchEvent(new Event("owly:lock"));
   }
 

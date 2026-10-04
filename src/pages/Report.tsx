@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useApp } from "../appContext";
@@ -17,6 +17,9 @@ export default function Report() {
   const [period, setPeriod] = useState<number | null>(30);
   const [questions, setQuestions] = useState<string[]>(["", ""]);
   const [busy, setBusy] = useState(false);
+  // State disables the button only after a re-render — a fast second click
+  // still reaches generate(). The ref gates synchronously.
+  const busyRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const [reloadNeeded, setReloadNeeded] = useState(false);
   const [ready, setReady] = useState(false);
@@ -33,7 +36,9 @@ export default function Report() {
       sessionStorage.removeItem(stashKey);
       if (!raw) return;
       const d = JSON.parse(raw) as { questions?: string[]; period?: number | null };
-      if (Array.isArray(d.questions)) setQuestions(d.questions);
+      // The form renders exactly two question fields — a stash carrying
+      // extras (corrupt or hand-written) would push the layout wider.
+      if (Array.isArray(d.questions)) setQuestions(d.questions.slice(0, 2));
       if ("period" in d) setPeriod(d.period ?? null);
     } catch { /* sessionStorage can be denied — restoration is best-effort */ }
   }, [stashKey]);
@@ -65,7 +70,8 @@ export default function Report() {
   const episodeCount = obs.filter((o) => !o.baseline && (period == null || o.startedAt >= Date.now() - period * 864e5)).length;
 
   async function generate() {
-    if (!active) return;
+    if (!active || busyRef.current) return;
+    busyRef.current = true;
     setBusy(true);
     setError(null);
     try {
@@ -98,6 +104,7 @@ export default function Report() {
         setError(t("report.error"));
       }
     } finally {
+      busyRef.current = false;
       setBusy(false);
     }
   }

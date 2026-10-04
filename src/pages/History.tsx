@@ -84,7 +84,7 @@ export default function History() {
               </div>
               <div className="text-[13px] text-neutral-600">
                 {o.durationMinutes ? fmtMinutes(o.durationMinutes) : ""}
-                {o.bodyZones.length > 0 && ` · ${o.bodyZones.map((z) => t(`zones.${z}`)).join(", ")}`}
+                {o.bodyZones.length > 0 && ` · ${o.bodyZones.map((z) => t(`zones.${z}`, { defaultValue: z })).join(", ")}`}
                 {o.suspectedCause && ` · ${o.suspectedCause}`}
               </div>
             </div>
@@ -92,7 +92,7 @@ export default function History() {
           </div>
           {o.interventions.length > 0 && (
             <div className="text-[13px] text-neutral-600">
-              {o.interventions.map((i) => t(`interventions.${i.type}`)).join(", ")}
+              {o.interventions.map((i) => t(`interventions.${i.type}`, { defaultValue: i.type })).join(", ")}
               {o.interventions.some((i) => i.helped === "yes") && " ✓"}
             </div>
           )}

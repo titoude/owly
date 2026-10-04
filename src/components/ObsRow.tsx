@@ -27,7 +27,7 @@ export function ObsRow({ o, to }: { o: Observation; to: string }) {
   const started = new Date(o.startedAt);
   const details = [
     o.note || null,
-    o.bodyZones.length ? o.bodyZones.map((z) => t(`zones.${z}`)).join(", ") : null,
+    o.bodyZones.length ? o.bodyZones.map((z) => t(`zones.${z}`, { defaultValue: z })).join(", ") : null,
     o.durationMinutes != null ? fmtMinutes(o.durationMinutes) : null,
     o.suspectedCause || null,
   ].filter(Boolean).join(" · ");
