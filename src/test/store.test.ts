@@ -100,6 +100,32 @@ describe("export/import", () => {
     expect(await dbRows()).toEqual(before);
   });
 
+  // The validator must hold the same invariants the forms enforce — a crafted
+  // backup can't smuggle values the UI would never write.
+  it("rejects fields outside the UI invariants and preserves all rows", async () => {
+    await seedDemo();
+    const before = await dbRows();
+    const base = await exportAll();
+    const mutates: ((d: Record<string, never>) => void)[] = [
+      (d) => { (d.children as { birthYear: number }[])[0].birthYear = -5; },
+      (d) => { (d.children as { birthYear: number }[])[0].birthYear = 2.5; },
+      (d) => { (d.children as { birthYear: number }[])[0].birthYear = 1800; },
+      (d) => { (d.children as { birthYear: number }[])[0].birthYear = new Date().getFullYear() + 1; },
+      (d) => { (d.observations as { durationMinutes: number }[])[0].durationMinutes = -5; },
+      (d) => { (d.observations as { durationMinutes: number }[])[0].durationMinutes = 2.5; },
+      (d) => { (d.observations as { durationMinutes: number }[])[0].durationMinutes = 2000; },
+      (d) => { (d.observations as { startedAt: number }[])[0].startedAt = Date.now() + 86400000; },
+      (d) => { (d.observations as { recordedAt: number }[])[0].recordedAt = Date.now() + 86400000; },
+      (d) => { (d.observations as { childId: number }[])[0].childId = 1.5; },
+    ];
+    for (const mutate of mutates) {
+      const dump = JSON.parse(base);
+      mutate(dump);
+      await expect(importAll(JSON.stringify(dump))).rejects.toThrow();
+    }
+    expect(await dbRows()).toEqual(before);
+  });
+
   it("points the active child at an imported profile after restore", async () => {
     await seedDemo();
     const dump = await exportAll();

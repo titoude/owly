@@ -56,7 +56,10 @@ function normalizeChild(c: Child, i: number): Child {
   if (typeof c.name !== "string" || c.name.trim() === "") bad("missing name");
   tsField(c.createdAt, () => bad("invalid createdAt"));
   if (c.id != null && (typeof c.id !== "number" || !Number.isInteger(c.id) || c.id <= 0)) bad("invalid id");
-  if (c.birthYear != null && (typeof c.birthYear !== "number" || !Number.isFinite(c.birthYear))) bad("invalid birthYear");
+  // Same invariant the form enforces — a crafted backup can't carry values
+  // the UI would never write.
+  const maxYear = new Date().getFullYear();
+  if (c.birthYear != null && (!Number.isInteger(c.birthYear) || c.birthYear < 1900 || c.birthYear > maxYear)) bad("invalid birthYear");
   const raw: unknown = c.customDescriptors ?? {};
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) bad("customDescriptors must be an object");
   const cd = raw as Record<string, unknown>;
@@ -78,15 +81,21 @@ function normalizeChild(c: Child, i: number): Child {
 
 function normalizeObservation(o: Observation, i: number): Observation {
   const fail = (): never => { throw new Error(`Invalid Owly backup file: malformed observation #${i + 1}`); };
-  if (!o || typeof o.childId !== "number" || !Number.isFinite(o.childId)) fail();
+  if (!o || typeof o.childId !== "number" || !Number.isInteger(o.childId) || o.childId <= 0) fail();
   tsField(o.recordedAt, fail);
   tsField(o.startedAt, fail);
+  // The wizard pins "now" or a past instant — future timestamps beyond small
+  // clock skew can't come from the app.
+  const skew = 5 * 60 * 1000;
+  if (o.startedAt > Date.now() + skew || o.recordedAt > Date.now() + skew) fail();
   if (!o.scores || typeof o.scores !== "object") fail();
   for (const cat of FLACC_CATEGORIES) {
     const v = (o.scores as unknown as Record<string, unknown>)[cat];
     if (typeof v !== "number" || !Number.isInteger(v) || v < 0 || v > 2) fail();
   }
-  if (o.durationMinutes != null && (typeof o.durationMinutes !== "number" || !Number.isFinite(o.durationMinutes))) fail();
+  // Durations are whole minutes within a day — the UI can't produce
+  // negatives, fractions, or week-long episodes.
+  if (o.durationMinutes != null && (!Number.isInteger(o.durationMinutes) || o.durationMinutes < 0 || o.durationMinutes > 24 * 60)) fail();
   if (o.bodyZones != null && !Array.isArray(o.bodyZones)) fail();
   if (o.interventions != null && !Array.isArray(o.interventions)) fail();
   const interventions = (o.interventions ?? []).map((it): Intervention => {
