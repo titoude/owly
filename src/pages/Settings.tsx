@@ -141,7 +141,7 @@ export default function Settings() {
               <span dir="auto">{c.name}</span>{" "}
               {c.isDemo ? (
                 <span className="ms-1 rounded-full bg-amber-100 px-2 py-0.5 text-[13px] font-semibold text-amber-800">
-                  demo
+                  {t("app.demoBadgeShort")}
                 </span>
               ) : null}
             </button>

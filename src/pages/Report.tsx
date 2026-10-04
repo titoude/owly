@@ -80,7 +80,8 @@ export default function Report() {
       // retryable error, not wedge the button in "loading" forever.
       const mod = await import("../report");
       const bytes = await mod.buildReport(active, obs, { periodDays: period, questions });
-      const date = new Date().toISOString().slice(0, 10);
+      const now = new Date();
+      const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
       mod.downloadPdf(bytes, `owly-report-${active.name.toLowerCase()}-${date}.pdf`);
       if (stashKey) try { sessionStorage.removeItem(stashKey); } catch { /* denied */ }
     } catch (e) {

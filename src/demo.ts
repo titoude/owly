@@ -10,7 +10,7 @@ export async function seedDemo(): Promise<void> {
   await clearDemo();
   const childId = (await db.children.add({
     name: "Léo",
-    birthYear: 2016,
+    birthYear: new Date().getFullYear() - 9,
     conditions: "Autism, non-verbal",
     communicates: "Pulls at ears, rocks, bangs head lightly, goes very still",
     customDescriptors: {

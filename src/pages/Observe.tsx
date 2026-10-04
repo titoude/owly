@@ -446,7 +446,7 @@ export default function Observe() {
                   aria-pressed={duration === m}
                   className={`btn-ghost text-[15px] ${duration === m ? "border border-accent-700 !bg-accent-50 text-accent-800" : ""}`}
                 >
-                  {m} min
+                  {t("observe.durationMin", { n: m })}
                 </button>
               ))}
               <button

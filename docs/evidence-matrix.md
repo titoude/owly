@@ -41,7 +41,7 @@ doc: check anything.
 
 ## Test status (this branch)
 
-`npm run build` clean · `npx vitest run` 34/34 · `e2e/smoke.mjs` 9/9 ·
+`npm run build` clean · `npx vitest run` 38/38 · `e2e/smoke.mjs` 9/9 ·
 `e2e/full.mjs` 44/44 · `e2e/keyboard.mjs` 17/17 · `e2e/offline.mjs` 6/6 ·
 a11y audit 33/33 PASS / 0 violations / 0 unverified.
 `npm run lint` exits 0 with 11 warnings (style/purity hints, no errors).

@@ -481,7 +481,7 @@ export async function buildReport(child: Child, observations: Observation[], opt
       const cells = [
         `${o.total}/10`,
         i18n.t(`band.${bandFor(o.total)}`),
-        o.durationMinutes ? `${o.durationMinutes}m` : "—",
+        o.durationMinutes ? t("durationMin", { n: o.durationMinutes }) : "—",
       ];
       cells.forEach((c, i) => {
         drawRuns(ctx, truncToWidth(ctx, c, 7.6, COL_W[i + 1]), ctx.left + COLS[i + 1], ctx.y, { size: 7.6, color: INK });

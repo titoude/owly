@@ -38,8 +38,8 @@ replaced or validated by the instrument licensor before any claims are made.
 
 - No locale has been reviewed by a native speaker or clinician. Treat UI
   translations outside EN/FR as draft quality.
-- PDF reports always render EN/FR report chrome (`report.pdf.*` exists only
-  in en/fr) — a deliberate choice for clinician-facing output; report
-  localisation is a design decision pending owner input.
+- PDF report chrome (`report.pdf.*`) is localized in all 9 locales, with
+  per-script fonts (Noto Sans Arabic / Devanagari / SC subsets) embedded
+  only when the content needs them.
 - Arabic UI is RTL (`<html dir="rtl">`); visual checks of every RTL screen
   are tracked in the accessibility evidence document.
