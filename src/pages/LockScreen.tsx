@@ -13,6 +13,7 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
   const [error, setError] = useState(false);
   const [cooldownUntil, setCooldownUntil] = useState(0);
   const [confirmWipe, setConfirmWipe] = useState(false);
+  const [corrupt, setCorrupt] = useState(false);
   const [wiping, setWiping] = useState(false);
   const attempts = useRef(0);
 
@@ -21,7 +22,10 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
       if (v && v > Date.now()) setCooldownUntil(v);
     });
     void getSetting<number>("pinAttempts").then((v) => {
-      attempts.current = v ?? 0;
+      // Corrupt/non-numeric values (tampered settings) must not silently
+      // disable the lockout counter.
+      const n = Number(v);
+      attempts.current = Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
     });
   }, []);
 
@@ -39,8 +43,14 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
   }, [cooldownUntil]);
 
   async function tryUnlock(value: string) {
-    const stored = await getSetting<string>("passcode");
+    const stored = await getSetting<unknown>("passcode");
     if (!stored) return onUnlock();
+    if (typeof stored !== "string") {
+      // A tampered/corrupt value can't be verified — dead-ending the PIN
+      // field would force a full wipe. Offer a scoped reset instead.
+      setCorrupt(true);
+      return;
+    }
     const upgraded = await verifyPin(value, stored);
     if (upgraded) {
       if (upgraded !== stored) await setSetting("passcode", upgraded); // legacy → salted
@@ -97,6 +107,22 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
           aria-label={t("settings.unlock")}
         />
         {error && <p className="text-[13px] text-red-700" role="alert">{t("settings.wrongPin")}</p>}
+        {corrupt && (
+          <div className="card p-4 space-y-2 text-start" role="alert">
+            <p className="text-[13px] text-neutral-600">{t("settings.lockCorrupt")}</p>
+            <button
+              type="button"
+              className="btn-primary w-full text-sm"
+              onClick={() => {
+                void setSetting("passcode", "");
+                void setSetting("pinAttempts", 0);
+                onUnlock();
+              }}
+            >
+              {t("settings.lockCorruptReset")}
+            </button>
+          </div>
+        )}
         {!confirmWipe ? (
           <button type="button" className="inline-flex min-h-11 items-center text-[13px] text-neutral-700 underline underline-offset-2" onClick={() => setConfirmWipe(true)}>
             {t("settings.forgotPin")}
