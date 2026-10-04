@@ -8,7 +8,10 @@
     "demoBadgeShort": "Demo",
     "storageErrorTitle": "Lokale Datenbank nicht erreichbar",
     "storageErrorBody": "Owly speichert alles auf diesem Gerät und der Browserspeicher ist nicht verfügbar oder voll. Geben Sie Speicher frei oder prüfen Sie die Website-Daten-Einstellungen und versuchen Sie es erneut. Es wurde nichts übertragen.",
-    "changeChild": "Wechseln"
+    "changeChild": "Wechseln",
+    "crashTitle": "Etwas ist schiefgelaufen",
+    "crashBody": "Auf dieser Seite ist ein unerwarteter Fehler aufgetreten. Deine Daten liegen auf diesem Gerät — ein Neuladen behebt die Anzeige meist.",
+    "crashReload": "Neu laden"
   },
   "nav": {
     "home": "Start",
@@ -110,7 +113,10 @@
       "tried": "Pflege & Notiz"
     },
     "stepsLabel": "Schritte der Beobachtung",
-    "draftSaved": "Entwurf gespeichert"
+    "draftSaved": "Entwurf gespeichert",
+    "editConflict": "Dieser Eintrag wurde in einem anderen Fenster geändert, seit du mit dem Bearbeiten begonnen hast. Wähle, welche Version bleibt:",
+    "editConflictOverwrite": "Meine Änderungen behalten",
+    "editConflictDiscard": "Meine Kopie verwerfen"
   },
   "interventions": {
     "comfort": "Trösten (Umarmung, Halten, Decke)",

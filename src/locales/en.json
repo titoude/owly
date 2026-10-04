@@ -8,7 +8,10 @@
     "demoBadgeShort": "Demo",
     "storageErrorTitle": "Can't reach the local database",
     "storageErrorBody": "Owly keeps everything on this device, and the browser's storage is unavailable or full. Free some space or check your browser's site-data settings, then try again. Nothing was sent anywhere.",
-    "changeChild": "Change"
+    "changeChild": "Change",
+    "crashTitle": "Something went wrong",
+    "crashBody": "This page hit an unexpected error. Your data is stored on this device — reloading usually fixes the display.",
+    "crashReload": "Reload"
   },
   "nav": {
     "home": "Home",
@@ -110,7 +113,10 @@
       "tried": "Care & notes"
     },
     "stepsLabel": "Observation steps",
-    "draftSaved": "Draft saved"
+    "draftSaved": "Draft saved",
+    "editConflict": "This record was changed in another window since you started editing. Choose which version to keep:",
+    "editConflictOverwrite": "Keep my changes",
+    "editConflictDiscard": "Discard my copy"
   },
   "interventions": {
     "comfort": "Comfort (hug, hold, blanket)",

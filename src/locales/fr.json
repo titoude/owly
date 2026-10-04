@@ -8,7 +8,10 @@
     "demoBadgeShort": "Démo",
     "storageErrorTitle": "Impossible d'accéder à la base locale",
     "storageErrorBody": "Owly conserve tout sur cet appareil, et le stockage du navigateur est indisponible ou plein. Libérez de l'espace ou vérifiez les réglages de données de site, puis réessayez. Rien n'a été envoyé nulle part.",
-    "changeChild": "Changer"
+    "changeChild": "Changer",
+    "crashTitle": "Une erreur est survenue",
+    "crashBody": "Cette page a rencontré une erreur inattendue. Vos données sont stockées sur cet appareil — un rechargement suffit généralement à rétablir l'affichage.",
+    "crashReload": "Recharger"
   },
   "nav": {
     "home": "Accueil",
@@ -110,7 +113,10 @@
       "tried": "Soins et note"
     },
     "stepsLabel": "Étapes de l'observation",
-    "draftSaved": "Brouillon enregistré"
+    "draftSaved": "Brouillon enregistré",
+    "editConflict": "Cet enregistrement a été modifié dans une autre fenêtre depuis le début de votre édition. Choisissez la version à conserver :",
+    "editConflictOverwrite": "Conserver mes modifications",
+    "editConflictDiscard": "Abandonner ma copie"
   },
   "interventions": {
     "comfort": "Réconfort (câlin, doudou, couverture)",

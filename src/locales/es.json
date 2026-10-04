@@ -8,7 +8,10 @@
     "demoBadgeShort": "Demo",
     "storageErrorTitle": "No se puede acceder a la base de datos local",
     "storageErrorBody": "Owly guarda todo en este dispositivo y el almacenamiento del navegador no está disponible o está lleno. Libera espacio o revisa la configuración de datos del sitio y vuelve a intentarlo. Nada se ha enviado a ningún lugar.",
-    "changeChild": "Cambiar"
+    "changeChild": "Cambiar",
+    "crashTitle": "Se ha producido un error",
+    "crashBody": "Esta página ha tenido un error inesperado. Tus datos están guardados en este dispositivo: recargar suele ser suficiente.",
+    "crashReload": "Recargar"
   },
   "nav": {
     "home": "Inicio",
@@ -110,7 +113,10 @@
       "tried": "Cuidados y nota"
     },
     "stepsLabel": "Pasos de la observación",
-    "draftSaved": "Borrador guardado"
+    "draftSaved": "Borrador guardado",
+    "editConflict": "Este registro se modificó en otra ventana desde que empezaste a editarlo. Elige qué versión conservar:",
+    "editConflictOverwrite": "Conservar mis cambios",
+    "editConflictDiscard": "Descartar mi copia"
   },
   "interventions": {
     "comfort": "Consuelo (abrazo, tener en brazos, manta)",

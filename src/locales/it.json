@@ -8,7 +8,10 @@
     "demoBadgeShort": "Demo",
     "storageErrorTitle": "Impossibile accedere al database locale",
     "storageErrorBody": "Owly conserva tutto su questo dispositivo e lo spazio di archiviazione del browser non è disponibile o è pieno. Libera spazio o controlla le impostazioni dei dati dei siti, poi riprova. Nulla è stato inviato.",
-    "changeChild": "Cambia"
+    "changeChild": "Cambia",
+    "crashTitle": "Qualcosa è andato storto",
+    "crashBody": "Questa pagina ha avuto un errore imprevisto. I tuoi dati sono salvati su questo dispositivo: di solito basta ricaricare.",
+    "crashReload": "Ricarica"
   },
   "nav": {
     "home": "Diario",
@@ -110,7 +113,10 @@
       "tried": "Cura e note"
     },
     "stepsLabel": "Passaggi dell'osservazione",
-    "draftSaved": "Bozza salvata"
+    "draftSaved": "Bozza salvata",
+    "editConflict": "Questo record è stato modificato in un'altra finestra da quando hai iniziato a modificarlo. Scegli quale versione conservare:",
+    "editConflictOverwrite": "Conserva le mie modifiche",
+    "editConflictDiscard": "Scarta la mia copia"
   },
   "interventions": {
     "comfort": "Conforto (abbraccio, tenerlo in braccio, coperta)",

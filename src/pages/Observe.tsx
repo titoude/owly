@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useApp } from "../appContext";
-import { db } from "../db";
+import { db, saneObs } from "../db";
 import { clearDraft, draftEditKey, draftKey, loadDraft, saveDraft, type ObsDraft } from "../drafts";
 import { INTERVENTION_TYPES, totalFlacc } from "../flacc";
 import { FLACC_CATEGORIES, type FlaccScores, type Intervention, type Observation } from "../types";
@@ -30,6 +30,13 @@ function toLocalInput(d: Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+const EDIT_CONFLICT = "owly-edit-conflict";
+
+// Semantic-field comparison in a fixed order — object key order isn't
+// stable across IndexedDB round-trips, so JSON.stringify(row) alone lies.
+const canonObs = (o: Observation | undefined | null) =>
+  o == null ? "" : JSON.stringify([o.childId, o.startedAt, o.recordedAt, o.scores, o.total, o.durationMinutes, o.bodyZones, o.suspectedCause, o.interventions, o.note, o.baseline]);
+
 export default function Observe() {
   const { t, i18n } = useTranslation();
   // Licensed FLACC step names stay English in most locales — tag the name's
@@ -40,7 +47,10 @@ export default function Observe() {
   const { active } = useApp();
   const nav = useNavigate();
   const { id } = useParams();
-  const editId = id ? Number(id) : null;
+  // A non-numeric / non-positive :id on the edit route isn't an edit at
+  // all — redirect instead of silently presenting a new-record wizard.
+  const editId = id != null && Number.isInteger(Number(id)) && Number(id) > 0 ? Number(id) : null;
+  const badId = id != null && editId === null;
   const [step, setStep] = useState(0);
   const [baseline, setBaseline] = useState(false);
   const [minutesAgo, setMinutesAgo] = useState(0);
@@ -60,6 +70,7 @@ export default function Observe() {
   const [offerSeen, setOfferSeen] = useState(false); // true once resolved
   const [draftFailed, setDraftFailed] = useState(false); // draft write rejected (quota/denied)
   const [draftSaved, setDraftSaved] = useState(false); // a draft write actually completed
+  const [conflict, setConflict] = useState(false); // record changed elsewhere while editing
   const writeSeq = useRef(0); // overlapping draft writes — only the latest may set the indicator
   const seeded = useRef<string>(""); // JSON of the seeded fields
   const orig = useRef<Observation | null>(null); // edited record, for timestamp preservation
@@ -72,6 +83,7 @@ export default function Observe() {
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const stepHeading = useRef<HTMLDivElement>(null);
   const offerRef = useRef<HTMLDivElement>(null);
+  const conflictRef = useRef<HTMLDivElement>(null);
 
   const key = editId ? draftEditKey(editId) : active?.id ? draftKey(active.id) : null;
 
@@ -89,7 +101,7 @@ export default function Observe() {
     let cancelled = false;
     void (async () => {
       if (editId) {
-        const o = await db.observations.get(editId);
+        const o = await db.observations.get(editId).then((r) => (r ? saneObs(r) : r));
         if (cancelled) return;
         if (!o || o.childId !== active.id) { nav("/history"); return; }
         orig.current = o;
@@ -165,6 +177,12 @@ export default function Observe() {
     if (offer) offerRef.current?.focus({ preventScroll: true });
   }, [offer]);
 
+  useEffect(() => {
+    if (conflict) conflictRef.current?.focus({ preventScroll: true });
+  }, [conflict]);
+
+  useEffect(() => { if (badId) nav("/history", { replace: true }); }, [badId, nav]);
+
   const total = useMemo(() => {
     if (Object.values(scores).some((v) => v < 0)) return null;
     return totalFlacc(scores as FlaccScores);
@@ -176,7 +194,7 @@ export default function Observe() {
     cat ? scores[cat] >= 0 :
     false;
 
-  async function save() {
+  async function save(force = false) {
     if (!active?.id || total === null) return;
     setSaving(true);
     const obs: Observation = {
@@ -186,7 +204,8 @@ export default function Observe() {
       // timestamp — a note-only correction must not move the episode.
       startedAt: editId && orig.current && customAt === seededWhen.current
         ? orig.current.startedAt
-        : startedAt ?? (customAt ? Math.min(new Date(customAt).getTime(), Date.now()) : Date.now() - minutesAgo * 60_000),
+        : startedAt != null ? Math.min(startedAt, Date.now())
+        : customAt ? Math.min(new Date(customAt).getTime(), Date.now()) : Date.now() - minutesAgo * 60_000,
       recordedAt: editId && orig.current ? orig.current.recordedAt : Date.now(),
       scores: scores as FlaccScores,
       total,
@@ -200,13 +219,21 @@ export default function Observe() {
     try {
       // The write and its draft cleanup commit or roll back together.
       await db.transaction("rw", [db.observations, db.settings], async () => {
+        if (editId && !force) {
+          const cur = await db.observations.get(editId);
+          // Another tab may have committed a different version (or deleted
+          // the record) since this form was seeded — never overwrite that
+          // silently; let the user pick which copy survives.
+          if (canonObs(cur) !== canonObs(orig.current)) throw new Error(EDIT_CONFLICT);
+        }
         if (editId) await db.observations.put(obs);
         else await db.observations.add(obs);
         if (key) await clearDraft(key);
       });
       nav("/history");
-    } catch {
+    } catch (e) {
       setSaving(false);
+      if (e instanceof Error && e.message === EDIT_CONFLICT) { setConflict(true); return; }
       setSaveError(t("observe.saveError"));
     }
   }
@@ -253,7 +280,7 @@ export default function Observe() {
     setOffer(null);
   }
 
-  if (!active) return null;
+  if (!active || badId) return null;
 
   return (
     <div className="mx-auto w-full max-w-xl space-y-6">
@@ -294,6 +321,16 @@ export default function Observe() {
           <div className="flex gap-2">
             <button type="button" className="btn-primary text-sm px-3 py-1.5" onClick={resume}>{t("observe.resume")}</button>
             <button type="button" className="btn-ghost text-sm px-3 py-1.5" onClick={discard}>{t("observe.discard")}</button>
+          </div>
+        </div>
+      )}
+
+      {conflict && (
+        <div className="card p-4 space-y-3 border-orange-300" role="group" aria-labelledby="conflict-title" tabIndex={-1} ref={conflictRef}>
+          <p id="conflict-title" className="text-sm font-medium text-neutral-700">{t("observe.editConflict")}</p>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" className="btn-primary text-sm px-3 py-1.5" onClick={() => { setConflict(false); void save(true); }}>{t("observe.editConflictOverwrite")}</button>
+            <button type="button" className="btn-ghost text-sm px-3 py-1.5" onClick={() => { if (key) void clearDraft(key).catch(() => setDraftFailed(true)); nav("/history"); }}>{t("observe.editConflictDiscard")}</button>
           </div>
         </div>
       )}
@@ -359,7 +396,10 @@ export default function Observe() {
                   const v = e.target.value === "" ? null : e.target.value;
                   setCustomAt(v);
                   const ms = v ? new Date(v).getTime() : NaN;
-                  setStartedAt(Number.isFinite(ms) ? ms : null);
+                  // `max` constrains only the picker widget — typed values
+                  // bypass it, so clamp here (and again at save, where a
+                  // resumed draft may carry an older pinned instant).
+                  setStartedAt(Number.isFinite(ms) ? Math.min(ms, Date.now()) : null);
                 }}
               />
             )}
@@ -514,8 +554,11 @@ export default function Observe() {
           </div>
         )}
         <div className="flex gap-3">
+        {/* e.detail: the second click of a double-tap/tremor arrives with
+            detail>=2 and can land on whichever button morphs into this spot
+            (Next→Save, or a step skip). Swallow it — a real press is detail=1. */}
         {step > 0 && (
-          <button type="button" className="btn-ghost flex-1" onClick={() => setStep((s) => s - 1)}>
+          <button type="button" className="btn-ghost flex-1" onClick={(e) => { if (e.detail <= 1) setStep((s) => s - 1); }}>
             {t("common.back")}
           </button>
         )}
@@ -524,12 +567,12 @@ export default function Observe() {
             type="button"
             className="btn-primary flex-1"
             disabled={!canNext}
-            onClick={() => setStep((s) => s + 1)}
+            onClick={(e) => { if (e.detail <= 1) setStep((s) => s + 1); }}
           >
             {t("common.next")}
           </button>
         ) : (
-          <button type="button" className="btn-primary flex-1" disabled={saving} onClick={() => void save()}>
+          <button type="button" className="btn-primary flex-1" disabled={saving} onClick={(e) => { if (e.detail <= 1) void save(); }}>
             {saving ? t("common.loading") : editId ? t("observe.update") : t("observe.save")}
           </button>
         )}

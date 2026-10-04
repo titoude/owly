@@ -8,7 +8,10 @@
     "demoBadgeShort": "演示",
     "storageErrorTitle": "无法访问本地数据库",
     "storageErrorBody": "Owly 将所有内容保存在此设备上，而浏览器存储不可用或已满。请释放一些空间或检查浏览器的站点数据设置，然后重试。没有发送任何内容。",
-    "changeChild": "更换"
+    "changeChild": "更换",
+    "crashTitle": "出现了问题",
+    "crashBody": "此页面发生了意外错误。您的数据保存在本设备上——重新加载通常即可恢复显示。",
+    "crashReload": "重新加载"
   },
   "nav": {
     "home": "主页",
@@ -110,7 +113,10 @@
       "tried": "照护与备注"
     },
     "stepsLabel": "观察步骤",
-    "draftSaved": "草稿已保存"
+    "draftSaved": "草稿已保存",
+    "editConflict": "自您开始编辑以来，此记录已在另一个窗口中被修改。请选择要保留的版本：",
+    "editConflictOverwrite": "保留我的修改",
+    "editConflictDiscard": "放弃我的副本"
   },
   "interventions": {
     "comfort": "安抚（拥抱、抱着、毯子）",
