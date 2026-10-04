@@ -91,10 +91,11 @@ function Shell() {
           <h1 className="text-xl font-bold">{t("app.storageErrorTitle")}</h1>
           <p className="text-sm text-neutral-600">{t("app.storageErrorBody")}</p>
           <button type="button" className="btn-primary px-6" onClick={() => {
-            // Dexie caches a rejected open — closing resets it so the next
-            // access re-issues indexedDB.open. Without this, "Try again"
-            // can never heal a restored permission.
-            try { db.close(); } catch { /* already closed */ }
+            // Dexie caches a rejected open, and plain close() sets
+            // disableAutoOpen — the next access would reject DatabaseClosed
+            // instead of retrying indexedDB.open. Reopen must stay enabled
+            // for "Try again" to heal a restored permission.
+            try { db.close({ disableAutoOpen: false }); } catch { /* already closed */ }
             void refresh();
           }}>
             {t("common.retry")}
