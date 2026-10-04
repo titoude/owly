@@ -11,11 +11,20 @@ interface Dump {
 }
 
 export async function exportAll(): Promise<string> {
+  const [children, allObs] = await Promise.all([db.children.toArray(), db.observations.toArray()]);
+  // An observation whose child row is gone (e.g. written by a stale tab
+  // after a cross-tab delete) is invisible in the UI and makes the whole
+  // dump fail its own validation on import — drop it, don't poison the backup.
+  const childIds = new Set(children.map((c) => c.id));
+  const observations = allObs.filter((o) => childIds.has(o.childId));
+  if (observations.length !== allObs.length) {
+    console.warn(`export: dropped ${allObs.length - observations.length} orphaned observation(s)`);
+  }
   const dump: Dump = {
     version: 1,
     exportedAt: new Date().toISOString(),
-    children: await db.children.toArray(),
-    observations: await db.observations.toArray(),
+    children,
+    observations,
   };
   return JSON.stringify(dump, null, 2);
 }

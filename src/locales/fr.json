@@ -116,7 +116,8 @@
     "draftSaved": "Brouillon enregistré",
     "editConflict": "Cet enregistrement a été modifié dans une autre fenêtre depuis le début de votre édition. Choisissez la version à conserver :",
     "editConflictOverwrite": "Conserver mes modifications",
-    "editConflictDiscard": "Abandonner ma copie"
+    "editConflictDiscard": "Abandonner ma copie",
+    "childGone": "Ce profil enfant a été supprimé (peut-être dans un autre onglet). Copiez vos notes puis abandonnez ce brouillon — rien n'a été enregistré."
   },
   "interventions": {
     "comfort": "Réconfort (câlin, doudou, couverture)",
@@ -278,7 +279,9 @@
     "importPreview": "Cette sauvegarde du {{date}} contient {{children}} profil(s) et {{observations}} observation(s). L'import remplace définitivement les {{curChildren}} profil(s) et {{curObs}} observation(s) présents sur cet appareil.",
     "importConfirm": "Remplacer par cette sauvegarde",
     "wrongPin": "Code incorrect",
-    "privacyBody": "Tout ce que vous notez reste sur cet appareil (IndexedDB) — aucun compte, aucun cloud, aucune analyse. Le code PIN n'est qu'un verrou d'écran : il ne chiffre pas les données, et toute personne ayant accès à l'appareil pourrait ouvrir le journal avec des outils techniques. Les sauvegardes sont des fichiers JSON non chiffrés : conservez-les comme le journal lui-même. Supprimer l'application ou les données du site efface tout si vous n'avez pas exporté de sauvegarde."
+    "privacyBody": "Tout ce que vous notez reste sur cet appareil (IndexedDB) — aucun compte, aucun cloud, aucune analyse. Le code PIN n'est qu'un verrou d'écran : il ne chiffre pas les données, et toute personne ayant accès à l'appareil pourrait ouvrir le journal avec des outils techniques. Les sauvegardes sont des fichiers JSON non chiffrés : conservez-les comme le journal lui-même. Supprimer l'application ou les données du site efface tout si vous n'avez pas exporté de sauvegarde.",
+    "lockCorrupt": "Le code PIN enregistré est corrompu et ne peut plus être vérifié.",
+    "lockCorruptReset": "Réinitialiser le PIN et déverrouiller"
   },
   "common": {
     "back": "Retour",

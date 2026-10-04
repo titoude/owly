@@ -116,7 +116,8 @@
     "draftSaved": "Borrador guardado",
     "editConflict": "Este registro se modificó en otra ventana desde que empezaste a editarlo. Elige qué versión conservar:",
     "editConflictOverwrite": "Conservar mis cambios",
-    "editConflictDiscard": "Descartar mi copia"
+    "editConflictDiscard": "Descartar mi copia",
+    "childGone": "Este perfil de niño fue eliminado (posiblemente en otra pestaña). Copia tus notas y luego descarta este borrador — no se guardó nada."
   },
   "interventions": {
     "comfort": "Consuelo (abrazo, tener en brazos, manta)",
@@ -278,7 +279,9 @@
     "importPreview": "Esta copia del {{date}} contiene {{children}} perfil(es) y {{observations}} observación(es). Importarla reemplaza permanentemente los {{curChildren}} perfil(es) y {{curObs}} observación(es) actuales de este dispositivo.",
     "importConfirm": "Reemplazar con esta copia",
     "wrongPin": "Código incorrecto",
-    "privacyBody": "Todo lo que registras se queda en este dispositivo (IndexedDB) — sin cuenta, sin nube, sin analítica. El PIN es solo un bloqueo de pantalla: no cifra los datos y cualquiera con acceso a este dispositivo podría abrir el diario con herramientas del sistema. Las copias de seguridad son archivos JSON sin cifrar: guárdalas como el propio diario. Borrar la app o los datos del sitio lo elimina todo, salvo que hayas exportado una copia."
+    "privacyBody": "Todo lo que registras se queda en este dispositivo (IndexedDB) — sin cuenta, sin nube, sin analítica. El PIN es solo un bloqueo de pantalla: no cifra los datos y cualquiera con acceso a este dispositivo podría abrir el diario con herramientas del sistema. Las copias de seguridad son archivos JSON sin cifrar: guárdalas como el propio diario. Borrar la app o los datos del sitio lo elimina todo, salvo que hayas exportado una copia.",
+    "lockCorrupt": "Los datos del PIN guardado están dañados y ya no se pueden verificar.",
+    "lockCorruptReset": "Restablecer PIN y desbloquear"
   },
   "common": {
     "back": "Atrás",

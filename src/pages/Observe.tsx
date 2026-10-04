@@ -31,6 +31,7 @@ function toLocalInput(d: Date): string {
 }
 
 const EDIT_CONFLICT = "owly-edit-conflict";
+const CHILD_GONE = "owly-child-gone";
 
 // Semantic-field comparison in a fixed order — object key order isn't
 // stable across IndexedDB round-trips, so JSON.stringify(row) alone lies.
@@ -218,7 +219,11 @@ export default function Observe() {
     };
     try {
       // The write and its draft cleanup commit or roll back together.
-      await db.transaction("rw", [db.observations, db.settings], async () => {
+      await db.transaction("rw", [db.observations, db.settings, db.children], async () => {
+        // A stale tab can outlive a deletion done in another tab: writing
+        // for a child that no longer exists orphans the row, and the next
+        // export would ship a backup its own validator rejects.
+        if (!(await db.children.get(active.id))) throw new Error(CHILD_GONE);
         if (editId && !force) {
           const cur = await db.observations.get(editId);
           // Another tab may have committed a different version (or deleted
@@ -234,6 +239,7 @@ export default function Observe() {
     } catch (e) {
       setSaving(false);
       if (e instanceof Error && e.message === EDIT_CONFLICT) { setConflict(true); return; }
+      if (e instanceof Error && e.message === CHILD_GONE) { setSaveError(t("observe.childGone")); return; }
       setSaveError(t("observe.saveError"));
     }
   }

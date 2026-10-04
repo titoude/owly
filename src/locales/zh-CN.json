@@ -116,7 +116,8 @@
     "draftSaved": "草稿已保存",
     "editConflict": "自您开始编辑以来，此记录已在另一个窗口中被修改。请选择要保留的版本：",
     "editConflictOverwrite": "保留我的修改",
-    "editConflictDiscard": "放弃我的副本"
+    "editConflictDiscard": "放弃我的副本",
+    "childGone": "此儿童档案已被删除（可能在另一个标签页中）。请复制你的记录，然后放弃此草稿——未保存任何内容。"
   },
   "interventions": {
     "comfort": "安抚（拥抱、抱着、毯子）",
@@ -268,7 +269,9 @@
     "importPreview": "这份 {{date}} 的备份包含 {{children}} 个档案和 {{observations}} 条观察。导入将永久替换此设备上现有的 {{curChildren}} 个档案和 {{curObs}} 条观察。",
     "importConfirm": "用此备份替换",
     "wrongPin": "密码错误",
-    "privacyBody": "你记录的一切都保存在这台设备上（IndexedDB）——无账号、无云端、无分析。PIN 只是屏幕锁：它并不加密数据，任何能访问这台设备的人都可能用系统工具打开日志。备份是未加密的 JSON 文件：请像保管日志一样保管它们。删除应用或网站数据会清除一切，除非你已导出备份。"
+    "privacyBody": "你记录的一切都保存在这台设备上（IndexedDB）——无账号、无云端、无分析。PIN 只是屏幕锁：它并不加密数据，任何能访问这台设备的人都可能用系统工具打开日志。备份是未加密的 JSON 文件：请像保管日志一样保管它们。删除应用或网站数据会清除一切，除非你已导出备份。",
+    "lockCorrupt": "已保存的 PIN 数据已损坏，无法再进行验证。",
+    "lockCorruptReset": "重置 PIN 并解锁"
   },
   "common": {
     "back": "返回",

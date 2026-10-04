@@ -116,7 +116,8 @@
     "draftSaved": "Draft saved",
     "editConflict": "This record was changed in another window since you started editing. Choose which version to keep:",
     "editConflictOverwrite": "Keep my changes",
-    "editConflictDiscard": "Discard my copy"
+    "editConflictDiscard": "Discard my copy",
+    "childGone": "This child profile was deleted (possibly in another tab). Copy any notes you need, then discard this draft — nothing was saved."
   },
   "interventions": {
     "comfort": "Comfort (hug, hold, blanket)",
@@ -278,7 +279,9 @@
     "importPreview": "This backup from {{date}} holds {{children}} profile(s) and {{observations}} observation(s). Importing it permanently replaces the {{curChildren}} profile(s) and {{curObs}} observation(s) now on this device.",
     "importConfirm": "Replace with this backup",
     "wrongPin": "Wrong code",
-    "privacyBody": "Everything you record stays on this device (IndexedDB) — no account, no cloud, no analytics. The PIN is only a screen lock: it does not encrypt data, and anyone with access to this device could open the journal with device tools. Backups are unencrypted JSON files: store them like the journal itself. Deleting the app or site data erases everything unless you exported a backup."
+    "privacyBody": "Everything you record stays on this device (IndexedDB) — no account, no cloud, no analytics. The PIN is only a screen lock: it does not encrypt data, and anyone with access to this device could open the journal with device tools. Backups are unencrypted JSON files: store them like the journal itself. Deleting the app or site data erases everything unless you exported a backup.",
+    "lockCorrupt": "The saved PIN data is corrupted and can no longer be verified.",
+    "lockCorruptReset": "Reset PIN and unlock"
   },
   "common": {
     "back": "Back",

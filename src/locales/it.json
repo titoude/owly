@@ -116,7 +116,8 @@
     "draftSaved": "Bozza salvata",
     "editConflict": "Questo record è stato modificato in un'altra finestra da quando hai iniziato a modificarlo. Scegli quale versione conservare:",
     "editConflictOverwrite": "Conserva le mie modifiche",
-    "editConflictDiscard": "Scarta la mia copia"
+    "editConflictDiscard": "Scarta la mia copia",
+    "childGone": "Questo profilo bambino è stato eliminato (forse in un'altra scheda). Copia le note e poi scarta questa bozza — non è stato salvato nulla."
   },
   "interventions": {
     "comfort": "Conforto (abbraccio, tenerlo in braccio, coperta)",
@@ -278,7 +279,9 @@
     "importPreview": "Questo backup del {{date}} contiene {{children}} profilo/i e {{observations}} osservazione/i. Importarlo sostituisce definitivamente i {{curChildren}} profilo/i e {{curObs}} osservazione/i attuali su questo dispositivo.",
     "importConfirm": "Sostituisci con questo backup",
     "wrongPin": "Codice errato",
-    "privacyBody": "Tutto ciò che registri resta su questo dispositivo (IndexedDB) — nessun account, nessun cloud, nessuna analitica. Il PIN è solo un blocco schermo: non cifra i dati e chiunque abbia accesso a questo dispositivo potrebbe aprire il diario con strumenti di sistema. I backup sono file JSON non cifrati: conservali come il diario stesso. Eliminare l'app o i dati del sito cancella tutto, a meno che tu non abbia esportato un backup."
+    "privacyBody": "Tutto ciò che registri resta su questo dispositivo (IndexedDB) — nessun account, nessun cloud, nessuna analitica. Il PIN è solo un blocco schermo: non cifra i dati e chiunque abbia accesso a questo dispositivo potrebbe aprire il diario con strumenti di sistema. I backup sono file JSON non cifrati: conservali come il diario stesso. Eliminare l'app o i dati del sito cancella tutto, a meno che tu non abbia esportato un backup.",
+    "lockCorrupt": "I dati del PIN salvato sono corrotti e non possono più essere verificati.",
+    "lockCorruptReset": "Reimposta PIN e sblocca"
   },
   "common": {
     "back": "Indietro",

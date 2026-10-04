@@ -116,7 +116,8 @@
     "draftSaved": "Entwurf gespeichert",
     "editConflict": "Dieser Eintrag wurde in einem anderen Fenster geändert, seit du mit dem Bearbeiten begonnen hast. Wähle, welche Version bleibt:",
     "editConflictOverwrite": "Meine Änderungen behalten",
-    "editConflictDiscard": "Meine Kopie verwerfen"
+    "editConflictDiscard": "Meine Kopie verwerfen",
+    "childGone": "Dieses Kinderprofil wurde gelöscht (möglicherweise in einem anderen Tab). Kopiere deine Notizen und verwirf dann diesen Entwurf — nichts wurde gespeichert."
   },
   "interventions": {
     "comfort": "Trösten (Umarmung, Halten, Decke)",
@@ -278,7 +279,9 @@
     "importPreview": "Dieses Backup vom {{date}} enthält {{children}} Profil(e) und {{observations}} Beobachtung(en). Der Import ersetzt dauerhaft die {{curChildren}} Profil(e) und {{curObs}} Beobachtung(en) auf diesem Gerät.",
     "importConfirm": "Mit diesem Backup ersetzen",
     "wrongPin": "Falscher Code",
-    "privacyBody": "Alles, was du aufzeichnest, bleibt auf diesem Gerät (IndexedDB) — kein Konto, keine Cloud, keine Analytik. Die PIN ist nur eine Bildschirmsperre: sie verschlüsselt keine Daten, und jeder mit Zugriff auf dieses Gerät könnte das Tagebuch mit Systemwerkzeugen öffnen. Backups sind unverschlüsselte JSON-Dateien: bewahre sie wie das Tagebuch selbst auf. App oder Websitedaten löschen entfernt alles, sofern du kein Backup exportiert hast."
+    "privacyBody": "Alles, was du aufzeichnest, bleibt auf diesem Gerät (IndexedDB) — kein Konto, keine Cloud, keine Analytik. Die PIN ist nur eine Bildschirmsperre: sie verschlüsselt keine Daten, und jeder mit Zugriff auf dieses Gerät könnte das Tagebuch mit Systemwerkzeugen öffnen. Backups sind unverschlüsselte JSON-Dateien: bewahre sie wie das Tagebuch selbst auf. App oder Websitedaten löschen entfernt alles, sofern du kein Backup exportiert hast.",
+    "lockCorrupt": "Die gespeicherten PIN-Daten sind beschädigt und können nicht mehr geprüft werden.",
+    "lockCorruptReset": "PIN zurücksetzen und entsperren"
   },
   "common": {
     "back": "Zurück",

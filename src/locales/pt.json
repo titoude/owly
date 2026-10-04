@@ -116,7 +116,8 @@
     "draftSaved": "Rascunho guardado",
     "editConflict": "Este registo foi alterado noutra janela desde que começou a editá-lo. Escolha que versão manter:",
     "editConflictOverwrite": "Manter as minhas alterações",
-    "editConflictDiscard": "Descartar a minha cópia"
+    "editConflictDiscard": "Descartar a minha cópia",
+    "childGone": "Este perfil de criança foi eliminado (possivelmente noutro separador). Copie as suas notas e depois descarte este rascunho — nada foi guardado."
   },
   "interventions": {
     "comfort": "Conforto (abraço, colo, manta)",
@@ -278,7 +279,9 @@
     "importPreview": "Esta cópia de {{date}} contém {{children}} perfil(s) e {{observations}} observação(ões). Importá-la substitui permanentemente os {{curChildren}} perfil(s) e {{curObs}} observação(ões) atuais deste dispositivo.",
     "importConfirm": "Substituir por esta cópia",
     "wrongPin": "Código errado",
-    "privacyBody": "Tudo o que regista fica neste dispositivo (IndexedDB) — sem conta, sem nuvem, sem analítica. O PIN é apenas um bloqueio de ecrã: não cifra os dados e qualquer pessoa com acesso a este dispositivo pode abrir o diário com ferramentas do sistema. As cópias de segurança são ficheiros JSON não cifrados: guarde-as como o próprio diário. Apagar a app ou os dados do site elimina tudo, a menos que tenha exportado uma cópia."
+    "privacyBody": "Tudo o que regista fica neste dispositivo (IndexedDB) — sem conta, sem nuvem, sem analítica. O PIN é apenas um bloqueio de ecrã: não cifra os dados e qualquer pessoa com acesso a este dispositivo pode abrir o diário com ferramentas do sistema. As cópias de segurança são ficheiros JSON não cifrados: guarde-as como o próprio diário. Apagar a app ou os dados do site elimina tudo, a menos que tenha exportado uma cópia.",
+    "lockCorrupt": "Os dados do PIN guardado estão corrompidos e já não podem ser verificados.",
+    "lockCorruptReset": "Repor PIN e desbloquear"
   },
   "common": {
     "back": "Voltar",
