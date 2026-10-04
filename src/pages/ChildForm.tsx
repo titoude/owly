@@ -85,6 +85,10 @@ export default function ChildForm() {
       await db.observations.where("childId").equals(childId).delete();
       await db.children.delete(childId);
       await clearChildDrafts(childId, obsIds);
+      // Don't leave activeChildId dangling at a deleted profile — point it
+      // at the next child (or clear it when none remain).
+      const rest = await db.children.orderBy("createdAt").toArray();
+      await db.settings.put({ key: "activeChildId", value: rest[0]?.id ?? null });
     });
     await refresh();
     nav("/settings");
