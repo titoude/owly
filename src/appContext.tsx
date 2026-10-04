@@ -48,6 +48,9 @@ export function AppProvider({ children: kids }: { children: ReactNode }) {
   }
 
   useEffect(() => {
+    // Ask for durable storage so the journal survives quota pressure —
+    // best-effort: denied or unsupported just keeps the volatile default.
+    void navigator.storage?.persist?.().catch(() => {});
     void refresh();
   }, []);
 

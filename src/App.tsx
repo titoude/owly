@@ -12,7 +12,7 @@ import RedFlags from "./pages/RedFlags";
 import ChildForm from "./pages/ChildForm";
 import LockScreen from "./pages/LockScreen";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { getSetting } from "./db";
+import { db, getSetting } from "./db";
 import { useEffect, useState } from "react";
 import {
   IconHome, IconObserve, IconHistory, IconPatterns, IconReport, IconSettings, IconAlert,
@@ -81,7 +81,13 @@ function Shell() {
         <div className="max-w-sm text-center space-y-4" role="alert">
           <h1 className="text-xl font-bold">{t("app.storageErrorTitle")}</h1>
           <p className="text-sm text-neutral-600">{t("app.storageErrorBody")}</p>
-          <button type="button" className="btn-primary px-6" onClick={() => void refresh()}>
+          <button type="button" className="btn-primary px-6" onClick={() => {
+            // Dexie caches a rejected open — closing resets it so the next
+            // access re-issues indexedDB.open. Without this, "Try again"
+            // can never heal a restored permission.
+            try { db.close(); } catch { /* already closed */ }
+            void refresh();
+          }}>
             {t("common.retry")}
           </button>
         </div>
