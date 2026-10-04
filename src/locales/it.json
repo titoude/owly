@@ -49,7 +49,8 @@
     "deleteConfirm": "Elimina questo bambino e tutte le sue osservazioni. Non si può annullare.",
     "editTitle": "Modifica profilo",
     "optionalTitle": "Dettagli opzionali",
-    "birthYearInvalid": "Inserisci un anno di nascita tra il 1900 e il {{max}}"
+    "birthYearInvalid": "Inserisci un anno di nascita tra il 1900 e il {{max}}",
+    "gone": "Questo profilo bambino è stato eliminato (forse in un'altra scheda). Non è stato salvato nulla."
   },
   "customDescriptors": {
     "title": "Come mostra il dolore {{name}}?",

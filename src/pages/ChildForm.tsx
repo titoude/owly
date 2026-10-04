@@ -27,15 +27,19 @@ export default function ChildForm() {
 
   useEffect(() => {
     if (!id) return;
-    void db.children.get(Number(id)).then((c) => {
-      if (!c) return;
+    const childId = Number(id);
+    // Edit URL guessed or the profile was deleted elsewhere — same
+    // redirect Observe uses for a bad id, not a dead-end empty form.
+    if (!Number.isInteger(childId)) { nav("/settings"); return; }
+    void db.children.get(childId).then((c) => {
+      if (!c) { nav("/settings"); return; }
       setName(c.name);
       setBirthYear(c.birthYear?.toString() ?? "");
       setConditions(c.conditions);
       setCommunicates(c.communicates);
       setDesc({ ...EMPTY_DESC, ...c.customDescriptors });
     });
-  }, [id]);
+  }, [id, nav]);
 
   const maxYear = new Date().getFullYear();
   const parsedYear = Number(birthYear);
@@ -64,7 +68,14 @@ export default function ChildForm() {
       let childId: number;
       if (id) {
         childId = Number(id);
-        await db.children.update(childId, payload);
+        // update() resolves 0 rows for a child deleted elsewhere — the
+        // write silently dropped nothing yet, so surface it like the
+        // observer flow's CHILD_GONE instead of reporting success.
+        if ((await db.children.update(childId, payload)) === 0) {
+          setSaving(false);
+          setSaveError(t("child.gone"));
+          return;
+        }
       } else {
         childId = (await db.children.add({ ...payload, createdAt: Date.now() } as Child)) as number;
       }

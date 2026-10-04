@@ -49,7 +49,8 @@
     "deleteConfirm": "Deletes this child and all their observations. This cannot be undone.",
     "editTitle": "Edit profile",
     "optionalTitle": "Optional details",
-    "birthYearInvalid": "Enter a birth year between 1900 and {{max}}"
+    "birthYearInvalid": "Enter a birth year between 1900 and {{max}}",
+    "gone": "This child profile was deleted (possibly in another tab). Nothing was saved."
   },
   "customDescriptors": {
     "title": "How does {{name}} show pain?",

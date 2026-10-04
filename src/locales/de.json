@@ -49,7 +49,8 @@
     "deleteConfirm": "Löscht dieses Kind und alle seine Beobachtungen. Das kann nicht rückgängig gemacht werden.",
     "editTitle": "Profil bearbeiten",
     "optionalTitle": "Optionale Angaben",
-    "birthYearInvalid": "Gib ein Geburtsjahr zwischen 1900 und {{max}} ein"
+    "birthYearInvalid": "Gib ein Geburtsjahr zwischen 1900 und {{max}} ein",
+    "gone": "Dieses Kinderprofil wurde gelöscht (möglicherweise in einem anderen Tab). Es wurde nichts gespeichert."
   },
   "customDescriptors": {
     "title": "Wie zeigt {{name}} Schmerz?",

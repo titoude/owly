@@ -49,7 +49,8 @@
     "deleteConfirm": "Supprime cet enfant et toutes ses observations. Irréversible.",
     "editTitle": "Modifier le profil",
     "optionalTitle": "Détails facultatifs",
-    "birthYearInvalid": "Indiquez une année de naissance entre 1900 et {{max}}"
+    "birthYearInvalid": "Indiquez une année de naissance entre 1900 et {{max}}",
+    "gone": "Ce profil enfant a été supprimé (peut-être dans un autre onglet). Rien n’a été enregistré."
   },
   "customDescriptors": {
     "title": "Comment {{name}} montre sa douleur ?",

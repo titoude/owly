@@ -49,7 +49,8 @@
     "deleteConfirm": "将删除此孩子及其全部观察记录，无法撤销。",
     "editTitle": "编辑资料",
     "optionalTitle": "可选信息",
-    "birthYearInvalid": "请输入 1900 至 {{max}} 之间的出生年份"
+    "birthYearInvalid": "请输入 1900 至 {{max}} 之间的出生年份",
+    "gone": "此儿童档案已被删除（可能是在另一个标签页中）。未保存任何内容。"
   },
   "customDescriptors": {
     "title": "{{name}}如何表现疼痛？",

@@ -49,7 +49,8 @@
     "deleteConfirm": "Elimina este niño y todas sus observaciones. No se puede deshacer.",
     "editTitle": "Editar perfil",
     "optionalTitle": "Detalles opcionales",
-    "birthYearInvalid": "Introduce un año de nacimiento entre 1900 y {{max}}"
+    "birthYearInvalid": "Introduce un año de nacimiento entre 1900 y {{max}}",
+    "gone": "Este perfil de niño fue eliminado (quizá en otra pestaña). No se guardó nada."
   },
   "customDescriptors": {
     "title": "¿Cómo muestra {{name}} el dolor?",
