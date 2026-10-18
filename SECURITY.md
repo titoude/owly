@@ -4,8 +4,7 @@
 
 Owly is an offline-first, local-only application: all data lives in
 IndexedDB on the user's device, no account, no server, no telemetry.
-There is no backend to breach — the meaningful security surface is the
-device itself, the JSON import/export path, and the service worker.
+There is no backend receiving journal records. The meaningful security surfaces are the device and browser profile, the static hosting origin and its update channel, third-party dependencies, exported files, the JSON import path, and the service worker.
 
 ## Reporting a vulnerability
 
@@ -16,6 +15,10 @@ exfiltrates data.
 
 Please include: affected version/commit, reproduction steps, and what
 data or flow is at risk.
+
+## Scope and limitations
+
+The absence of a journal API does **not** eliminate risks from a compromised static host, malicious browser extensions, lost devices, unsafe backup sharing, or vulnerabilities in dependencies. Use an HTTPS origin and a trusted device. There is no guaranteed recovery if local browser storage is cleared without a backup.
 
 ## Threat model
 
