@@ -1,8 +1,8 @@
 // axe-core audit for Owly, per scripts/a11y/manifest.json.
 // Runs WCAG 2.2 A/AA + best-practice rules on every manifest route and state.
 // Usage: node scripts/a11y/audit.mjs [base-url] [--out a11y-audit/baseline]
-// Exit 1 on any violation; UNVERIFIED entries are listed but don't fail.
-import { mkdirSync, writeFileSync } from "node:fs";
+// Exit 1 on any violation, unverified scenario, or manifest coverage gap.
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { launchBrowser } from "../../e2e/browser.mjs";
 
@@ -54,8 +54,13 @@ async function audit(page, id, description) {
         passes: res.passes.length,
       };
     }, TAGS);
-    const status = r.violations.length ? "FAIL" : "PASS";
-    if (r.violations.length) fail++; else pass++;
+    // A rule that threw or could not execute is NOT proof of no barriers.
+    // Ordinary incomplete findings with evidence remain manual-review items.
+    const unexecutedRules = r.incomplete.filter((x) => x.nodes === 0 || x.error || x.checkError);
+    const status = r.violations.length ? "FAIL" : unexecutedRules.length ? "UNVERIFIED" : "PASS";
+    if (status === "FAIL") fail++;
+    else if (status === "UNVERIFIED") unverified++;
+    else pass++;
     results.push({ id, description, status, ...r });
     console.log(`${status} ${id} — ${r.violations.length} violations, ${r.incomplete.length} incomplete`);
     for (const v of r.violations) console.log(`    ${v.id} [${v.impact}]: ${v.nodes.map((n) => n.target.join(" ")).join(" | ").slice(0, 200)}`);
@@ -170,8 +175,8 @@ await go(page, "#/settings");
   const offer = page.locator("#draft-title");
   await offer.waitFor({ timeout: 6000 }).catch(() => {});
   if (await offer.count()) {
-    await req(page, "#draft-title", "draft-resume", "draft offer");
-    if (results.at(-1).status !== "UNVERIFIED") await audit(page, "draft-resume", "draft resume/discard offer on wizard entry");
+    if (await req(page, "#draft-title", "draft-resume", "draft offer"))
+      await audit(page, "draft-resume", "draft resume/discard offer on wizard entry");
     await page.locator("button", { hasText: /discard|supprimer|ignorer/i }).first().click().catch(() => {});
     await page.waitForTimeout(300);
   } else { results.push({ id: "draft-resume", status: "UNVERIFIED", error: "no draft offer after partial wizard" }); unverified++; }
@@ -359,8 +364,40 @@ await go(page, "#/settings");
   } else { results.push({ id: "pin-locked", status: "UNVERIFIED", error: "no PIN input" }, { id: "pin-error", status: "UNVERIFIED", error: "no PIN input" }); unverified += 2; }
 }
 
-// --- report ---
-const scope = { manifest: "scripts/a11y/manifest.json", audited: results.map((r) => r.id) };
+// --- manifest contract: never report a green audit when a declared screen or
+// state was dropped from the executable scenarios. The /observe route is
+// covered by the step-0 wizard audit, then by the remaining seven steps.
+const manifest = JSON.parse(readFileSync(new URL("./manifest.json", import.meta.url), "utf8"));
+if (!Array.isArray(manifest.routes) || !Array.isArray(manifest.states)) {
+  throw new Error("Invalid a11y manifest: missing routes or states");
+}
+const expectedIds = [
+  ...manifest.routes.filter((r) => r.path !== "/observe").map((r) => `route:${r.path}`),
+  ...manifest.states.flatMap((s) => {
+    if (s.id === "observe-step0..step7") return Array.from({ length: 8 }, (_, i) => `observe-step${i}`);
+    return [(["fr", "rtl", "fr-observe"].includes(s.id) ? "state:" : "") + s.id];
+  }),
+];
+// The manifest's /observe route is exercised by the state: step-0 audit.
+if (manifest.routes.some((r) => r.path === "/observe") && !expectedIds.includes("observe-step0"))
+  expectedIds.push("observe-step0");
+const expected = new Set(expectedIds);
+const audited = new Set(results.map((r) => r.id));
+if (expected.size !== expectedIds.length) {
+  throw new Error("Invalid a11y manifest: duplicate scenario ids");
+}
+const missing = [...expected].filter((id) => !audited.has(id));
+for (const id of missing) {
+  results.push({ id, status: "UNVERIFIED", error: "declared in manifest but never executed" });
+  unverified++;
+}
+const scope = {
+  manifest: "scripts/a11y/manifest.json",
+  expected: [...expected],
+  audited: results.map((r) => r.id),
+  missing,
+  pass, fail, unverified,
+};
 writeFileSync(`${OUT}/results.json`, JSON.stringify({ base: BASE, tags: TAGS, when: new Date().toISOString(), results }, null, 2));
 writeFileSync(`${OUT}/scope.json`, JSON.stringify(scope, null, 2));
 const md = ["# a11y audit", "", `Base: ${BASE}`, `Tags: ${TAGS.join(", ")}`, "",
@@ -370,4 +407,4 @@ const md = ["# a11y audit", "", `Base: ${BASE}`, `Tags: ${TAGS.join(", ")}`, "",
 writeFileSync(`${OUT}/report.md`, md.join("\n"));
 console.log(`\n${pass} PASS · ${fail} FAIL · ${unverified} UNVERIFIED → ${OUT}/`);
 await browser.close();
-process.exit(fail ? 1 : 0);
+process.exit(fail || unverified ? 1 : 0);

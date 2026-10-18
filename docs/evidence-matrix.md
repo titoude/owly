@@ -39,12 +39,12 @@ doc: check anything.
 - **Medical validation / real-user testing.** No caregivers or
   clinicians have evaluated the app; the demo data is fictional.
 
-## Test status (this branch)
+## Test status (Opethon candidate, 2026-10-04)
 
 `npm run build` clean · `npx vitest run` 38/38 · `e2e/smoke.mjs` 9/9 ·
 `e2e/full.mjs` 44/44 · `e2e/keyboard.mjs` 17/17 · `e2e/offline.mjs` 6/6 ·
 a11y audit 33/33 PASS / 0 violations / 0 unverified.
-`npm run lint` exits 0 with 11 warnings (style/purity hints, no errors).
+`npm run lint` exits 0 with 11 warnings (style/purity hints, no errors). These are recorded results, not a promise that every future commit passes. The CI also runs typecheck, lint, localization parity, tests, the production build, browser flows, offline/PDF and the manifest-checked accessibility scan; see [the workflow](../.github/workflows/ci.yml) for the latest run.
 
 Note on audit scope history: the baseline run covered 25 scenarios; the
 final run covers 33. The 8 added states (draft-resume, observe-edit,

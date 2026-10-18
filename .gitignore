@@ -25,3 +25,17 @@ dist-ssr
 e2e-shots/
 coverage/
 *.tsbuildinfo
+
+# Private local-only inputs: never commit real child data or auth state
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.key
+auth.json
+storage-state*.json
+owly-export-*.json
+owly-backup*.json
+a11y-audit/ci/
+a11y-audit/local/

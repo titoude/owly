@@ -1,5 +1,7 @@
 # 🦉 Owly
 
+[![CI](https://github.com/titoude/owly/actions/workflows/ci.yml/badge.svg)](https://github.com/titoude/owly/actions/workflows/ci.yml)
+
 **A private, offline-first pain observation journal for children who can't say it hurts.**
 
 Owly helps parents and caregivers of nonverbal children — severe autism, cerebral palsy, complex disabilities, or any child who can't self-report pain — record what they see, spot patterns, and walk into a doctor's appointment with evidence instead of a shrug.
@@ -49,6 +51,32 @@ npm run preview    # serve the production build
 ```
 
 `dist/` is fully static — host it on any static server (GitHub Pages, Netlify, a Raspberry Pi). No backend required, ever.
+
+## Verify the release
+
+Install dependencies and run fast checks:
+
+```bash
+npm ci --ignore-scripts
+npm run typecheck
+npm run lint
+npm run i18n:check
+npm test
+npm run build
+npx playwright install chromium
+```
+
+Run `npm run preview -- --host 127.0.0.1 --port 4173` in one terminal, then run these commands in another:
+
+```bash
+npm run e2e
+npm run e2e:full
+npm run e2e:keys
+node e2e/offline.mjs
+node scripts/a11y/audit.mjs --out a11y-audit/local
+```
+
+The accessibility command fails if any declared route/state is unverified or an automated rule could not execute. Passing does **not** certify complete WCAG conformance, accessible PDFs, clinical efficacy, or authorization to redistribute FLACC wording. See [evidence and limitations](docs/evidence-matrix.md). CI reruns these checks on pull requests and `main`.
 
 ## Try the demo story
 
@@ -124,6 +152,10 @@ Owly ships the English wording in every locale **except French**, which carries 
 - [docs/i18n-review.md](docs/i18n-review.md) — translation review status
 - [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md)
 
+## Related open-source project
+
+[Accessibility with evidence](https://github.com/titoude/accessibilite-conformite) is a separately maintained toolkit for AI coding agents to repair web accessibility barriers and independently verify changes.
+
 ## License
 
-MIT — see [LICENSE](LICENSE).
+The original Owly code is MIT licensed — see [LICENSE](LICENSE). Third-party assets and the clinical-instrument wording may have separate terms; consult **Instrument licensing** and **Third-party notices** above before redistribution.
