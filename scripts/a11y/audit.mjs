@@ -372,12 +372,15 @@ if (!Array.isArray(manifest.routes) || !Array.isArray(manifest.states)) {
   throw new Error("Invalid a11y manifest: missing routes or states");
 }
 const expectedIds = [
-  ...manifest.routes.map((r) => r.path === "/observe" ? "observe-step0" : `route:${r.path}`),
+  ...manifest.routes.filter((r) => r.path !== "/observe").map((r) => `route:${r.path}`),
   ...manifest.states.flatMap((s) => {
     if (s.id === "observe-step0..step7") return Array.from({ length: 8 }, (_, i) => `observe-step${i}`);
     return [(["fr", "rtl", "fr-observe"].includes(s.id) ? "state:" : "") + s.id];
   }),
 ];
+// The manifest's /observe route is exercised by the state: step-0 audit.
+if (manifest.routes.some((r) => r.path === "/observe") && !expectedIds.includes("observe-step0"))
+  expectedIds.push("observe-step0");
 const expected = new Set(expectedIds);
 const audited = new Set(results.map((r) => r.id));
 if (expected.size !== expectedIds.length) {
