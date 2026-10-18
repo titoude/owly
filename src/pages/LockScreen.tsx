@@ -13,6 +13,7 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
   const [error, setError] = useState(false);
   const [cooldownUntil, setCooldownUntil] = useState(0);
   const [confirmWipe, setConfirmWipe] = useState(false);
+  const [corrupt, setCorrupt] = useState(false);
   const [wiping, setWiping] = useState(false);
   const attempts = useRef(0);
 
@@ -21,7 +22,10 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
       if (v && v > Date.now()) setCooldownUntil(v);
     });
     void getSetting<number>("pinAttempts").then((v) => {
-      attempts.current = v ?? 0;
+      // Corrupt/non-numeric values (tampered settings) must not silently
+      // disable the lockout counter.
+      const n = Number(v);
+      attempts.current = Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
     });
   }, []);
 
@@ -39,11 +43,21 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
   }, [cooldownUntil]);
 
   async function tryUnlock(value: string) {
-    const stored = await getSetting<string>("passcode");
+    const stored = await getSetting<unknown>("passcode");
     if (!stored) return onUnlock();
+    if (typeof stored !== "string") {
+      // A tampered/corrupt value can't be verified — dead-ending the PIN
+      // field would force a full wipe. Offer a scoped reset instead.
+      setCorrupt(true);
+      return;
+    }
     const upgraded = await verifyPin(value, stored);
     if (upgraded) {
       if (upgraded !== stored) await setSetting("passcode", upgraded); // legacy → salted
+      // A correct PIN clears any accumulated strikes — old typos must not
+      // carry toward a future lockout.
+      attempts.current = 0;
+      void setSetting("pinAttempts", 0);
       onUnlock();
     } else {
       attempts.current += 1;
@@ -70,12 +84,12 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
   }
 
   return (
-    <div className="min-h-dvh grid place-items-center">
+    <main className="min-h-dvh grid place-items-center" aria-labelledby="lock-heading">
       <div className="space-y-6 text-center">
         <img src="/icon.svg" alt="" className="mx-auto size-20 rounded-3xl" />
-        <p className="text-neutral-600">
+        <h1 id="lock-heading" className="text-xl font-semibold text-neutral-800">
           {coolingDown ? t("settings.unlockWait") : t("settings.unlock")}
-        </p>
+        </h1>
         <input
           type="password"
           inputMode="numeric"
@@ -89,17 +103,33 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
             setError(false);
             if (v.length === 4) void tryUnlock(v);
           }}
-          className={`input text-center text-2xl tracking-[0.5em] w-40 ${error ? "border-red-500" : ""}`}
+          className={`input text-center text-2xl tracking-[0.5em] !w-40 ${error ? "border-red-500" : ""}`}
           aria-label={t("settings.unlock")}
         />
-        {error && <p className="text-xs text-red-700" role="alert">{t("settings.wrongPin")}</p>}
+        {error && <p className="text-[13px] text-red-700" role="alert">{t("settings.wrongPin")}</p>}
+        {corrupt && (
+          <div className="card p-4 space-y-2 text-start" role="alert">
+            <p className="text-[13px] text-neutral-600">{t("settings.lockCorrupt")}</p>
+            <button
+              type="button"
+              className="btn-primary w-full text-sm"
+              onClick={() => {
+                void setSetting("passcode", "");
+                void setSetting("pinAttempts", 0);
+                onUnlock();
+              }}
+            >
+              {t("settings.lockCorruptReset")}
+            </button>
+          </div>
+        )}
         {!confirmWipe ? (
-          <button type="button" className="text-xs text-neutral-500 underline underline-offset-2" onClick={() => setConfirmWipe(true)}>
+          <button type="button" className="inline-flex min-h-11 items-center text-[13px] text-neutral-700 underline underline-offset-2" onClick={() => setConfirmWipe(true)}>
             {t("settings.forgotPin")}
           </button>
         ) : (
-          <div className="card p-4 space-y-2 text-left">
-            <p className="text-xs text-neutral-600">{t("settings.forgotPinWarning")}</p>
+          <div className="card p-4 space-y-2 text-start">
+            <p className="text-[13px] text-neutral-600">{t("settings.forgotPinWarning")}</p>
             <div className="flex gap-2">
               <button type="button" className="btn-ghost flex-1 text-sm" onClick={() => setConfirmWipe(false)}>
                 {t("common.cancel")}
@@ -116,6 +146,6 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }

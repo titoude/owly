@@ -1,0 +1,405 @@
+{
+  "base": "http://localhost:4173",
+  "tags": [
+    "wcag2a",
+    "wcag2aa",
+    "wcag21a",
+    "wcag21aa",
+    "wcag22aa",
+    "best-practice"
+  ],
+  "when": "2026-10-04T15:53:57.138Z",
+  "results": [
+    {
+      "id": "route:/",
+      "description": "dashboard (demo seed)",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 34
+    },
+    {
+      "id": "route:/history",
+      "description": "history list",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 33
+    },
+    {
+      "id": "route:/patterns",
+      "description": "patterns report",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 40
+    },
+    {
+      "id": "route:/report",
+      "description": "report config form",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 38
+    },
+    {
+      "id": "route:/settings",
+      "description": "settings",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 38
+    },
+    {
+      "id": "route:/redflags",
+      "description": "emergency red flags",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 35
+    },
+    {
+      "id": "route:/welcome",
+      "description": "onboarding",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 3,
+          "targets": [
+            "li:nth-child(1) > .text-accent-700",
+            "li:nth-child(2) > .text-accent-700",
+            "li:nth-child(3) > .text-accent-700"
+          ]
+        }
+      ],
+      "passes": 39
+    },
+    {
+      "id": "route:/child/new",
+      "description": "child create form",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 37
+    },
+    {
+      "id": "observe-step0",
+      "description": "observe wizard step 0",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-primary"
+          ]
+        }
+      ],
+      "passes": 37
+    },
+    {
+      "id": "observe-step1",
+      "description": "observe wizard step 1",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-ghost"
+          ]
+        }
+      ],
+      "passes": 40
+    },
+    {
+      "id": "observe-step2",
+      "description": "observe wizard step 2",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-ghost"
+          ]
+        }
+      ],
+      "passes": 40
+    },
+    {
+      "id": "observe-step3",
+      "description": "observe wizard step 3",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-ghost"
+          ]
+        }
+      ],
+      "passes": 40
+    },
+    {
+      "id": "observe-step4",
+      "description": "observe wizard step 4",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-ghost"
+          ]
+        }
+      ],
+      "passes": 40
+    },
+    {
+      "id": "observe-step5",
+      "description": "observe wizard step 5",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-ghost"
+          ]
+        }
+      ],
+      "passes": 40
+    },
+    {
+      "id": "observe-step6",
+      "description": "observe wizard step 6",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2,
+          "targets": [
+            ".btn-ghost.flex-1[type=\"button\"]",
+            ".btn-primary"
+          ]
+        }
+      ],
+      "passes": 41
+    },
+    {
+      "id": "observe-step7",
+      "description": "observe wizard step 7",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2,
+          "targets": [
+            ".btn-ghost",
+            ".btn-primary"
+          ]
+        }
+      ],
+      "passes": 41
+    },
+    {
+      "id": "delete-confirm",
+      "description": "inline delete confirmation",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 33
+    },
+    {
+      "id": "child-edit",
+      "description": "edit form for existing child",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 37
+    },
+    {
+      "id": "import-preview",
+      "description": "replacement-preview dialog",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".text-amber-900.text-\\[13px\\]"
+          ]
+        }
+      ],
+      "passes": 20
+    },
+    {
+      "id": "draft-resume",
+      "description": "draft resume/discard offer on wizard entry",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-primary.flex-1[type=\"button\"]"
+          ]
+        }
+      ],
+      "passes": 38
+    },
+    {
+      "id": "observe-edit",
+      "description": "observation edit mode (preseeded)",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-primary"
+          ]
+        }
+      ],
+      "passes": 40
+    },
+    {
+      "id": "draft-save-error",
+      "description": "autosave failure surfaced (quota/denied)",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2,
+          "targets": [
+            "p[role=\"alert\"]",
+            ".btn-primary"
+          ]
+        }
+      ],
+      "passes": 37
+    },
+    {
+      "id": "pdf-unsupported",
+      "description": "unsupported-character PDF error",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 42
+    },
+    {
+      "id": "storage-denied-boot",
+      "description": "boot with storage denied → recovery screen",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 22
+    },
+    {
+      "id": "ls-denied-boot",
+      "description": "boot with only localStorage denied",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 3,
+          "targets": [
+            "li:nth-child(1) > .text-accent-700",
+            "li:nth-child(2) > .text-accent-700",
+            "li:nth-child(3) > .text-accent-700"
+          ]
+        }
+      ],
+      "passes": 39
+    },
+    {
+      "id": "state:fr",
+      "description": "settings in French",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 38
+    },
+    {
+      "id": "state:fr-observe",
+      "description": "FLACC step in French (scaleNote rendered)",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-ghost"
+          ]
+        }
+      ],
+      "passes": 40
+    },
+    {
+      "id": "state:rtl",
+      "description": "app shell RTL (ar)",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 35
+    },
+    {
+      "id": "empty-dashboard",
+      "description": "dashboard with child but zero observations",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 34
+    },
+    {
+      "id": "empty-history",
+      "description": "history with zero observations",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 33
+    },
+    {
+      "id": "empty-patterns",
+      "description": "patterns with zero observations",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 33
+    },
+    {
+      "id": "pin-locked",
+      "description": "lock screen after PIN set",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 30
+    },
+    {
+      "id": "pin-error",
+      "description": "lock screen wrong-PIN error",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 34
+    }
+  ]
+}

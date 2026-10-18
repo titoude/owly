@@ -1,7 +1,17 @@
 {
   "app": {
     "name": "Owly",
-    "tagline": "When they can't say where it hurts"
+    "tagline": "When they can't say where it hurts",
+    "skipToContent": "Skip to main content",
+    "navLabel": "Main navigation",
+    "demoBadge": "Demo — fictional data",
+    "demoBadgeShort": "Demo",
+    "storageErrorTitle": "Can't reach the local database",
+    "storageErrorBody": "Owly keeps everything on this device, and the browser's storage is unavailable or full. Free some space or check your browser's site-data settings, then try again. Nothing was sent anywhere.",
+    "changeChild": "Change",
+    "crashTitle": "Something went wrong",
+    "crashBody": "This page hit an unexpected error. Your data is stored on this device — reloading usually fixes the display.",
+    "crashReload": "Reload"
   },
   "nav": {
     "home": "Home",
@@ -14,13 +24,13 @@
   },
   "onboarding": {
     "title": "When they can't say it hurts, behavior is the language.",
-    "body": "Owly helps you record what you see — using the FLACC scale, the same tool nurses use for children who can't self-report pain — and turns weeks of observations into a clear, one-page report for the doctor.",
+    "body": "Owly helps you record what you see — using the FLACC scale, the same tool nurses use for children who can't self-report pain — and turns weeks of observations into a clear report for the doctor.",
     "notdiagnosis": "Owly is an observation journal. It does not diagnose. It helps you show a professional what you saw.",
     "cta": "Set up your child's profile",
     "demo": "Explore the demo instead",
     "points": [
-      "60-second check-ins, even at 3 a.m.",
-      "Validated pain scale (FLACC), individualized to your child",
+      "Quick check-ins, even at 3 a.m.",
+      "Structured observation based on the published FLACC scale, adaptable to your child",
       "Everything stays on this device — nothing is sent anywhere"
     ],
     "restore": "Restore a backup",
@@ -36,7 +46,11 @@
     "title": "Your child's profile",
     "saveError": "Could not save — please try again.",
     "delete": "Delete this profile",
-    "deleteConfirm": "Deletes this child and all their observations. This cannot be undone."
+    "deleteConfirm": "Deletes this child and all their observations. This cannot be undone.",
+    "editTitle": "Edit profile",
+    "optionalTitle": "Optional details",
+    "birthYearInvalid": "Enter a birth year between 1900 and {{max}}",
+    "gone": "This child profile was deleted (possibly in another tab). Nothing was saved."
   },
   "customDescriptors": {
     "title": "How does {{name}} show pain?",
@@ -71,6 +85,7 @@
     "minutesAgo": "{{n}} min ago",
     "duration": "How long did it last?",
     "durationUnknown": "Still going / unknown",
+    "durationMin": "{{n}} min",
     "where": "Where does it seem to hurt? (optional)",
     "cause": "Suspected cause (optional)",
     "causeHint": "e.g. ear infection, teething, stomach ache, unknown",
@@ -82,11 +97,29 @@
     "note": "Note (optional)",
     "noteHint": "Anything else a doctor should know — e.g. was rocking, refused food, slept 2h",
     "save": "Save observation",
-    "saved": "Saved",
     "score": "FLACC score",
     "summary": "Summary",
     "saveError": "Could not save — please try again.",
-    "pickTime": "Pick a time"
+    "pickTime": "Pick a time",
+    "scaleNote": "The FLACC scale descriptions are shown in English — the instrument's published wording; authorized translations are not confirmed.",
+    "editTitle": "Edit observation",
+    "draftPrompt": "You left an unfinished observation. Pick up where you left off, or discard it.",
+    "resume": "Resume draft",
+    "discard": "Discard draft",
+    "update": "Save changes",
+    "draftSaveFailed": "Couldn't save the draft — device storage may be full or blocked. Your recorded data is safe; finish and save the observation to keep it.",
+    "stepStatusPrefix": "Step {{n}} of {{total}} —",
+    "stepNames": {
+      "when": "When",
+      "details": "Details",
+      "tried": "Care & notes"
+    },
+    "stepsLabel": "Observation steps",
+    "draftSaved": "Draft saved",
+    "editConflict": "This record was changed or deleted in another window since you started editing. Choose which version to keep:",
+    "editConflictOverwrite": "Keep my changes",
+    "editConflictDiscard": "Discard my copy",
+    "childGone": "This child profile was deleted (possibly in another tab). Copy any notes you need, then discard this draft — nothing was saved."
   },
   "interventions": {
     "comfort": "Comfort (hug, hold, blanket)",
@@ -101,10 +134,12 @@
   },
   "history": {
     "title": "History",
-    "empty": "No observations yet. The first one takes about a minute.",
+    "empty": "No observations yet. The first one only takes a moment.",
     "emptyCta": "Record first observation",
     "baseline": "baseline",
-    "deleteConfirm": "Delete this observation?"
+    "deleteConfirm": "Delete this observation?",
+    "observationsCount_one": "{{count}} observation",
+    "observationsCount_other": "{{count}} observations"
   },
   "patterns": {
     "title": "Patterns",
@@ -116,26 +151,31 @@
     "afternoon": "Afternoon (12–18)",
     "evening": "Evening (18–22)",
     "zones": "Suspected areas",
-    "worked": "What helped",
-    "workedRate": "{{yes}}/{{n}} helped",
-    "episodes": "episodes",
+    "worked": "What you recorded as helping",
+    "workedRate": "{{yes}}/{{n}} reported helped",
+    "note": "Patterns describe what you recorded — they suggest what to discuss with the doctor, they do not prove cause or treatment effect.",
+    "toReport": "Generate the doctor report →",
     "avgScore": "Avg. score",
     "insight": "Insights",
     "insightNight": "Most episodes happen at night — worth mentioning to the doctor.",
-    "insightWorked": "\"{{label}}\" helped in {{yes}} of {{n}} uses.",
-    "scoreChartLabel": "Bar chart: {{n}} most recent episodes, average {{avg}}, max {{max}}",
+    "insightWorked": "\"{{label}}\" was recorded as helping in {{yes}} of {{n}} uses.",
     "insightZone_one": "\"{{zone}}\" is the most suspected area ({{n}} episode).",
-    "insightZone_other": "\"{{zone}}\" is the most suspected area ({{n}} episodes)."
+    "insightZone_other": "\"{{zone}}\" is the most suspected area ({{n}} episodes).",
+    "entryDesc": "See when episodes cluster and what you recorded as helping.",
+    "values": "Show values",
+    "episodeCount_one": "{{count}} episode",
+    "episodeCount_other": "{{count}} episodes",
+    "scoreChartLabel_one": "Bar chart: {{count}} most recent episode, average {{avg}}, max {{max}}",
+    "scoreChartLabel_other": "Bar chart: {{count}} most recent episodes, average {{avg}}, max {{max}}"
   },
   "report": {
     "title": "Doctor report",
-    "body": "A one-page summary built for a busy clinician: who your child is, what you observed, patterns, and what you tried.",
+    "body": "A compact summary built for a busy clinician: who your child is, what you observed, patterns, and what you tried.",
     "period": "Include observations from",
     "all": "All",
     "generate": "Generate PDF report",
-    "subtitle": "Generate a one-page PDF to bring to the appointment.",
+    "subtitle": "Generate a PDF to bring to the appointment.",
     "days": "{{n}}d",
-    "included": "episodes included",
     "questions": "Your questions for the clinician",
     "q0": "e.g. Could this be an ear infection?",
     "q1": "e.g. Is the medication plan still right?",
@@ -151,10 +191,11 @@
     "localNote": "Generated entirely on this device — nothing is uploaded.",
     "empty": "Record at least one pain episode first — the report needs observations.",
     "error": "Could not generate the PDF — please try again.",
+    "loadFailed": "The report couldn't load — a reload usually fixes this. Your journal and the questions below are kept.",
+    "reloadRetry": "Reload and retry",
     "pdf": {
       "title": "PAIN OBSERVATION REPORT",
       "born": "born",
-      "prepared": "Prepared {{date}} · {{count}} episode(s) observed · owly.app",
       "howTheySignal": "How they usually signal discomfort",
       "individualBehaviours": "Individual pain behaviours (rFLACC)",
       "whatShows": "What the observations show",
@@ -167,18 +208,34 @@
       "colScore": "score",
       "colBand": "band",
       "colDuration": "duration",
+      "durationMin": "{{n}}m",
       "colAreas": "areas",
       "colCause": "cause / note",
-      "earlierEpisodes": "… plus {{count}} older episodes not shown",
-      "baselineLine": "Baseline (calm) observations: {{count}} — FLACC {{scores}}",
       "questions": "Questions for the clinician",
       "footer1": "Recorded with Owly — a free, open-source observation journal (FLACC: Merkel 1997; individualised rFLACC: Malviya 2006).",
       "footer2": "Observations are caregiver-reported and are not a diagnosis.",
+      "continued": "continued",
       "episodesLine_one": "{{count}} episode, average FLACC {{avg}}/10 (max {{max}})",
       "episodesLine_other": "{{count}} episodes, average FLACC {{avg}}/10 (max {{max}})",
-      "nightLine": "{{night}}/{{count}} occurred at night (22:00–06:00)"
+      "demoTag": "demo",
+      "periodAll": "all recorded observations",
+      "periodLast": "last {{n}} days",
+      "prepared_one": "Prepared {{date}} · {{count}} episode observed",
+      "prepared_other": "Prepared {{date}} · {{count}} episodes observed",
+      "earlierEpisodes_one": "… plus {{count}} older episode not shown",
+      "earlierEpisodes_other": "… plus {{count}} older episodes not shown",
+      "baselineLine_one": "Baseline (calm) observation: {{count}} — FLACC {{scores}}",
+      "baselineLine_other": "Baseline (calm) observations: {{count}} — FLACC {{scores}}",
+      "nightLine_one": "{{night}}/{{count}} occurred at night (22:00–06:00)",
+      "nightLine_other": "{{night}}/{{count}} occurred at night (22:00–06:00)"
     },
-    "allTime": "All recorded episodes"
+    "allTime": "All recorded episodes",
+    "entryTitle": "Prepare the report",
+    "entryDesc": "Pick the period and what to include, then generate the clinician PDF.",
+    "unsupported": "This report can't display the character(s): {{chars}}. Edit or remove them in the journal, or keep the data and export a JSON backup instead — nothing was sent anywhere.",
+    "loadFailedNoKeep": "The report couldn't load — reload to retry. Your unsaved questions could not be kept; the journal itself is unaffected.",
+    "included_one": "{{count}} episode included",
+    "included_other": "{{count}} episodes included"
   },
   "settings": {
     "title": "Settings",
@@ -204,7 +261,7 @@
     "demoClear": "Remove demo data",
     "children": "Children",
     "pin": "App lock (PIN)",
-    "pinBody": "Require a 4-digit PIN to open Owly. Protects the journal when others use this device.",
+    "pinBody": "Require a 4-digit PIN to open Owly. A screen lock only — the journal is not encrypted; anyone with access to this browser's storage can still read it.",
     "pinSet": "Set PIN",
     "pinSaved": "PIN saved — Owly is now locked",
     "pinRemove": "Remove PIN",
@@ -215,13 +272,19 @@
     "demoBody": "Load “Léo” — a fictional 9-year-old with 3 weeks of observations, to try every feature instantly.",
     "demoLoad": "Load demo data",
     "demoLoaded": "Demo child loaded — explore away",
-    "license": "Owly is free and open source (MIT). FLACC: Merkel et al. 1997 — public clinical instrument. Owly is an observation journal, not a medical device.",
+    "license": "Owly is free and open source (MIT). Observation wording follows the published FLACC scale (Merkel et al., 1997) and rFLACC (Malviya et al., 2006). Owly is an observation journal and has not undergone medical-device regulatory assessment.",
     "unlockWait": "Too many attempts — wait 30 seconds",
     "forgotPin": "Forgot the code?",
-    "forgotPinWarning": "Without the PIN, the journal cannot be recovered. You can erase everything and start over — this deletes all profiles and observations on this device.",
+    "forgotPinWarning": "The PIN cannot be recovered — Owly has no reset mechanism. You can erase everything and start over — this deletes all profiles and observations on this device.",
     "wipeAll": "Erase everything",
     "importWarn": "Replaces all current data on this device.",
-    "wrongPin": "Wrong code"
+    "importPreviewTitle": "Replace current data?",
+    "importPreview": "This backup from {{date}} holds {{children}} profile(s) and {{observations}} observation(s). Importing it permanently replaces the {{curChildren}} profile(s) and {{curObs}} observation(s) now on this device.",
+    "importConfirm": "Replace with this backup",
+    "wrongPin": "Wrong code",
+    "privacyBody": "Everything you record stays on this device (IndexedDB) — no account, no cloud, no analytics. The PIN is only a screen lock: it does not encrypt data, and anyone with access to this device could open the journal with device tools. Backups are unencrypted JSON files: store them like the journal itself. Deleting the app or site data erases everything unless you exported a backup.",
+    "lockCorrupt": "The saved PIN data is corrupted and can no longer be verified.",
+    "lockCorruptReset": "Reset PIN and unlock"
   },
   "common": {
     "back": "Back",
@@ -233,7 +296,11 @@
     "confirm": "Confirm",
     "loading": "Loading…",
     "of": "of",
-    "edit": "Edit"
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "edit": "Edit",
+    "retry": "Try again",
+    "viewAll": "View all"
   },
   "flacc": {
     "face": "Face",
@@ -294,5 +361,10 @@
       "Reassured by occasional touching, hugging or being talked to; distractible",
       "Difficult to console or comfort"
     ]
+  },
+  "dashboard": {
+    "recent": "Recent observations",
+    "tools": "Tools",
+    "journal": "Journal"
   }
 }

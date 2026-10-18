@@ -1,14 +1,23 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { db, getSetting, setSetting } from "../db";
 import { seedDemo, clearDemo } from "../demo";
+import { clearAllDrafts, draftEditKey, draftKey, loadDraft, saveDraft } from "../drafts";
 import { exportAll, importAll, deleteAll } from "../export";
 import { hashPin } from "../pin";
 import type { Observation } from "../types";
+
+const DRAFT = {
+  step: 3, baseline: false, minutesAgo: 0, customAt: null, startedAt: null,
+  scores: { face: 1, legs: 1, activity: 1, cry: 1, consolability: 1 },
+  duration: 10, zones: [], cause: "draft cause",
+  interventions: [], note: "draft note", savedAt: 0,
+};
 
 beforeEach(async () => {
   await db.children.clear();
   await db.observations.clear();
   await db.settings.clear();
+  await clearAllDrafts();
 });
 
 describe("demo seed", () => {
@@ -59,6 +68,102 @@ describe("export/import", () => {
     await expect(importAll("{}")).rejects.toThrow();
     await expect(importAll('{"version":9,"children":[],"observations":[]}')).rejects.toThrow();
   });
+
+  // exportedAt differs between exports — compare the stored rows, not the dump string.
+  const dbRows = async () => ({
+    children: await db.children.toArray(),
+    observations: await db.observations.toArray(),
+    settings: await db.settings.toArray(),
+  });
+
+  it("rejects a backup with a non-string custom descriptor and preserves existing data", async () => {
+    await seedDemo();
+    const before = await dbRows();
+    const dump = JSON.parse(await exportAll());
+    dump.children[0].customDescriptors.face = { en: "grimaces" };
+    await expect(importAll(JSON.stringify(dump))).rejects.toThrow();
+    expect(await dbRows()).toEqual(before);
+  });
+
+  it("rejects non-string free-text fields instead of silently dropping them", async () => {
+    await seedDemo();
+    const before = await dbRows();
+    const base = await exportAll();
+    for (const field of ["communicates", "conditions", "name"]) {
+      const dump = JSON.parse(base);
+      dump.children[0][field] = { text: "nested" };
+      await expect(importAll(JSON.stringify(dump))).rejects.toThrow();
+    }
+    const dump = JSON.parse(base);
+    dump.observations[0].note = 42;
+    await expect(importAll(JSON.stringify(dump))).rejects.toThrow();
+    expect(await dbRows()).toEqual(before);
+  });
+
+  // The validator must hold the same invariants the forms enforce — a crafted
+  // backup can't smuggle values the UI would never write.
+  it("rejects fields outside the UI invariants and preserves all rows", async () => {
+    await seedDemo();
+    const before = await dbRows();
+    const base = await exportAll();
+    const mutates: ((d: Record<string, never>) => void)[] = [
+      (d) => { (d.children as { birthYear: number }[])[0].birthYear = -5; },
+      (d) => { (d.children as { birthYear: number }[])[0].birthYear = 2.5; },
+      (d) => { (d.children as { birthYear: number }[])[0].birthYear = 1800; },
+      (d) => { (d.children as { birthYear: number }[])[0].birthYear = new Date().getFullYear() + 1; },
+      (d) => { (d.observations as { durationMinutes: number }[])[0].durationMinutes = -5; },
+      (d) => { (d.observations as { durationMinutes: number }[])[0].durationMinutes = 2.5; },
+      (d) => { (d.observations as { durationMinutes: number }[])[0].durationMinutes = 2000; },
+      (d) => { (d.observations as { startedAt: number }[])[0].startedAt = Date.now() + 86400000; },
+      (d) => { (d.observations as { recordedAt: number }[])[0].recordedAt = Date.now() + 86400000; },
+      (d) => { (d.observations as { childId: number }[])[0].childId = 1.5; },
+    ];
+    for (const mutate of mutates) {
+      const dump = JSON.parse(base);
+      mutate(dump);
+      await expect(importAll(JSON.stringify(dump))).rejects.toThrow();
+    }
+    expect(await dbRows()).toEqual(before);
+  });
+
+  it("points the active child at an imported profile after restore", async () => {
+    await seedDemo();
+    const dump = await exportAll();
+    const importedId = JSON.parse(dump).children[0].id;
+    await deleteAll();
+    await setSetting("activeChildId", 9999); // stale id, no longer exists
+    await importAll(dump);
+    expect(await getSetting("activeChildId")).toBe(importedId);
+  });
+
+  it("rejects timestamps a Date cannot represent and preserves all rows", async () => {
+    await seedDemo();
+    const before = await dbRows();
+    const base = await exportAll();
+    for (const mutate of [
+      (d: Record<string, never>) => { (d.observations as { startedAt: number }[])[0].startedAt = 9e18; },
+      (d: Record<string, never>) => { (d.observations as { recordedAt: number }[])[0].recordedAt = 9e18; },
+      (d: Record<string, never>) => { (d.children as { createdAt: number }[])[0].createdAt = -9e18; },
+    ]) {
+      const dump = JSON.parse(base);
+      mutate(dump);
+      await expect(importAll(JSON.stringify(dump))).rejects.toThrow();
+    }
+    expect(await dbRows()).toEqual(before);
+  });
+
+  it("rolls back the whole import if the active-child write fails", async () => {
+    await seedDemo();
+    const dump = await exportAll();
+    await deleteAll();
+    const put = vi.spyOn(db.settings, "put").mockRejectedValueOnce(new Error("disk full"));
+    await expect(importAll(dump)).rejects.toThrow();
+    put.mockRestore();
+    // Nothing half-restored: children, observations and settings all empty.
+    expect(await db.children.count()).toBe(0);
+    expect(await db.observations.count()).toBe(0);
+    expect(await getSetting("activeChildId")).toBeUndefined();
+  });
 });
 
 describe("settings + pin", () => {
@@ -99,4 +204,96 @@ describe("observation integrity", () => {
     const byChild = await db.observations.where("childId").equals(childId as number).toArray();
     expect(byChild).toHaveLength(1);
   });
+
+  it("never leaks one child's observations into another profile", async () => {
+    const a = (await db.children.add({ name: "A", createdAt: 0 } as never)) as number;
+    const b = (await db.children.add({ name: "B", createdAt: 0 } as never)) as number;
+    const mk = (childId: number): Observation => ({
+      childId, startedAt: 1, recordedAt: 2,
+      scores: { face: 0, legs: 0, activity: 0, cry: 0, consolability: 0 },
+      total: 0, durationMinutes: null, bodyZones: [], suspectedCause: "",
+      interventions: [], note: "", baseline: false,
+    });
+    await db.observations.bulkAdd([mk(a), mk(a), mk(b)]);
+    expect(await db.observations.where("childId").equals(a).count()).toBe(2);
+    expect(await db.observations.where("childId").equals(b).count()).toBe(1);
+  });
 });
+
+describe("drafts", () => {
+  it("a confirmed replace import wipes all drafts, even on colliding child ids", async () => {
+    await seedDemo();
+    const dump = await exportAll();
+    const demoId = JSON.parse(dump).children[0].id as number;
+    // Drafts keyed to the ids the restore will REUSE.
+    await saveDraft(draftKey(demoId), DRAFT);
+    await saveDraft(draftEditKey(1), DRAFT);
+    await importAll(dump);
+    expect(await loadDraft(draftKey(demoId))).toBeNull();
+    expect(await loadDraft(draftEditKey(1))).toBeNull();
+  });
+
+  it("draft wipe is inside the import transaction — a settings failure rolls back everything", async () => {
+    await seedDemo();
+    const dump = await exportAll();
+    const demoId = JSON.parse(dump).children[0].id as number;
+    await saveDraft(draftKey(demoId), DRAFT);
+    // Make the draft deletion fail mid-transaction: nothing may commit.
+    const spy = vi.spyOn(db.settings, "where").mockImplementationOnce(() => {
+      throw new DOMException("The operation is insecure", "SecurityError");
+    });
+    await expect(importAll(dump)).rejects.toThrow();
+    spy.mockRestore();
+    // Original data AND the draft both survive.
+    expect(await db.children.count()).toBe(1);
+    expect((await loadDraft(draftKey(demoId)))?.note).toBe("draft note");
+  });
+
+  it("a rejected import preserves drafts", async () => {
+    await seedDemo();
+    const k = draftKey(1);
+    await saveDraft(k, DRAFT);
+    await expect(importAll("{}")).rejects.toThrow();
+    const d = await loadDraft(k);
+    expect(d?.note).toBe("draft note");
+  });
+
+  it("deleteAll wipes drafts along with the database", async () => {
+    await seedDemo();
+    await saveDraft(draftKey(1), DRAFT);
+    await deleteAll();
+    expect(await loadDraft(draftKey(1))).toBeNull();
+  });
+
+  it("clearDemo removes drafts of the demo child (and its edit drafts)", async () => {
+    await seedDemo();
+    const demoId = (await db.children.toArray())[0].id!;
+    const obsId = (await db.observations.toArray())[0].id!;
+    const other = (await db.children.add({ name: "Real", createdAt: 0 } as never)) as number;
+    await saveDraft(draftKey(demoId), DRAFT);
+    await saveDraft(draftEditKey(obsId), DRAFT);
+    await saveDraft(draftKey(other), { ...DRAFT, note: "keep me" });
+    await clearDemo();
+    expect(await loadDraft(draftKey(demoId))).toBeNull();
+    expect(await loadDraft(draftEditKey(obsId))).toBeNull();
+    expect((await loadDraft(draftKey(other)))?.note).toBe("keep me");
+  });
+
+  it("saveDraft propagates storage failures instead of swallowing them", async () => {
+    const spy = vi.spyOn(db.settings, "put").mockRejectedValueOnce(
+      new DOMException("Quota exceeded", "QuotaExceededError"),
+    );
+    await expect(saveDraft(draftKey(1), DRAFT)).rejects.toThrow();
+    spy.mockRestore();
+    expect(await loadDraft(draftKey(1))).toBeNull();
+  });
+
+  it("loadDraft returns null when storage is denied, not a throw", async () => {
+    const spy = vi.spyOn(db.settings, "get").mockRejectedValueOnce(
+      new DOMException("denied", "SecurityError"),
+    );
+    expect(await loadDraft(draftKey(1))).toBeNull();
+    spy.mockRestore();
+  });
+});
+

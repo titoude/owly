@@ -1,7 +1,17 @@
 {
   "app": {
     "name": "Owly",
-    "tagline": "Quand ils ne peuvent pas dire où ça fait mal"
+    "tagline": "Quand ils ne peuvent pas dire où ça fait mal",
+    "skipToContent": "Aller au contenu principal",
+    "navLabel": "Navigation principale",
+    "demoBadge": "Démo — données fictives",
+    "demoBadgeShort": "Démo",
+    "storageErrorTitle": "Impossible d'accéder à la base locale",
+    "storageErrorBody": "Owly conserve tout sur cet appareil, et le stockage du navigateur est indisponible ou plein. Libérez de l'espace ou vérifiez les réglages de données de site, puis réessayez. Rien n'a été envoyé nulle part.",
+    "changeChild": "Changer",
+    "crashTitle": "Une erreur est survenue",
+    "crashBody": "Cette page a rencontré une erreur inattendue. Vos données sont stockées sur cet appareil — un rechargement suffit généralement à rétablir l'affichage.",
+    "crashReload": "Recharger"
   },
   "nav": {
     "home": "Accueil",
@@ -14,13 +24,13 @@
   },
   "onboarding": {
     "title": "Quand ils ne peuvent pas dire où ça fait mal, le comportement est la langue.",
-    "body": "Owly vous aide à noter ce que vous voyez — avec l'échelle FLACC, le même outil que les infirmières utilisent pour les enfants qui ne peuvent pas décrire leur douleur — et transforme des semaines d'observations en un rapport d'une page pour le médecin.",
+    "body": "Owly vous aide à noter ce que vous voyez — avec l'échelle FLACC, le même outil que les infirmières utilisent pour les enfants qui ne peuvent pas décrire leur douleur — et transforme des semaines d'observations en un rapport clair pour le médecin.",
     "notdiagnosis": "Owly est un journal d'observation. Il ne diagnostique pas. Il vous aide à montrer à un professionnel ce que vous avez vu.",
     "cta": "Créer le profil de votre enfant",
     "demo": "Explorer la démo",
     "points": [
-      "Relevés de 60 secondes, même à 3 h du matin",
-      "Échelle validée (FLACC), individualisée à votre enfant",
+      "Des relevés rapides, même à 3 h du matin",
+      "Observation structurée basée sur l'échelle FLACC publiée, adaptable à votre enfant",
       "Tout reste sur cet appareil — rien n'est envoyé"
     ],
     "restore": "Restaurer une sauvegarde",
@@ -36,7 +46,11 @@
     "title": "Profil de votre enfant",
     "saveError": "Enregistrement impossible — réessayez.",
     "delete": "Supprimer ce profil",
-    "deleteConfirm": "Supprime cet enfant et toutes ses observations. Irréversible."
+    "deleteConfirm": "Supprime cet enfant et toutes ses observations. Irréversible.",
+    "editTitle": "Modifier le profil",
+    "optionalTitle": "Détails facultatifs",
+    "birthYearInvalid": "Indiquez une année de naissance entre 1900 et {{max}}",
+    "gone": "Ce profil enfant a été supprimé (peut-être dans un autre onglet). Rien n’a été enregistré."
   },
   "customDescriptors": {
     "title": "Comment {{name}} montre sa douleur ?",
@@ -71,6 +85,7 @@
     "minutesAgo": "il y a {{n}} min",
     "duration": "Combien de temps ça a duré ?",
     "durationUnknown": "En cours / inconnu",
+    "durationMin": "{{n}} min",
     "where": "Où semble-t-il avoir mal ? (optionnel)",
     "cause": "Cause soupçonnée (optionnel)",
     "causeHint": "ex. otite, poussée dentaire, mal de ventre, inconnu",
@@ -82,11 +97,29 @@
     "note": "Note (optionnel)",
     "noteHint": "Tout ce que le médecin devrait savoir — ex. se balançait, a refusé de manger, a dormi 2 h",
     "save": "Enregistrer l'observation",
-    "saved": "Enregistré",
     "score": "Score FLACC",
     "summary": "Résumé",
     "saveError": "Enregistrement impossible — réessayez.",
-    "pickTime": "Choisir l'heure"
+    "pickTime": "Choisir l'heure",
+    "scaleNote": "Les descriptions de l'échelle FLACC sont une traduction interne non validée — aucune version agréée n'est confirmée.",
+    "editTitle": "Modifier l'observation",
+    "draftPrompt": "Vous avez une observation non terminée. Reprenez là où vous étiez, ou supprimez-la.",
+    "resume": "Reprendre",
+    "discard": "Supprimer le brouillon",
+    "update": "Enregistrer",
+    "draftSaveFailed": "Impossible d'enregistrer le brouillon — le stockage de l'appareil est peut-être plein ou bloqué. Vos données enregistrées sont en sécurité ; terminez et enregistrez l'observation pour la conserver.",
+    "stepStatusPrefix": "Étape {{n}} sur {{total}} —",
+    "stepNames": {
+      "when": "Quand",
+      "details": "Détails",
+      "tried": "Soins et note"
+    },
+    "stepsLabel": "Étapes de l'observation",
+    "draftSaved": "Brouillon enregistré",
+    "editConflict": "Cet enregistrement a été modifié ou supprimé dans une autre fenêtre depuis le début de votre édition. Choisissez la version à conserver :",
+    "editConflictOverwrite": "Conserver mes modifications",
+    "editConflictDiscard": "Abandonner ma copie",
+    "childGone": "Ce profil enfant a été supprimé (peut-être dans un autre onglet). Copiez vos notes puis abandonnez ce brouillon — rien n'a été enregistré."
   },
   "interventions": {
     "comfort": "Réconfort (câlin, doudou, couverture)",
@@ -101,10 +134,12 @@
   },
   "history": {
     "title": "Historique",
-    "empty": "Pas encore d'observation. La première prend environ une minute.",
+    "empty": "Pas encore d'observation. La première ne prend qu'un moment.",
     "emptyCta": "Enregistrer la première observation",
-    "baseline": "baseline",
-    "deleteConfirm": "Supprimer cette observation ?"
+    "baseline": "référence",
+    "deleteConfirm": "Supprimer cette observation ?",
+    "observationsCount_one": "{{count}} observation",
+    "observationsCount_other": "{{count}} observations"
   },
   "patterns": {
     "title": "Tendances",
@@ -116,26 +151,31 @@
     "afternoon": "Après-midi (12–18)",
     "evening": "Soir (18–22)",
     "zones": "Zones soupçonnées",
-    "worked": "Ce qui a aidé",
-    "workedRate": "{{yes}}/{{n}} aidé",
-    "episodes": "épisodes",
+    "worked": "Ce qui a été noté comme aidant",
+    "workedRate": "{{yes}}/{{n}} noté aidant",
     "avgScore": "Score moyen",
     "insight": "Points d'attention",
     "insightNight": "La plupart des épisodes arrivent la nuit — à mentionner au médecin.",
-    "insightWorked": "« {{label}} » a aidé {{yes}} fois sur {{n}}.",
-    "scoreChartLabel": "Graphique : {{n}} épisodes récents, moyenne {{avg}}, max {{max}}",
+    "insightWorked": "« {{label}} » a été noté comme aidant {{yes}} fois sur {{n}} — constat déclaré, pas une preuve d'efficacité.",
     "insightZone_one": "« {{zone}} » est la zone la plus soupçonnée ({{n}} épisode).",
-    "insightZone_other": "« {{zone}} » est la zone la plus soupçonnée ({{n}} épisodes)."
+    "insightZone_other": "« {{zone}} » est la zone la plus soupçonnée ({{n}} épisodes).",
+    "note": "Les motifs décrivent ce que vous avez noté — ils suggèrent quoi discuter avec le médecin, ils ne prouvent ni cause ni efficacité.",
+    "toReport": "Générer le rapport médecin →",
+    "entryDesc": "Quand les épisodes se concentrent et ce qui a aidé.",
+    "values": "Afficher les valeurs",
+    "episodeCount_one": "{{count}} épisode",
+    "episodeCount_other": "{{count}} épisodes",
+    "scoreChartLabel_one": "Graphique : {{count}} épisode récent, moyenne {{avg}}, max {{max}}",
+    "scoreChartLabel_other": "Graphique : {{count}} épisodes récents, moyenne {{avg}}, max {{max}}"
   },
   "report": {
     "title": "Rapport médecin",
-    "body": "Un résumé d'une page pensé pour un clinicien pressé : qui est votre enfant, ce que vous avez observé, les tendances, ce que vous avez essayé.",
+    "body": "Un résumé compact pensé pour un clinicien pressé : qui est votre enfant, ce que vous avez observé, les tendances, ce que vous avez essayé.",
     "period": "Inclure les observations des",
     "all": "Tout",
     "generate": "Générer le rapport PDF",
-    "subtitle": "Génère un PDF d'une page à apporter au rendez-vous.",
+    "subtitle": "Génère un PDF à apporter au rendez-vous.",
     "days": "{{n}} j",
-    "included": "épisodes inclus",
     "questions": "Vos questions pour le clinicien",
     "q0": "ex. Et si c'était une otite ?",
     "q1": "ex. Le traitement actuel est-il adapté ?",
@@ -151,10 +191,11 @@
     "localNote": "Généré entièrement sur cet appareil — rien n'est envoyé.",
     "empty": "Enregistrez d'abord au moins un épisode de douleur — le rapport a besoin d'observations.",
     "error": "Impossible de générer le PDF — réessayez.",
+    "loadFailed": "Le rapport n'a pas pu se charger — un rechargement règle généralement le problème. Votre journal et les questions ci-dessous sont conservés.",
+    "reloadRetry": "Recharger et réessayer",
     "pdf": {
       "title": "RAPPORT D'OBSERVATION DE LA DOULEUR",
       "born": "né(e) en",
-      "prepared": "Préparé le {{date}} · {{count}} épisode(s) observé(s) · owly.app",
       "howTheySignal": "Comment l'enfant signale son inconfort",
       "individualBehaviours": "Comportements douloureux individuels (rFLACC)",
       "whatShows": "Ce que montrent les observations",
@@ -167,18 +208,34 @@
       "colScore": "score",
       "colBand": "niveau",
       "colDuration": "durée",
+      "durationMin": "{{n}}m",
       "colAreas": "zones",
       "colCause": "cause / note",
-      "earlierEpisodes": "… plus {{count}} épisodes plus anciens non affichés",
-      "baselineLine": "Observations de base (calme) : {{count}} — FLACC {{scores}}",
       "questions": "Questions pour le clinicien",
       "footer1": "Enregistré avec Owly — journal d'observation libre et gratuit (FLACC : Merkel 1997 ; rFLACC individualisé : Malviya 2006).",
       "footer2": "Les observations sont rapportées par l'aidant et ne constituent pas un diagnostic.",
+      "continued": "suite",
       "episodesLine_one": "{{count}} épisode, FLACC moyen {{avg}}/10 (max {{max}})",
       "episodesLine_other": "{{count}} épisodes, FLACC moyen {{avg}}/10 (max {{max}})",
-      "nightLine": "{{night}}/{{count}} survenus la nuit (22h00–06h00)"
+      "demoTag": "démo",
+      "periodAll": "toutes les observations enregistrées",
+      "periodLast": "les {{n}} derniers jours",
+      "prepared_one": "Préparé le {{date}} · {{count}} épisode observé",
+      "prepared_other": "Préparé le {{date}} · {{count}} épisodes observés",
+      "earlierEpisodes_one": "… plus {{count}} épisode plus ancien non affiché",
+      "earlierEpisodes_other": "… plus {{count}} épisodes plus anciens non affichés",
+      "baselineLine_one": "Observation de base (calme) : {{count}} — FLACC {{scores}}",
+      "baselineLine_other": "Observations de base (calme) : {{count}} — FLACC {{scores}}",
+      "nightLine_one": "{{night}}/{{count}} survenue la nuit (22h00–06h00)",
+      "nightLine_other": "{{night}}/{{count}} survenues la nuit (22h00–06h00)"
     },
-    "allTime": "Tous les épisodes enregistrés"
+    "allTime": "Tous les épisodes enregistrés",
+    "entryTitle": "Préparer le rapport",
+    "entryDesc": "Choisissez la période et le contenu, puis générez le PDF pour le clinicien.",
+    "unsupported": "Ce rapport ne peut pas afficher le ou les caractères : {{chars}}. Corrigez-les dans le journal, ou conservez les données et exportez une sauvegarde JSON — rien n'a été envoyé.",
+    "loadFailedNoKeep": "Le rapport n'a pas pu se charger — rechargez pour réessayer. Vos questions non enregistrées n'ont pas pu être conservées ; le journal n'est pas affecté.",
+    "included_one": "{{count}} épisode inclus",
+    "included_other": "{{count}} épisodes inclus"
   },
   "settings": {
     "title": "Réglages",
@@ -204,7 +261,7 @@
     "demoClear": "Retirer les données de démo",
     "children": "Enfants",
     "pin": "Verrouillage (PIN)",
-    "pinBody": "Exiger un code à 4 chiffres pour ouvrir Owly. Protège le journal si d'autres utilisent cet appareil.",
+    "pinBody": "Exiger un code à 4 chiffres pour ouvrir Owly. Verrouillage d'écran uniquement — le journal n'est pas chiffré ; quiconque accède au stockage de ce navigateur peut encore le lire.",
     "pinSet": "Définir le PIN",
     "pinSaved": "PIN enregistré — Owly est maintenant verrouillé",
     "pinRemove": "Retirer le PIN",
@@ -215,13 +272,19 @@
     "demoBody": "Charger « Léo » — un enfant fictif de 9 ans avec 3 semaines d'observations, pour tout essayer immédiatement.",
     "demoLoad": "Charger les données de démo",
     "demoLoaded": "Enfant de démo chargé — explorez librement",
-    "license": "Owly est gratuit et open source (MIT). FLACC : Merkel et al. 1997 — instrument clinique public. Owly est un journal d'observation, pas un dispositif médical.",
+    "license": "Owly est gratuit et open source (MIT). Les formulations d'observation suivent l'échelle FLACC publiée (Merkel et al., 1997) et la rFLACC (Malviya et al., 2006). Owly est un journal d'observation et n'a pas fait l'objet d'une évaluation réglementaire comme dispositif médical.",
     "unlockWait": "Trop de tentatives — patientez 30 secondes",
     "forgotPin": "Code oublié ?",
-    "forgotPinWarning": "Sans le PIN, le journal est irrécupérable. Vous pouvez tout effacer et recommencer — cela supprime tous les profils et observations de cet appareil.",
+    "forgotPinWarning": "Le code ne peut pas être récupéré — Owly n'a aucun mécanisme de réinitialisation. Vous pouvez tout effacer et recommencer — cela supprime tous les profils et observations de cet appareil.",
     "wipeAll": "Tout effacer",
     "importWarn": "Remplace toutes les données actuelles de cet appareil.",
-    "wrongPin": "Code incorrect"
+    "importPreviewTitle": "Remplacer les données actuelles ?",
+    "importPreview": "Cette sauvegarde du {{date}} contient {{children}} profil(s) et {{observations}} observation(s). L'import remplace définitivement les {{curChildren}} profil(s) et {{curObs}} observation(s) présents sur cet appareil.",
+    "importConfirm": "Remplacer par cette sauvegarde",
+    "wrongPin": "Code incorrect",
+    "privacyBody": "Tout ce que vous notez reste sur cet appareil (IndexedDB) — aucun compte, aucun cloud, aucune analyse. Le code PIN n'est qu'un verrou d'écran : il ne chiffre pas les données, et toute personne ayant accès à l'appareil pourrait ouvrir le journal avec des outils techniques. Les sauvegardes sont des fichiers JSON non chiffrés : conservez-les comme le journal lui-même. Supprimer l'application ou les données du site efface tout si vous n'avez pas exporté de sauvegarde.",
+    "lockCorrupt": "Le code PIN enregistré est corrompu et ne peut plus être vérifié.",
+    "lockCorruptReset": "Réinitialiser le PIN et déverrouiller"
   },
   "common": {
     "back": "Retour",
@@ -233,7 +296,11 @@
     "confirm": "Confirmer",
     "loading": "Chargement…",
     "of": "sur",
-    "edit": "Modifier"
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "edit": "Modifier",
+    "retry": "Réessayer",
+    "viewAll": "Tout voir"
   },
   "flacc": {
     "face": "Visage",
@@ -294,5 +361,10 @@
       "Rassuré par un contact, un câlin ou la parole occasionnelle ; distrayable",
       "Difficile à consoler ou à réconforter"
     ]
+  },
+  "dashboard": {
+    "recent": "Observations récentes",
+    "tools": "Outils",
+    "journal": "Journal"
   }
 }

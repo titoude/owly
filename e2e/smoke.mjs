@@ -33,12 +33,11 @@ try {
 
   // 3. Observation wizard: step 0 → next, steps 1-5 pick score 2, 6 → next, 7 → save
   await page.goto(BASE + "/#/observe");
-  await page.waitForSelector("text=/[0-9]\/[0-9]/", { timeout: 5000 });
+  await page.waitForSelector('[role="status"]', { timeout: 5000 });
   await nextBtn().click();
   for (let s = 0; s < 5; s++) {
-    await page.waitForSelector("[role='radio']", { timeout: 5000 });
-    const radios = page.locator("[role='radio']");
-    await radios.nth(2).click(); // score 2
+    await page.waitForSelector("input[type='radio']", { timeout: 5000 });
+    await page.locator("label:has(input[type='radio'])").nth(2).click(); // score 2
     await page.waitForFunction(() => {
       const b = [...document.querySelectorAll("button")].find((x) => /^(next|suivant)$/i.test(x.textContent.trim()));
       return b && !b.disabled;
@@ -66,13 +65,13 @@ try {
   // 6. Settings + language switch
   await page.goto(BASE + "/#/settings");
   await page.waitForTimeout(500);
-  ok("settings renders", /settings|paramètres|data/i.test(await page.locator("body").innerText()));
-  const fr = page.locator("button", { hasText: /français/i }).first();
-  if (await fr.count()) {
-    await fr.click();
+  ok("settings renders", /settings|réglages|paramètres|data/i.test(await page.locator("body").innerText()));
+  const langSel = page.locator("main select").first();
+  if (await langSel.count()) {
+    await langSel.selectOption("fr");
     await page.waitForTimeout(500);
     ok("french switch", /paramètres|enfant|douleur|supprimer/i.test(await page.locator("body").innerText()));
-  } else ok("french switch", false, "no FR button");
+  } else ok("french switch", false, "no language select");
 
   // 7. Red flags
   await page.goto(BASE + "/#/redflags");

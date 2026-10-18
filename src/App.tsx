@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AppProvider, useApp } from "./appContext";
 import Onboarding from "./pages/Onboarding";
@@ -11,86 +11,97 @@ import SettingsPage from "./pages/Settings";
 import RedFlags from "./pages/RedFlags";
 import ChildForm from "./pages/ChildForm";
 import LockScreen from "./pages/LockScreen";
-import { getSetting } from "./db";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { db, getSetting } from "./db";
 import { useEffect, useState } from "react";
-
-const stroke = {
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 1.7,
-  strokeLinecap: "round" as const,
-  strokeLinejoin: "round" as const,
-};
-
-const IconHome = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
-    <path d="M3.5 10.5 12 3.5l8.5 7" />
-    <path d="M5.5 9.5V20a.5.5 0 0 0 .5.5h12a.5.5 0 0 0 .5-.5V9.5" />
-    <path d="M9.5 20.5v-5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5" />
-  </svg>
-);
-const IconObserve = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
-    <circle cx="12" cy="12" r="8.5" />
-    <path d="M12 8v8M8 12h8" />
-  </svg>
-);
-const IconHistory = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
-    <path d="M8 6.5h12M8 12h12M8 17.5h12" />
-    <path d="M4 6.5h.01M4 12h.01M4 17.5h.01" strokeWidth={2.6} />
-  </svg>
-);
-const IconPatterns = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
-    <path d="M4 19.5V10M9.5 19.5V4.5M15 19.5v-8M20.5 19.5V8" />
-  </svg>
-);
-const IconReport = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
-    <path d="M6.5 3.5h7L19 8.5v11a1 1 0 0 1-1 1H6.5a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1Z" />
-    <path d="M13.5 3.5V9H19M9 13h6.5M9 16.5h4" />
-  </svg>
-);
-const IconSettings = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" {...stroke}>
-    <circle cx="12" cy="12" r="3.2" />
-    <path d="M12 3.8v2.2M12 18v2.2M3.8 12H6M18 12h2.2M6.2 6.2l1.5 1.5M16.3 16.3l1.5 1.5M17.8 6.2l-1.5 1.5M7.7 16.3l-1.5 1.5" />
-  </svg>
-);
+import {
+  IconHome, IconObserve, IconHistory, IconPatterns, IconReport, IconSettings, IconAlert,
+} from "./components/icons";
 
 const NAV = [
   { to: "/", Icon: IconHome, label: "nav.home" },
   { to: "/observe", Icon: IconObserve, label: "nav.observe" },
   { to: "/history", Icon: IconHistory, label: "nav.history" },
   { to: "/patterns", Icon: IconPatterns, label: "nav.patterns" },
-  { to: "/report", Icon: IconReport, label: "nav.report" },
   { to: "/settings", Icon: IconSettings, label: "nav.settings" },
 ];
 
+// The wizard must remount on every identity change — same-component
+// reconciliation otherwise carries fields/draft state between an edit and
+// a fresh observation, or between two children.
+function ObserveKeyed() {
+  const { active } = useApp();
+  const { id } = useParams();
+  return <Observe key={`${active?.id ?? "none"}:${id ?? "new"}`} />;
+}
+
+// Report is a destination, not a daily tab — present in the desktop top nav
+// and reachable from Dashboard/Patterns entry points on mobile.
+const REPORT_NAV = { to: "/report", Icon: IconReport, label: "nav.report" };
+const TOP_NAV = [...NAV.slice(0, 4), REPORT_NAV, NAV[4]];
+
 function Shell() {
   const { t } = useTranslation();
-  const { children, active, loading } = useApp();
+  const { children, active, loading, error, refresh } = useApp();
   const nav = useNavigate();
   const loc = useLocation();
   const [locked, setLocked] = useState(false);
   const [lockChecked, setLockChecked] = useState(false);
 
   useEffect(() => {
-    void getSetting<string>("passcode").then((p) => {
+    getSetting<string>("passcode").then((p) => {
       setLocked(!!p);
+      setLockChecked(true);
+    }).catch(() => {
+      // DB unreachable — the provider's error state takes over the screen.
       setLockChecked(true);
     });
     const arm = () => setLocked(true);
     window.addEventListener("owly:lock", arm);
-    return () => window.removeEventListener("owly:lock", arm);
+    // The CustomEvent only reaches this window — other open tabs get the
+    // localStorage `storage` event instead so the lock arms everywhere.
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "owly-lock-signal" && e.newValue) setLocked(true);
+    };
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("owly:lock", arm);
+      window.removeEventListener("storage", onStorage);
+    };
   }, []);
+
+  // HashRouter preserves scroll across route changes — every new page
+  // should open at its top.
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [loc.pathname]);
 
   if (loading || !lockChecked) {
     return (
       <div className="min-h-dvh grid place-items-center text-neutral-600">
         {t("common.loading")}
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="min-h-dvh grid place-items-center px-6">
+        <div className="max-w-sm text-center space-y-4" role="alert">
+          <h1 className="text-xl font-bold">{t("app.storageErrorTitle")}</h1>
+          <p className="text-sm text-neutral-600">{t("app.storageErrorBody")}</p>
+          <button type="button" className="btn-primary px-6" onClick={() => {
+            // Dexie caches a rejected open, and plain close() sets
+            // disableAutoOpen — the next access would reject DatabaseClosed
+            // instead of retrying indexedDB.open. Reopen must stay enabled
+            // for "Try again" to heal a restored permission.
+            try { db.close({ disableAutoOpen: false }); } catch { /* already closed */ }
+            void refresh();
+          }}>
+            {t("common.retry")}
+          </button>
+        </div>
+      </main>
     );
   }
 
@@ -119,23 +130,110 @@ function Shell() {
   }
 
   return (
-    <div className="min-h-dvh flex flex-col">
-      <main className="flex-1 mx-auto w-full max-w-lg px-4 pb-28 pt-6">
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/welcome" element={<Onboarding />} />
-          <Route path="/observe" element={<Observe />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/patterns" element={<Patterns />} />
-          <Route path="/report" element={<Report />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/redflags" element={<RedFlags />} />
-          <Route path="/child/new" element={<ChildForm />} />
-          <Route path="/child/:id/edit" element={<ChildForm />} />
-        </Routes>
-      </main>
-      <nav className="fixed bottom-0 inset-x-0 z-40 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-2 px-4">
-        <div className="mx-auto max-w-lg grid grid-cols-6 rounded-[1.75rem] border border-neutral-200 bg-white/85 backdrop-blur-xl shadow-[0_12px_32px_-8px_rgba(0,0,0,0.65)]">
+    <div className="min-h-dvh">
+      <a
+        href="#main"
+        onClick={(e) => {
+          // HashRouter owns location.hash — a native #main jump would replace
+          // the route. Move focus programmatically instead.
+          e.preventDefault();
+          const m = document.getElementById("main");
+          m?.focus();
+          m?.scrollIntoView({ block: "start" });
+        }}
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-accent-600 focus:px-4 focus:py-2.5 focus:text-sm focus:font-medium focus:text-white"
+      >
+        {t("app.skipToContent")}
+      </a>
+
+      {/* Compact top bar — brand, destinations, child context, emergency. */}
+      <header className="sticky top-0 z-40 border-b border-neutral-200 bg-neutral-50">
+        <div className="mx-auto flex h-14 max-w-5xl items-center gap-2 px-3 md:px-6">
+          <Link to="/" className="flex shrink-0 items-center gap-2 rounded-lg px-1 py-1">
+            <img src="/icon.svg" alt="" className="size-7 rounded-lg" />
+            <span className="text-[15px] font-semibold tracking-tight">Owly</span>
+          </Link>
+
+          {/* Full nav only once every destination + child + Emergency actually
+              fits (long DE/AR labels overflow below lg) — compact bottom nav
+              covers md. */}
+          <nav className="mx-auto hidden items-center gap-0.5 lg:flex" aria-label={t("app.navLabel")}>
+            {TOP_NAV.map((n) => {
+              const selected = loc.pathname === n.to;
+              return (
+                <button
+                  key={n.to}
+                  onClick={() => void nav(n.to)}
+                  aria-current={selected ? "page" : undefined}
+                  className={`flex min-h-10 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors duration-150
+                    ${selected ? "bg-white text-neutral-900 shadow-[inset_0_0_0_1px_var(--color-neutral-200)]" : "text-neutral-600 hover:bg-white/70 hover:text-neutral-900"}`}
+                >
+                  <span aria-hidden className="leading-none"><n.Icon size={17} /></span>
+                  {t(n.label)}
+                </button>
+              );
+            })}
+          </nav>
+
+          <div className="ms-auto flex min-w-0 items-center gap-2 lg:ms-0">
+            {active && (
+              <Link
+                to="/settings"
+                title={t("app.changeChild")}
+                className="flex min-w-0 max-w-40 items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-white/70"
+              >
+                <span className="truncate" dir="auto">{active.name}</span>
+                {active.isDemo && (
+                  <span className="shrink-0 rounded-md bg-amber-100 px-1.5 py-0.5 text-[11px] font-semibold text-amber-800">
+                    {t("app.demoBadgeShort")}
+                  </span>
+                )}
+              </Link>
+            )}
+            <Link
+              to="/redflags"
+              aria-label={t("nav.redflags")}
+              className="flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-sm font-semibold text-red-700 transition-colors hover:bg-red-50"
+            >
+              <span aria-hidden className="leading-none"><IconAlert size={17} /></span>
+              <span className="hidden sm:inline">{t("nav.redflags")}</span>
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <div className="flex min-h-[calc(100dvh-3.5rem)] flex-col">
+        <main id="main" tabIndex={-1} className="mx-auto w-full max-w-lg flex-1 px-4 pb-28 pt-6 focus:outline-none md:max-w-5xl md:pt-8 lg:pb-14">
+          {/* Route-level crash containment: a broken page degrades to a
+              recoverable card keyed by pathname — the rest of the shell
+              stays mounted and navigating away clears the failed subtree. */}
+          <ErrorBoundary key={loc.pathname}>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/welcome" element={<Onboarding />} />
+            <Route path="/observe" element={<ObserveKeyed />} />
+            <Route path="/observe/:id/edit" element={<ObserveKeyed />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/patterns" element={<Patterns />} />
+            <Route path="/report" element={<Report />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/redflags" element={<RedFlags />} />
+            {/* The emergency surface lives at /redflags; keep the intuitive
+                path working instead of silently landing home. */}
+            <Route path="/emergency" element={<Navigate to="/redflags" replace />} />
+            <Route path="/child/new" element={<ChildForm />} />
+            <Route path="/child/:id/edit" element={<ChildForm />} />
+            {/* Unknown paths (incl. /observe/<id> without /edit) go home
+                rather than rendering an empty main. */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+          </ErrorBoundary>
+        </main>
+      </div>
+
+      {/* Mobile: 5 calm tabs — flat bottom bar, no floating pill */}
+      <nav className="fixed bottom-0 inset-x-0 z-40 border-t border-neutral-200 bg-neutral-50 pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label={t("app.navLabel")}>
+        <div className="mx-auto max-w-lg grid grid-cols-5">
           {NAV.map((n) => {
             const selected = loc.pathname === n.to;
             return (
@@ -143,11 +241,13 @@ function Shell() {
                 key={n.to}
                 onClick={() => void nav(n.to)}
                 aria-current={selected ? "page" : undefined}
-                className={`flex flex-col items-center gap-1 py-2.5 text-[10.5px] font-medium touch-target transition-colors duration-150
-                  ${selected ? "text-teal-700" : "text-neutral-600 hover:text-neutral-900"}`}
+                className={`flex flex-col items-center gap-1 py-2 text-[12px] font-medium touch-target !min-w-0 transition-colors duration-150
+                  ${selected ? "text-accent-700" : "text-neutral-600 hover:text-neutral-900"}`}
               >
                 <span aria-hidden className="leading-none"><n.Icon /></span>
-                {t(n.label)}
+                {/* Wrapping + hyphenation keep long native labels (e.g. de
+                    "Einstellungen") fully visible at 320px instead of clipped. */}
+                <span className="w-full text-center leading-tight break-words hyphens-auto">{t(n.label)}</span>
               </button>
             );
           })}
