@@ -6,14 +6,8 @@ import { db, saneObs } from "../db";
 import { BAND_COLOR } from "../flacc";
 import { bandFor, type Observation } from "../types";
 import { intlLocale } from "../i18n";
+import { mostlyAtNight, summarize, TIME_BUCKETS } from "../summary";
 import { IconChevronRight } from "../components/icons";
-
-function bucket(hour: number): "night" | "morning" | "afternoon" | "evening" {
-  if (hour >= 22 || hour < 6) return "night";
-  if (hour < 12) return "morning";
-  if (hour < 18) return "afternoon";
-  return "evening";
-}
 
 export default function Patterns() {
   const { t } = useTranslation();
@@ -27,45 +21,20 @@ export default function Patterns() {
     void db.observations.where("childId").equals(active.id).sortBy("recordedAt").then((list) => setObs(list.map(saneObs)));
   }, [active]);
 
-  const episodes = useMemo(() => obs.filter((o) => !o.baseline), [obs]);
-
-  const byTime = useMemo(() => {
-    const c = { night: 0, morning: 0, afternoon: 0, evening: 0 };
-    episodes.forEach((o) => c[bucket(new Date(o.startedAt).getHours())]++);
-    return c;
-  }, [episodes]);
-
-  const zones = useMemo(() => {
-    const m = new Map<string, number>();
-    episodes.forEach((o) => o.bodyZones.forEach((z) => m.set(z, (m.get(z) ?? 0) + 1)));
-    return [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6);
-  }, [episodes]);
-
-  const helped = useMemo(() => {
-    const m = new Map<string, { yes: number; n: number }>();
-    episodes.forEach((o) =>
-      o.interventions.forEach((i) => {
-        if (!i.helped) return;
-        const e = m.get(i.type) ?? { yes: 0, n: 0 };
-        e.n++;
-        if (i.helped === "yes") e.yes++;
-        m.set(i.type, e);
-      }),
-    );
-    return [...m.entries()].sort((a, b) => b[1].yes - a[1].yes);
-  }, [episodes]);
+  // Patterns covers the whole journal (no period filter).
+  const summary = useMemo(() => summarize(obs), [obs]);
+  const { episodes, byTime, helped } = summary;
+  const zones = summary.zones.slice(0, 6);
 
   const insights = useMemo(() => {
     const out: string[] = [];
-    // Night insight only when night is strictly the modal bucket — no tie bias.
-    const max = Math.max(...Object.values(byTime));
-    const nightStrictlyTop = byTime.night === max && Object.values(byTime).filter((v) => v === max).length === 1;
-    if (nightStrictlyTop && max >= 2 && max > episodes.length / 2) out.push(t("patterns.insightNight"));
-    if (zones.length > 0) out.push(t("patterns.insightZone", { zone: t(`zones.${zones[0][0]}`, { defaultValue: zones[0][0] }), n: zones[0][1], count: zones[0][1] }));
-    const w = helped.find(([, v]) => v.yes >= 2);
+    if (mostlyAtNight(summary)) out.push(t("patterns.insightNight"));
+    const [topZone] = summary.zones;
+    if (topZone) out.push(t("patterns.insightZone", { zone: t(`zones.${topZone[0]}`, { defaultValue: topZone[0] }), n: topZone[1], count: topZone[1] }));
+    const w = summary.helped.find(([, v]) => v.yes >= 2);
     if (w) out.push(t("patterns.insightWorked", { label: t(`interventions.${w[0]}`, { defaultValue: w[0] }), yes: w[1].yes, n: w[1].n }));
     return out;
-  }, [byTime, episodes.length, zones, helped, t]);
+  }, [summary, t]);
 
   if (!active) return null;
 
@@ -84,8 +53,8 @@ export default function Patterns() {
     );
   }
 
-  const avg = episodes.reduce((s, o) => s + o.total, 0) / episodes.length;
-  const maxScore = Math.max(...episodes.map((o) => o.total), 1);
+  const { avg } = summary;
+  const maxScore = Math.max(summary.max, 1);
 
   return (
     <div className="space-y-6">
@@ -158,7 +127,7 @@ export default function Patterns() {
       <section className="card p-4 space-y-3">
         <h2 className="section-title">{t("patterns.byTimeOfDay")}</h2>
         <div className="space-y-2">
-          {(["night", "morning", "afternoon", "evening"] as const).map((k) => (
+          {TIME_BUCKETS.map((k) => (
             <div key={k} className="flex items-center gap-2 text-sm">
               <span className="w-28 text-neutral-600">{t(`patterns.${k}`)}</span>
               <div className="flex-1 h-4 rounded-full bg-neutral-100 overflow-hidden">

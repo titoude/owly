@@ -4,8 +4,9 @@ import fontkit from "@pdf-lib/fontkit";
 // missing in browsers AND node without this tiny side-effect polyfill.
 import "regenerator-runtime/runtime.js";
 import bidiFactory from "bidi-js";
-import { bandFor, type Child, type Observation } from "./types";
+import { bandFor, FLACC_CATEGORIES, type Child, type Observation } from "./types";
 import i18n, { intlLocale } from "./i18n";
+import { summarize } from "./summary";
 import fontRegularUrl from "./assets/fonts/NotoSans-Regular.ttf?url";
 import fontBoldUrl from "./assets/fonts/NotoSans-Bold.ttf?url";
 import fontArabicUrl from "./assets/fonts/NotoSansArabic-Regular.ttf?url";
@@ -395,10 +396,8 @@ async function loadFaces(doc: PDFDocument, need: { arabic: boolean; deva: boolea
 }
 
 export async function buildReport(child: Child, observations: Observation[], opts: ReportOptions): Promise<Uint8Array> {
-  const episodes = observations
-    .filter((o) => !o.baseline)
-    .filter((o) => opts.periodDays == null || o.startedAt >= Date.now() - opts.periodDays * 864e5)
-    .sort((a, b) => a.startedAt - b.startedAt);
+  const summary = summarize(observations, opts.periodDays);
+  const { episodes, baselines } = summary;
 
   const doc = await PDFDocument.create();
   doc.setTitle(`Owly pain report — ${sanitize(child.name)}`);
@@ -432,32 +431,21 @@ export async function buildReport(child: Child, observations: Observation[], opt
     heading(ctx, t("howTheySignal"));
     line(ctx, child.communicates);
   }
-  const custom = Object.entries(child.customDescriptors).filter(([, v]) => v.trim());
+  // Category names follow the UI's FLACC labels (licensed English outside FR).
+  const custom = FLACC_CATEGORIES.filter((c) => child.customDescriptors[c]?.trim());
   if (custom.length > 0) {
-    line(ctx, `${t("individualBehaviours")}: ${custom.map(([k, v]) => `${k}: ${v}`).join(" · ")}`, { size: 8.5, color: MUTED, gap: 12 });
+    line(ctx, `${t("individualBehaviours")}: ${custom.map((c) => `${i18n.t(`flacc.${c}`)}: ${child.customDescriptors[c].trim()}`).join(" · ")}`, { size: 8.5, color: MUTED, gap: 12 });
   }
 
   // Pattern summary
   if (episodes.length > 0) {
     heading(ctx, t("whatShows"));
-    const avg = episodes.reduce((s, o) => s + o.total, 0) / episodes.length;
-    const night = episodes.filter((o) => { const h = new Date(o.startedAt).getHours(); return h >= 22 || h < 6; }).length;
-    const zoneCounts = new Map<string, number>();
-    episodes.forEach((o) => o.bodyZones.forEach((z) => zoneCounts.set(z, (zoneCounts.get(z) ?? 0) + 1)));
-    const topZones = [...zoneCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
-    line(ctx, `• ${t("episodesLine", { count: episodes.length, avg: avg.toFixed(1), max: Math.max(...episodes.map((o) => o.total)) })}`);
-    if (night > 0) line(ctx, `• ${t("nightLine", { night, count: episodes.length })}`);
+    const topZones = summary.zones.slice(0, 4);
+    line(ctx, `• ${t("episodesLine", { count: episodes.length, avg: summary.avg.toFixed(1), max: summary.max })}`);
+    if (summary.night > 0) line(ctx, `• ${t("nightLine", { night: summary.night, count: episodes.length })}`);
     if (topZones.length) line(ctx, `• ${t("areasLine")}: ${topZones.map(([z, n]) => `${zoneLabel(z)} (${n}×)`).join(", ")}`);
-    const med = episodes.flatMap((o) => o.interventions).filter((i) => i.type === "medication" && i.label);
-    if (med.length) line(ctx, `• ${t("medLine")}: ${[...new Set(med.map((m) => m.label))].join(", ")}`);
-    const worked = new Map<string, { yes: number; n: number }>();
-    episodes.forEach((o) => o.interventions.forEach((i) => {
-      if (!i.helped) return;
-      const e = worked.get(i.type) ?? { yes: 0, n: 0 };
-      e.n++; if (i.helped === "yes") e.yes++;
-      worked.set(i.type, e);
-    }));
-    const workedList = [...worked.entries()].map(([k, v]) => `${intervLabel(k)} ${v.yes}/${v.n} ${t("helped")}`).join(", ");
+    if (summary.meds.length) line(ctx, `• ${t("medLine")}: ${summary.meds.join(", ")}`);
+    const workedList = summary.helped.map(([k, v]) => `${intervLabel(k)} ${v.yes}/${v.n} ${t("helped")}`).join(", ");
     if (workedList) line(ctx, `• ${t("intervLine")}: ${workedList}`, { color: MUTED });
   }
 
@@ -517,8 +505,6 @@ export async function buildReport(child: Child, observations: Observation[], opt
   }
 
   // Baselines
-  const baselines = observations.filter((o) => o.baseline)
-    .filter((o) => opts.periodDays == null || o.startedAt >= Date.now() - opts.periodDays * 864e5);
   if (baselines.length > 0) {
     ctx.y -= 4;
     line(ctx, t("baselineLine", { count: baselines.length, scores: baselines.map((b) => b.total).join(", ") }), { size: 8, color: MUTED });
