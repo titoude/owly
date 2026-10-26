@@ -284,7 +284,14 @@
     "wrongPin": "Wrong code",
     "privacyBody": "Everything you record stays on this device (IndexedDB) — no account, no cloud, no analytics. The PIN is only a screen lock: it does not encrypt data, and anyone with access to this device could open the journal with device tools. Backups are unencrypted JSON files: store them like the journal itself. Deleting the app or site data erases everything unless you exported a backup.",
     "lockCorrupt": "The saved PIN data is corrupted and can no longer be verified.",
-    "lockCorruptReset": "Reset PIN and unlock"
+    "lockCorruptReset": "Reset PIN and unlock",
+    "appearance": "Appearance",
+    "appearanceBody": "Night mode keeps the screen dark when you check on your child at night.",
+    "themes": {
+      "system": "Automatic",
+      "light": "Light",
+      "dark": "Night"
+    }
   },
   "common": {
     "back": "Back",
@@ -366,5 +373,48 @@
     "recent": "Recent observations",
     "tools": "Tools",
     "journal": "Journal"
+  },
+  "passport": {
+    "kicker": "Pain passport",
+    "entryTitle": "Pain passport",
+    "entryDesc": "A one-page card for school, carers and the ER: how your child shows pain and what helps.",
+    "heading": "{{name}}'s pain passport",
+    "intro": "{{name}} may not be able to tell you that something hurts. This page explains how {{name}} shows pain and what has helped, based on the family's own observations.",
+    "born": "born {{year}}",
+    "showsPain": "How {{name}} shows pain",
+    "noSigns": "No personal pain signs recorded yet.",
+    "addSigns": "Add them to the profile",
+    "calm": "When {{name}} is calm and comfortable, the usual FLACC score is {{score}}/10.",
+    "helps": "What has helped",
+    "helpsRate": "recorded as helping: {{yes}}/{{n}}",
+    "helpsNone": "Nothing has been recorded as helping yet.",
+    "watch": "Good to know",
+    "watchNight": "Pain episodes have mostly happened at night.",
+    "watchZone": "Area most often suspected: {{zone}}.",
+    "steps": "If {{name}} seems to be in pain",
+    "stepsItems": [
+      "Stay close and calm, and look for the signs above.",
+      "Try what has helped before.",
+      "Note the time and what you saw, and tell the family.",
+      "Never give medicine unless the family or a doctor has agreed to it."
+    ],
+    "emergency": "Call emergency services immediately if",
+    "contacts": "Contacts",
+    "contactFamily": "Parent / caregiver",
+    "contactDoctor": "Doctor",
+    "phone": "Phone",
+    "footer": "Prepared with Owly on {{date}} from the family's observations. It describes behaviour — it is not a diagnosis.",
+    "print": "Print or save as PDF",
+    "editProfile": "Edit the profile",
+    "printHint": "Print it for the school bag, or save it as a PDF to share. The contact lines appear on paper only — Owly never stores them."
+  },
+  "reportView": {
+    "open": "Read the report on screen",
+    "openHint": "The on-screen version works with screen readers, zoom and printing.",
+    "title": "Pain observation report",
+    "back": "Back to report options",
+    "print": "Print or save as PDF",
+    "caption": "Pain episodes in this period, oldest first, with FLACC scores from 0 to 10",
+    "noEpisodes": "No pain episodes in this period."
   }
 }

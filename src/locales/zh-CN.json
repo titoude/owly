@@ -274,7 +274,14 @@
     "wrongPin": "密码错误",
     "privacyBody": "你记录的一切都保存在这台设备上（IndexedDB）——无账号、无云端、无分析。PIN 只是屏幕锁：它并不加密数据，任何能访问这台设备的人都可能用系统工具打开日志。备份是未加密的 JSON 文件：请像保管日志一样保管它们。删除应用或网站数据会清除一切，除非你已导出备份。",
     "lockCorrupt": "已保存的 PIN 数据已损坏，无法再进行验证。",
-    "lockCorruptReset": "重置 PIN 并解锁"
+    "lockCorruptReset": "重置 PIN 并解锁",
+    "appearance": "外观",
+    "appearanceBody": "夜间照看孩子时，夜间模式让屏幕保持暗色。",
+    "themes": {
+      "system": "自动",
+      "light": "浅色",
+      "dark": "夜间"
+    }
   },
   "common": {
     "back": "返回",
@@ -356,5 +363,48 @@
     "recent": "最近记录",
     "tools": "工具",
     "journal": "日志"
+  },
+  "passport": {
+    "kicker": "疼痛护照",
+    "entryTitle": "疼痛护照",
+    "entryDesc": "给学校、照护者和急诊的一页卡片：孩子如何表现疼痛，以及什么能帮到他。",
+    "heading": "{{name}}的疼痛护照",
+    "intro": "{{name}}可能无法告诉你哪里疼。本页根据家人的观察，说明{{name}}如何表现疼痛，以及哪些方法曾经有帮助。",
+    "born": "出生年份：{{year}}",
+    "showsPain": "{{name}}如何表现疼痛",
+    "noSigns": "尚未记录个人的疼痛表现。",
+    "addSigns": "在资料中添加",
+    "calm": "{{name}}平静舒适时，通常的 FLACC 分数为 {{score}}/10。",
+    "helps": "曾经有帮助的方法",
+    "helpsRate": "记录为有效：{{yes}}/{{n}}",
+    "helpsNone": "尚未记录到有效的方法。",
+    "watch": "值得了解",
+    "watchNight": "疼痛发作大多发生在夜间。",
+    "watchZone": "最常怀疑的部位：{{zone}}。",
+    "steps": "如果{{name}}看起来很疼",
+    "stepsItems": [
+      "待在旁边、保持冷静，留意上面描述的表现。",
+      "尝试以前有帮助的方法。",
+      "记下时间和你看到的情况，并告诉家人。",
+      "未经家人或医生同意，切勿给药。"
+    ],
+    "emergency": "出现以下情况请立即拨打急救电话",
+    "contacts": "联系人",
+    "contactFamily": "父母 / 照护者",
+    "contactDoctor": "医生",
+    "phone": "电话",
+    "footer": "于 {{date}} 根据家人的观察用 Owly 整理。描述的是行为表现——不是诊断。",
+    "print": "打印或另存为 PDF",
+    "editProfile": "编辑资料",
+    "printHint": "打印出来放进书包，或另存为 PDF 分享。联系人栏只出现在纸上——Owly 从不保存这些信息。"
+  },
+  "reportView": {
+    "open": "在屏幕上阅读报告",
+    "openHint": "屏幕版本支持屏幕阅读器、缩放和打印。",
+    "title": "疼痛观察报告",
+    "back": "返回报告选项",
+    "print": "打印或另存为 PDF",
+    "caption": "本时段的疼痛发作，从最早到最近，FLACC 分数 0 到 10",
+    "noEpisodes": "本时段没有疼痛发作。"
   }
 }

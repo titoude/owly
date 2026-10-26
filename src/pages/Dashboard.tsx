@@ -5,7 +5,7 @@ import { useApp } from "../appContext";
 import { db, saneObs } from "../db";
 import type { Observation } from "../types";
 import { ObsRow } from "../components/ObsRow";
-import { IconReport, IconPatterns, IconChevronRight } from "../components/icons";
+import { IconReport, IconPatterns, IconPassport, IconChevronRight } from "../components/icons";
 
 export default function Dashboard() {
   const { t } = useTranslation();
@@ -30,6 +30,7 @@ export default function Dashboard() {
   const toolRows = [
     { to: "/report", Icon: IconReport, title: t("report.entryTitle"), desc: t("report.entryDesc") },
     ...(count > 0 ? [{ to: "/patterns", Icon: IconPatterns, title: t("patterns.title"), desc: t("patterns.entryDesc") }] : []),
+    { to: "/passport", Icon: IconPassport, title: t("passport.entryTitle"), desc: t("passport.entryDesc") },
   ];
 
   return (

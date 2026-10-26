@@ -44,6 +44,18 @@
       "expects": "static warning list"
     },
     {
+      "path": "/passport",
+      "role": "document",
+      "precondition": "demo seed (Léo) loaded",
+      "expects": "carer card: signs, what has helped, steps, emergency list, print action"
+    },
+    {
+      "path": "/report/view",
+      "role": "document",
+      "precondition": "demo seed (Léo) loaded; opened directly, so default period (30 days)",
+      "expects": "headings, summary list, captioned episode table in a focusable scroll region, print action"
+    },
+    {
       "path": "/child/new",
       "role": "form",
       "precondition": "none",
@@ -73,6 +85,12 @@
       "id": "empty-patterns",
       "description": "patterns view with zero observations",
       "route": "/patterns",
+      "setup": "fresh child, no seed"
+    },
+    {
+      "id": "empty-passport",
+      "description": "pain passport for a fresh child (no signs, no observations)",
+      "route": "/passport",
       "setup": "fresh child, no seed"
     },
     {
@@ -163,6 +181,48 @@
       "id": "fr-observe",
       "description": "a FLACC wizard step in French — the scaleNote translation notice only renders outside EN and must meet contrast",
       "precondition": "locale=fr, observe wizard at step 2/8"
+    },
+    {
+      "id": "night-dashboard",
+      "description": "dashboard in night mode — the dark palette must keep WCAG AA contrast",
+      "route": "/",
+      "setup": "fresh context, owly-theme=dark, demo seed"
+    },
+    {
+      "id": "night-observe",
+      "description": "observe wizard step 1 in night mode — the dark palette must keep WCAG AA contrast",
+      "route": "/observe",
+      "setup": "fresh context, owly-theme=dark, demo seed"
+    },
+    {
+      "id": "night-patterns",
+      "description": "patterns in night mode — the dark palette must keep WCAG AA contrast",
+      "route": "/patterns",
+      "setup": "fresh context, owly-theme=dark, demo seed"
+    },
+    {
+      "id": "night-report",
+      "description": "report options in night mode — the dark palette must keep WCAG AA contrast",
+      "route": "/report",
+      "setup": "fresh context, owly-theme=dark, demo seed"
+    },
+    {
+      "id": "night-report-view",
+      "description": "on-screen report in night mode — the dark palette must keep WCAG AA contrast",
+      "route": "/report/view",
+      "setup": "fresh context, owly-theme=dark, demo seed"
+    },
+    {
+      "id": "night-passport",
+      "description": "pain passport in night mode — the dark palette must keep WCAG AA contrast",
+      "route": "/passport",
+      "setup": "fresh context, owly-theme=dark, demo seed"
+    },
+    {
+      "id": "night-settings",
+      "description": "settings in night mode — the dark palette must keep WCAG AA contrast",
+      "route": "/settings",
+      "setup": "fresh context, owly-theme=dark, demo seed"
     }
   ]
 }

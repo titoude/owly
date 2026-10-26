@@ -67,3 +67,20 @@ export const IconCheck = ({ size = 18 }: { size?: number }) => (
     <path d="m4.5 12.5 5 5L19.5 7" />
   </svg>
 );
+
+// ID-card shape — the pain passport carers keep with the child.
+export const IconPassport = ({ size = 22 }: { size?: number }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+    <rect x="3.5" y="5.5" width="17" height="13" rx="2" />
+    <circle cx="9" cy="11" r="2" />
+    <path d="M6 15.5c.6-1.3 1.7-2 3-2s2.4.7 3 2M14 10h3.5M14 13h3.5" />
+  </svg>
+);
+
+export const IconPrint = ({ size = 18 }: { size?: number }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} {...stroke}>
+    <path d="M7 8.5V3.5h10v5" />
+    <rect x="3.5" y="8.5" width="17" height="8" rx="1.5" />
+    <path d="M7 14h10v6.5H7z" />
+  </svg>
+);

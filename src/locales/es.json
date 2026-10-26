@@ -284,7 +284,14 @@
     "wrongPin": "Código incorrecto",
     "privacyBody": "Todo lo que registras se queda en este dispositivo (IndexedDB) — sin cuenta, sin nube, sin analítica. El PIN es solo un bloqueo de pantalla: no cifra los datos y cualquiera con acceso a este dispositivo podría abrir el diario con herramientas del sistema. Las copias de seguridad son archivos JSON sin cifrar: guárdalas como el propio diario. Borrar la app o los datos del sitio lo elimina todo, salvo que hayas exportado una copia.",
     "lockCorrupt": "Los datos del PIN guardado están dañados y ya no se pueden verificar.",
-    "lockCorruptReset": "Restablecer PIN y desbloquear"
+    "lockCorruptReset": "Restablecer PIN y desbloquear",
+    "appearance": "Apariencia",
+    "appearanceBody": "El modo noche mantiene la pantalla oscura cuando atiendes a tu hijo por la noche.",
+    "themes": {
+      "system": "Automático",
+      "light": "Claro",
+      "dark": "Noche"
+    }
   },
   "common": {
     "back": "Atrás",
@@ -366,5 +373,48 @@
     "recent": "Observaciones recientes",
     "tools": "Herramientas",
     "journal": "Diario"
+  },
+  "passport": {
+    "kicker": "Pasaporte del dolor",
+    "entryTitle": "Pasaporte del dolor",
+    "entryDesc": "Una ficha de una página para el colegio, los cuidadores y urgencias: cómo muestra el dolor tu hijo y qué le ayuda.",
+    "heading": "Pasaporte del dolor de {{name}}",
+    "intro": "Puede que {{name}} no sea capaz de decir que algo le duele. Esta página explica cómo muestra {{name}} el dolor y qué le ha ayudado, según las observaciones de su familia.",
+    "born": "año de nacimiento: {{year}}",
+    "showsPain": "Cómo muestra {{name}} el dolor",
+    "noSigns": "Todavía no se han registrado señales de dolor personales.",
+    "addSigns": "Añadirlas al perfil",
+    "calm": "En calma, la puntuación FLACC habitual de {{name}} es {{score}}/10.",
+    "helps": "Lo que ha ayudado",
+    "helpsRate": "registrado como útil: {{yes}}/{{n}}",
+    "helpsNone": "Todavía no se ha registrado nada como útil.",
+    "watch": "Conviene saber",
+    "watchNight": "Los episodios de dolor han ocurrido sobre todo de noche.",
+    "watchZone": "Zona sospechada con más frecuencia: {{zone}}.",
+    "steps": "Si {{name}} parece tener dolor",
+    "stepsItems": [
+      "Quédate cerca y con calma, y busca las señales descritas arriba.",
+      "Prueba lo que ya ha ayudado antes.",
+      "Anota la hora y lo que viste, y avisa a la familia.",
+      "Nunca des medicamentos sin el acuerdo de la familia o de un médico."
+    ],
+    "emergency": "Llama de inmediato a emergencias si",
+    "contacts": "Contactos",
+    "contactFamily": "Familia / cuidador",
+    "contactDoctor": "Médico",
+    "phone": "Teléfono",
+    "footer": "Preparado con Owly el {{date}} a partir de las observaciones de la familia. Describe comportamientos; no es un diagnóstico.",
+    "print": "Imprimir o guardar como PDF",
+    "editProfile": "Editar el perfil",
+    "printHint": "Imprímelo para la mochila del colegio o guárdalo como PDF para compartirlo. Las líneas de contacto solo aparecen en papel: Owly nunca las guarda."
+  },
+  "reportView": {
+    "open": "Leer el informe en pantalla",
+    "openHint": "La versión en pantalla funciona con lectores de pantalla, zoom e impresión.",
+    "title": "Informe de observación del dolor",
+    "back": "Volver a las opciones del informe",
+    "print": "Imprimir o guardar como PDF",
+    "caption": "Episodios de dolor del periodo, del más antiguo al más reciente, con puntuaciones FLACC de 0 a 10",
+    "noEpisodes": "No hay episodios de dolor en este periodo."
   }
 }

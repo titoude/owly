@@ -7,6 +7,8 @@ import Observe from "./pages/Observe";
 import History from "./pages/History";
 import Patterns from "./pages/Patterns";
 import Report from "./pages/Report";
+import ReportView from "./pages/ReportView";
+import Passport from "./pages/Passport";
 import SettingsPage from "./pages/Settings";
 import RedFlags from "./pages/RedFlags";
 import ChildForm from "./pages/ChildForm";
@@ -130,7 +132,7 @@ function Shell() {
   }
 
   return (
-    <div className="min-h-dvh">
+    <div className="min-h-dvh print:min-h-0">
       <a
         href="#main"
         onClick={(e) => {
@@ -147,10 +149,10 @@ function Shell() {
       </a>
 
       {/* Compact top bar — brand, destinations, child context, emergency. */}
-      <header className="sticky top-0 z-40 border-b border-neutral-200 bg-neutral-50">
+      <header className="sticky top-0 z-40 border-b border-neutral-200 bg-neutral-50 print:hidden">
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-2 px-3 md:px-6">
           <Link to="/" className="flex shrink-0 items-center gap-2 rounded-lg px-1 py-1">
-            <img src="/icon.svg" alt="" className="size-7 rounded-lg" />
+            <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="size-7 rounded-lg" />
             <span className="text-[15px] font-semibold tracking-tight">Owly</span>
           </Link>
 
@@ -202,8 +204,8 @@ function Shell() {
         </div>
       </header>
 
-      <div className="flex min-h-[calc(100dvh-3.5rem)] flex-col">
-        <main id="main" tabIndex={-1} className="mx-auto w-full max-w-lg flex-1 px-4 pb-28 pt-6 focus:outline-none md:max-w-5xl md:pt-8 lg:pb-14">
+      <div className="flex min-h-[calc(100dvh-3.5rem)] flex-col print:min-h-0">
+        <main id="main" tabIndex={-1} className="mx-auto w-full max-w-lg flex-1 px-4 pb-28 pt-6 focus:outline-none md:max-w-5xl md:pt-8 lg:pb-14 print:max-w-none print:p-0">
           {/* Route-level crash containment: a broken page degrades to a
               recoverable card keyed by pathname — the rest of the shell
               stays mounted and navigating away clears the failed subtree. */}
@@ -216,6 +218,8 @@ function Shell() {
             <Route path="/history" element={<History />} />
             <Route path="/patterns" element={<Patterns />} />
             <Route path="/report" element={<Report />} />
+            <Route path="/report/view" element={<ReportView />} />
+            <Route path="/passport" element={<Passport />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/redflags" element={<RedFlags />} />
             {/* The emergency surface lives at /redflags; keep the intuitive
@@ -232,7 +236,7 @@ function Shell() {
       </div>
 
       {/* Mobile: 5 calm tabs — flat bottom bar, no floating pill */}
-      <nav className="fixed bottom-0 inset-x-0 z-40 border-t border-neutral-200 bg-neutral-50 pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label={t("app.navLabel")}>
+      <nav className="fixed bottom-0 inset-x-0 z-40 border-t border-neutral-200 bg-neutral-50 pb-[env(safe-area-inset-bottom)] lg:hidden print:hidden" aria-label={t("app.navLabel")}>
         <div className="mx-auto max-w-lg grid grid-cols-5">
           {NAV.map((n) => {
             const selected = loc.pathname === n.to;

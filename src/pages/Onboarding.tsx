@@ -50,7 +50,7 @@ export default function Onboarding() {
         </select>
       </div>
       <div className="text-center space-y-3">
-        <img src="/icon.svg" alt="" className="mx-auto size-24 rounded-3xl" />
+        <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="mx-auto size-24 rounded-3xl" />
         <h1 className="text-3xl font-bold leading-tight">{t("onboarding.title")}</h1>
         <p className="text-neutral-600 text-sm font-medium tracking-wide">{t("app.tagline")}</p>
       </div>

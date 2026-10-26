@@ -86,7 +86,7 @@ export default function LockScreen({ onUnlock }: { onUnlock: () => void }) {
   return (
     <main className="min-h-dvh grid place-items-center" aria-labelledby="lock-heading">
       <div className="space-y-6 text-center">
-        <img src="/icon.svg" alt="" className="mx-auto size-20 rounded-3xl" />
+        <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="mx-auto size-20 rounded-3xl" />
         <h1 id="lock-heading" className="text-xl font-semibold text-neutral-800">
           {coolingDown ? t("settings.unlockWait") : t("settings.unlock")}
         </h1>

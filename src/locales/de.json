@@ -284,7 +284,14 @@
     "wrongPin": "Falscher Code",
     "privacyBody": "Alles, was du aufzeichnest, bleibt auf diesem Gerät (IndexedDB) — kein Konto, keine Cloud, keine Analytik. Die PIN ist nur eine Bildschirmsperre: sie verschlüsselt keine Daten, und jeder mit Zugriff auf dieses Gerät könnte das Tagebuch mit Systemwerkzeugen öffnen. Backups sind unverschlüsselte JSON-Dateien: bewahre sie wie das Tagebuch selbst auf. App oder Websitedaten löschen entfernt alles, sofern du kein Backup exportiert hast.",
     "lockCorrupt": "Die gespeicherten PIN-Daten sind beschädigt und können nicht mehr geprüft werden.",
-    "lockCorruptReset": "PIN zurücksetzen und entsperren"
+    "lockCorruptReset": "PIN zurücksetzen und entsperren",
+    "appearance": "Darstellung",
+    "appearanceBody": "Der Nachtmodus hält den Bildschirm dunkel, wenn du nachts nach deinem Kind siehst.",
+    "themes": {
+      "system": "Automatisch",
+      "light": "Hell",
+      "dark": "Nacht"
+    }
   },
   "common": {
     "back": "Zurück",
@@ -366,5 +373,48 @@
     "recent": "Letzte Beobachtungen",
     "tools": "Werkzeuge",
     "journal": "Tagebuch"
+  },
+  "passport": {
+    "kicker": "Schmerzpass",
+    "entryTitle": "Schmerzpass",
+    "entryDesc": "Eine Seite für Schule, Betreuung und Notaufnahme: wie dein Kind Schmerz zeigt und was hilft.",
+    "heading": "Schmerzpass von {{name}}",
+    "intro": "{{name}} kann vielleicht nicht sagen, dass etwas wehtut. Diese Seite erklärt, wie {{name}} Schmerz zeigt und was bisher geholfen hat – auf Grundlage der Beobachtungen der Familie.",
+    "born": "Geburtsjahr: {{year}}",
+    "showsPain": "So zeigt {{name}} Schmerz",
+    "noSigns": "Noch keine persönlichen Schmerzzeichen eingetragen.",
+    "addSigns": "Im Profil ergänzen",
+    "calm": "In Ruhe liegt der übliche FLACC-Wert von {{name}} bei {{score}}/10.",
+    "helps": "Was bisher geholfen hat",
+    "helpsRate": "als hilfreich notiert: {{yes}}/{{n}}",
+    "helpsNone": "Bisher wurde nichts als hilfreich notiert.",
+    "watch": "Gut zu wissen",
+    "watchNight": "Schmerzepisoden traten bisher meist nachts auf.",
+    "watchZone": "Am häufigsten vermuteter Bereich: {{zone}}.",
+    "steps": "Wenn {{name}} Schmerzen zu haben scheint",
+    "stepsItems": [
+      "Bleib in der Nähe und ruhig und achte auf die oben beschriebenen Zeichen.",
+      "Probiere aus, was schon geholfen hat.",
+      "Notiere die Uhrzeit und was du gesehen hast, und informiere die Familie.",
+      "Gib niemals Medikamente ohne Absprache mit der Familie oder einer Ärztin bzw. einem Arzt."
+    ],
+    "emergency": "Sofort den Notruf wählen, wenn",
+    "contacts": "Kontakte",
+    "contactFamily": "Eltern / Bezugsperson",
+    "contactDoctor": "Ärztin / Arzt",
+    "phone": "Telefon",
+    "footer": "Erstellt mit Owly am {{date}} aus den Beobachtungen der Familie. Beschreibt Verhalten – keine Diagnose.",
+    "print": "Drucken oder als PDF speichern",
+    "editProfile": "Profil bearbeiten",
+    "printHint": "Drucke sie für den Schulranzen aus oder speichere sie als PDF zum Teilen. Die Kontaktzeilen erscheinen nur auf Papier – Owly speichert sie nie."
+  },
+  "reportView": {
+    "open": "Bericht auf dem Bildschirm lesen",
+    "openHint": "Die Bildschirmversion funktioniert mit Screenreadern, Zoom und Drucken.",
+    "title": "Schmerz-Beobachtungsbericht",
+    "back": "Zurück zu den Berichtsoptionen",
+    "print": "Drucken oder als PDF speichern",
+    "caption": "Schmerzepisoden im Zeitraum, älteste zuerst, mit FLACC-Werten von 0 bis 10",
+    "noEpisodes": "Keine Schmerzepisoden in diesem Zeitraum."
   }
 }

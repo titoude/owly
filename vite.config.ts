@@ -3,7 +3,12 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
+// The live demo is served from a sub-path (GitHub Pages: /owly/); every
+// asset, the manifest and the service worker scope follow `base`.
+const base = process.env.OWLY_BASE ?? "/";
+
 export default defineConfig({
+  base,
   plugins: [
     react(),
     tailwindcss(),
@@ -15,10 +20,11 @@ export default defineConfig({
         short_name: "Owly",
         description:
           "A private, on-device pain observation journal (FLACC) for children who can't self-report pain.",
-        theme_color: "#f5f5f7",
-        background_color: "#f5f5f7",
+        theme_color: "#f9f8f7",
+        background_color: "#f9f8f7",
         display: "standalone",
-        start_url: "/",
+        start_url: base,
+        scope: base,
         icons: [
           { src: "icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
           { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },

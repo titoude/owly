@@ -91,6 +91,8 @@ for (const r of [
   ["route:/report", "report config form"],
   ["route:/settings", "settings"],
   ["route:/redflags", "emergency red flags"],
+  ["route:/passport", "pain passport (printable carer card)"],
+  ["route:/report/view", "on-screen doctor report (accessible alternative to the PDF)"],
 ]) {
   await go(page, `#${r[0].slice(6)}`);
   await audit(page, r[0], r[1]);
@@ -103,6 +105,32 @@ for (const r of [
   await p2.goto(`${BASE}/#/child/new`);
   await audit(p2, "route:/child/new", "child create form");
   await p2.close();
+}
+
+// --- Night mode: the dark palette re-points every colour token, so each
+// main surface is re-audited for contrast in its own context (fresh demo).
+{
+  const nctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  await nctx.addInitScript(() => { localStorage.setItem("owly-lang", "en"); localStorage.setItem("owly-theme", "dark"); });
+  const np = await nctx.newPage();
+  await np.goto(`${BASE}/#/welcome`);
+  await np.locator("button", { hasText: DEMO_RE }).first().click();
+  await np.waitForSelector("nav.fixed", { state: "visible", timeout: 10000 });
+  const theme = await np.evaluate(() => document.documentElement.dataset.theme);
+  for (const [id, hash, what] of [
+    ["night-dashboard", "#/", "dashboard in night mode"],
+    ["night-observe", "#/observe", "observe wizard step 1 in night mode"],
+    ["night-patterns", "#/patterns", "patterns in night mode"],
+    ["night-report", "#/report", "report options in night mode"],
+    ["night-report-view", "#/report/view", "on-screen report in night mode"],
+    ["night-passport", "#/passport", "pain passport in night mode"],
+    ["night-settings", "#/settings", "settings in night mode"],
+  ]) {
+    if (theme !== "dark") { results.push({ id, status: "UNVERIFIED", error: `data-theme=${theme}, expected dark` }); unverified++; continue; }
+    await go(np, hash);
+    await audit(np, id, what);
+  }
+  await nctx.close();
 }
 
 // --- States ---
@@ -335,6 +363,9 @@ await go(page, "#/settings");
   await audit(p2, "empty-history", "history with zero observations");
   await go(p2, "#/patterns");
   await audit(p2, "empty-patterns", "patterns with zero observations");
+  await go(p2, "#/passport");
+  if (await req(p2, "#passport-title", "empty-passport", "passport heading"))
+    await audit(p2, "empty-passport", "pain passport for a child with no signs or observations yet");
   await p2.close();
 }
 

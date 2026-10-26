@@ -48,7 +48,7 @@ export default function History() {
   if (obs.length === 0) {
     return (
       <div className="text-center space-y-4 pt-20">
-        <img src="/icon.svg" alt="" className="mx-auto size-16 rounded-2xl opacity-70" />
+        <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="mx-auto size-16 rounded-2xl opacity-70" />
         <h1 className="page-title">{t("history.title")}</h1>
         <p className="text-neutral-600">{t("history.empty")}</p>
         <Link to="/observe" className="btn-primary inline-block">

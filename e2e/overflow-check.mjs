@@ -15,7 +15,8 @@ for (const w of [320, 390, 768, 1024, 1440]) {
     await p.goto(BASE + "/#/");
     await p.locator("button", { hasText: /demo|démo|عرض/i }).first().click();
     await p.getByText(/^léo$/i).first().waitFor({ timeout: 8000 });
-    for (const route of ["/#/", "/#/history", "/#/settings", "/#/report"]) {
+    const routes = ["/#/", "/#/history", "/#/patterns", "/#/settings", "/#/report", "/#/report/view", "/#/passport"];
+    for (const route of routes) {
       await p.goto(BASE + route);
       await p.waitForTimeout(500);
       const [sw, iw] = await p.evaluate(() => [
@@ -27,7 +28,7 @@ for (const w of [320, 390, 768, 1024, 1440]) {
         console.log(`OVERFLOW ${w}px ${lang} ${route}: scrollWidth=${sw} > ${iw}`);
       }
     }
-    console.log(`${w}px ${lang}: checked 4 routes`);
+    console.log(`${w}px ${lang}: checked ${routes.length} routes`);
     await ctx.close();
   }
 }

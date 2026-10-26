@@ -8,6 +8,7 @@ import { deleteAll, exportAll, importAll, inspectBackup, type BackupSummary } fr
 import { newPinRecord } from "../pin";
 import type { Child } from "../types";
 import { intlLocale, LANGS, LANG_LABEL, setLang, isRtl, type Lang } from "../i18n";
+import { getThemePref, setThemePref, THEME_PREFS, type ThemePref } from "../theme";
 
 function download(name: string, text: string, type = "application/json") {
   const a = document.createElement("a");
@@ -43,6 +44,7 @@ export default function Settings() {
     return () => importBtnRef.current?.focus();
   }, [pendingImport]);
   const [obsCount, setObsCount] = useState(0);
+  const [theme, setTheme] = useState<ThemePref>(getThemePref);
 
   useEffect(() => {
     void getSetting<string>("passcode").then((p) => setPinSet(!!p));
@@ -62,6 +64,11 @@ export default function Settings() {
 
   function changeLang(l: Lang) {
     setLang(l);
+  }
+
+  function changeTheme(p: ThemePref) {
+    setThemePref(p);
+    setTheme(p);
   }
 
   async function setPasscode() {
@@ -175,6 +182,32 @@ export default function Settings() {
       </section>
 
       <section className="card p-4 space-y-3">
+        {/* Native radios: arrow keys move the choice, the group is named by its legend. */}
+        <fieldset className="min-w-0 space-y-3">
+          <legend className="section-title">{t("settings.appearance")}</legend>
+          <p className="text-[13px] text-neutral-600">{t("settings.appearanceBody")}</p>
+          <div className="grid grid-cols-3 gap-2">
+            {THEME_PREFS.map((p) => (
+              <label
+                key={p}
+                className="flex min-h-11 cursor-pointer items-center justify-center rounded-lg border border-neutral-500 px-2 text-center text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100 has-checked:border-accent-600 has-checked:bg-accent-600 has-checked:text-white has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent-600"
+              >
+                <input
+                  type="radio"
+                  name="theme"
+                  value={p}
+                  checked={theme === p}
+                  onChange={() => changeTheme(p)}
+                  className="sr-only"
+                />
+                {t(`settings.themes.${p}`)}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      </section>
+
+      <section className="card p-4 space-y-3">
         <h2 className="section-title">{t("settings.pin")}</h2>
         <p className="text-[13px] text-neutral-600">{t("settings.pinBody")}</p>
         {pinSet ? (
@@ -213,7 +246,7 @@ export default function Settings() {
             role="alertdialog"
             aria-labelledby="import-preview-title"
             onCancel={() => setPendingImport(null)}
-            className="m-auto rounded-xl border border-amber-300 bg-amber-50 p-3 space-y-2 w-full max-w-sm backdrop:bg-neutral-900/40"
+            className="m-auto rounded-xl border border-amber-300 bg-amber-50 p-3 space-y-2 w-full max-w-sm backdrop:bg-black/50"
           >
             <p id="import-preview-title" className="text-sm font-semibold text-amber-900">{t("settings.importPreviewTitle")}</p>
             <p className="text-[13px] text-amber-900">

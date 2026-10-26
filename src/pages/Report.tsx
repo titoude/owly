@@ -1,21 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useApp } from "../appContext";
 import { db, saneObs } from "../db";
 // pdf-lib is heavy — report.ts is lazy-loaded on first Generate click
 // to keep the initial bundle small on low-end phones.
 import type { Observation } from "../types";
 import { intlLocale } from "../i18n";
-
-const PERIODS = [7, 14, 30, null] as const;
+import { readReportState, REPORT_PERIODS as PERIODS } from "../reportState";
 
 export default function Report() {
   const { t } = useTranslation();
   const { active } = useApp();
+  const nav = useNavigate();
+  // Coming back from the on-screen view restores the options it was opened with.
+  const back = readReportState(useLocation().state);
   const [obs, setObs] = useState<Observation[]>([]);
-  const [period, setPeriod] = useState<number | null>(30);
-  const [questions, setQuestions] = useState<string[]>(["", ""]);
+  const [period, setPeriod] = useState<number | null>(back.period);
+  const [questions, setQuestions] = useState<string[]>(back.questions);
   const [busy, setBusy] = useState(false);
   // State disables the button only after a re-render — a fast second click
   // still reaches generate(). The ref gates synchronously.
@@ -195,13 +197,21 @@ export default function Report() {
       <button type="button" className="btn-primary w-full" disabled={busy || episodeCount === 0} onClick={() => void generate()}>
         {busy ? t("common.loading") : t("report.generate")}
       </button>
+      <button
+        type="button"
+        className="btn-ghost w-full"
+        disabled={episodeCount === 0}
+        onClick={() => void nav("/report/view", { state: { period, questions } })}
+      >
+        {t("reportView.open")}
+      </button>
       {error && <p className="text-sm text-red-700 text-center" role="alert">{error}</p>}
       {reloadNeeded && (
         <button type="button" className="btn-ghost w-full" onClick={() => window.location.reload()}>
           {t("report.reloadRetry")}
         </button>
       )}
-      <p className="text-[13px] text-neutral-600 text-center">{t("report.localNote")}</p>
+      <p className="text-[13px] text-neutral-600 text-center">{t("reportView.openHint")} {t("report.localNote")}</p>
     </div>
   );
 }

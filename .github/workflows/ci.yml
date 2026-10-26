@@ -49,5 +49,6 @@ jobs:
           npm run e2e
           npm run e2e:full
           npm run e2e:keys
+          npm run e2e:features
           node e2e/offline.mjs
           node scripts/a11y/audit.mjs --out a11y-audit/ci
