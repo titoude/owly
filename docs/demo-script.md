@@ -1,4 +1,4 @@
-# Demo script (≈3 minutes)
+# Demo script (≈4 minutes)
 
 Goal: show that a caregiver can go from a fresh install to a report a
 pediatrician can read, entirely on-device.
@@ -35,7 +35,22 @@ the point is that no network is needed once installed.
    The PDF has real pagination, the child's name and page numbers on
    every page, and renders Arabic/Hindi/Chinese names correctly. All
    on-device.
-7. **Privacy (15 s)** — Settings: the privacy paragraph, JSON backup
+7. **Accessible report (15 s)** — Back on the Report page, "Read the
+   report on screen": the same content and numbers as the PDF, as a web
+   page with headings and a captioned table — the route for a clinician
+   or parent who uses a screen reader or zoom. "Print or save as PDF"
+   prints it on one page.
+8. **Pain passport (30 s)** — Home → "Pain passport". This is the page
+   for everyone who isn't the doctor: school, respite care, grandparents,
+   the ER. How Léo shows pain (his own signs), what has helped (a quiet
+   dark room 3/3, his weighted blanket 2/3), what to do, when to call
+   emergency services. Print it: one A4 page, with blank contact lines
+   that exist only on paper. It never lists medication — dosing stays
+   between the family and the doctor.
+9. **Night mode (10 s)** — Settings → Appearance → Night. Episodes happen
+   at night; the screen shouldn't light up the room. Automatic follows
+   the phone.
+10. **Privacy (15 s)** — Settings: the privacy paragraph, JSON backup
    download, PIN lock (a screen lock — stated honestly, not
    encryption), and one-tap delete-all.
 
@@ -43,4 +58,5 @@ the point is that no network is needed once installed.
 
 Everything you just saw ran with the network off. There is no account,
 no server, no analytics — a child's pain journal never leaves the
-device. The PDF is the artifact a parent hands to a doctor.
+device. The PDF is what a parent hands to a doctor; the pain passport
+is what they hand to everyone else.

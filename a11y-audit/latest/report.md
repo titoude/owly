@@ -1,6 +1,6 @@
 # a11y audit
 
-Base: http://localhost:4173
+Base: http://127.0.0.1:4180
 Tags: wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa, best-practice
 
 | scenario | status | violations | incomplete |
@@ -11,8 +11,17 @@ Tags: wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa, best-practice
 | route:/report | PASS | 0 | 0 |
 | route:/settings | PASS | 0 | 0 |
 | route:/redflags | PASS | 0 | 0 |
+| route:/passport | PASS | 0 | 0 |
+| route:/report/view | PASS | 0 | 1 |
 | route:/welcome | PASS | 0 | 1 |
 | route:/child/new | PASS | 0 | 0 |
+| night-dashboard | PASS | 0 | 0 |
+| night-observe | PASS | 0 | 1 |
+| night-patterns | PASS | 0 | 0 |
+| night-report | PASS | 0 | 0 |
+| night-report-view | PASS | 0 | 1 |
+| night-passport | PASS | 0 | 0 |
+| night-settings | PASS | 0 | 0 |
 | observe-step0 | PASS | 0 | 1 |
 | observe-step1 | PASS | 0 | 1 |
 | observe-step2 | PASS | 0 | 1 |
@@ -36,7 +45,8 @@ Tags: wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa, best-practice
 | empty-dashboard | PASS | 0 | 0 |
 | empty-history | PASS | 0 | 0 |
 | empty-patterns | PASS | 0 | 0 |
+| empty-passport | PASS | 0 | 0 |
 | pin-locked | PASS | 0 | 0 |
 | pin-error | PASS | 0 | 0 |
 
-**33 PASS · 0 FAIL · 0 UNVERIFIED**
+**43 PASS · 0 FAIL · 0 UNVERIFIED**

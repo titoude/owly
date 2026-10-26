@@ -1,161 +1,195 @@
 # 🦉 Owly
 
 [![CI](https://github.com/titoude/owly/actions/workflows/ci.yml/badge.svg)](https://github.com/titoude/owly/actions/workflows/ci.yml)
+[![Live demo](https://img.shields.io/badge/live%20demo-titoude.github.io%2Fowly-2f66d0)](https://titoude.github.io/owly/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-615c53)](LICENSE)
 
-**A private, offline-first pain observation journal for children who can't say it hurts.**
+**A private, offline pain journal for children who can't say it hurts.**
 
-Owly helps parents and caregivers of nonverbal children — severe autism, cerebral palsy, complex disabilities, or any child who can't self-report pain — record what they see, spot patterns, and walk into a doctor's appointment with evidence instead of a shrug.
+Owly helps parents of nonverbal children (severe autism, cerebral palsy, complex disabilities) record what they see in under a minute and spot patterns. They can then share it in two forms: a report for the doctor, and a one-page **pain passport** for everyone else who looks after their child.
 
-Built for [Opethon](https://opethon.com/) — Accessibility & Inclusion track.
+**[Try the live demo →](https://titoude.github.io/owly/)** Tap *Explore the demo instead* to load Léo, a fictional 9-year-old with three weeks of observations. Nothing you type leaves your device.
+
+![Owly on a phone: the journal, a FLACC observation step, Léo's pain passport, and the journal in night mode](docs/screenshots/hero.png)
+
+Built for [Opethon](https://opethon.com/), Accessibility & Inclusion track · [Version française](README.fr.md)
 
 ---
 
 ## The problem
 
-A child who can't speak still feels pain. Parents of nonverbal kids learn to read grimaces, rocking, sudden stillness — but when the doctor asks *"how often? how bad? what helps?"*, all they have is memory and worry. Pain in this population is documented to be **under-recognized and under-treated**: caregivers report distress behaviors clinicians can't interpret, and every appointment starts from zero.
+A child who can't speak still feels pain. Parents of nonverbal kids learn to read grimaces, rocking and sudden stillness. But when the doctor asks *"how often? how bad? what helps?"*, all they have is memory and worry. Pain in this population is documented to be **under-recognized and under-treated**, and every appointment starts from zero.
 
-Commercial tools exist, but they're built for institutions. PainChek® — the leading clinical product — is licensed to facilities and clinicians; it does offer a parent-facing app, but only for infants aged 1–12 months ([PainChek Infant](https://www.painchek.com/use-cases/infant-for-parents/)).
+The same gap exists outside the doctor's office. The teacher, the respite carer, the grandparent and the ER nurse don't know that *this* child goes very still when it hurts, or that a dark, quiet room settles him.
 
-Owly's difference is architectural, not clinical: local-first and offline, no account, no subscription — a journal for caregivers, not a diagnostic tool. We don't claim no other option exists; we claim this one is private by design and free.
+Commercial tools exist, but they're built for institutions. PainChek®, the leading clinical product, is licensed to facilities and clinicians. Its parent-facing app covers only infants aged 1–12 months ([PainChek Infant](https://www.painchek.com/use-cases/infant-for-parents/)). Owly is a journal for caregivers, not a diagnostic tool. It is local-first, works offline, needs no account and is free.
 
 ## What Owly does
 
-- **Guided observations** — [FLACC](https://en.wikipedia.org/wiki/FLACC_scale) scoring (Face, Legs, Activity, Cry, Consolability), a published observational instrument intended for patients who can't self-report
-- **Personalized to your child** — individualized rFLACC descriptors ("how *your* child shows pain") shown right inside each scoring step
-- **Baseline vs. episode** — record calm moments too, so "different from usual" is measurable
-- **Body map, interventions, notes** — where it might hurt, what you tried, whether it helped
-- **Pattern summaries** — time-of-day clusters and recurring areas to bring to a clinician
-- **Doctor report PDF** — a clinician-ready report: communication cues, episode timeline with scores, patterns, and your questions. Generated 100% on-device.
-- **Works offline** — installable PWA; all assets precached so previously-loaded installs work with no network, 9 languages (EN, FR, ES, PT, DE, IT, AR, HI, 中文)
+- **Guided observations.** [FLACC](https://en.wikipedia.org/wiki/FLACC_scale) scoring (Face, Legs, Activity, Cry, Consolability), a published observational scale for patients who can't self-report.
+- **Personalized to the child.** Individual rFLACC descriptors ("how *your* child shows it") appear inside each scoring step.
+- **Baseline vs. episode.** Calm moments are recorded too, so "different from usual" becomes measurable.
+- **Body map, interventions, notes.** Where it might hurt, what you tried, and whether it helped.
+- **Patterns.** Time-of-day clusters, recurring areas and what was recorded as helping. These suggest what to discuss; they don't claim cause.
+- **Doctor report.** A PDF built on the device, and the same report **as an accessible web page**, with headings, a captioned data table and print support.
+- **Pain passport.** One printable page for school, respite care, family and the ER:
+  - how the child shows pain;
+  - what has helped;
+  - what to do;
+  - when to call emergency services.
+
+  It never lists medication.
+- **Night mode.** A dark palette for checking on a child in a dark room. Seven main screens are re-audited for contrast in night mode, and printing always uses the light palette.
+- **Works offline.** Installable PWA in 9 languages: EN, FR, ES, PT, DE, IT, AR (right-to-left), HI and 中文.
+
+## A three-minute tour
+
+![Patterns for the demo child, the on-screen doctor report, and the pain passport in night mode](docs/screenshots/tour.png)
+
+1. **Patterns.** Léo's episodes cluster at night and point to his ears. Medication and a quieter environment were recorded as helping.
+2. **Report.** Add a question for the pediatrician, then:
+   - **Generate PDF report** produces the page you hand over;
+   - **Read the report on screen** shows the same content as a web page.
+3. **Pain passport.** Go to Home → *Pain passport* → *Print or save as PDF*. It fits on one A4 page.
+4. **Night mode.** Settings → Appearance → *Night*.
+5. **Observe.** Record a new observation through the 8-step wizard. A half-finished observation is saved as a draft that survives a reload.
+
+<details>
+<summary>The printed pain passport (A4, from the demo)</summary>
+
+![Léo's pain passport printed on one A4 page: how he shows pain, what has helped, what to do, emergency signs and blank contact lines](docs/screenshots/passport-a4.png)
+
+</details>
+
+## Accessibility
+
+Owly is built for caregivers who are exhausted, holding a child with one hand, and often in the dark. Its own accessibility is tested on every pull request:
+
+| Check | Result | How |
+|---|---|---|
+| axe-core, WCAG 2.2 A/AA + best practice | **43 scenarios, 0 violations**: every route, every wizard step, error and empty states, French, Arabic (RTL), and 7 screens in night mode | `node scripts/a11y/audit.mjs` |
+| Keyboard | 17 checks: radio groups, skip link, dialog focus trap and restore | `npm run e2e:keys` |
+| Reflow | No horizontal overflow at 320 / 390 / 768 / 1024 / 1440 px in English, German and Arabic | `node e2e/overflow-check.mjs` |
+| Print | Passport and on-screen report print on one A4 page each, without the app chrome | `npm run e2e:features` |
+
+The PDF is a visual document. The on-screen report is its accessible equivalent, with the same numbers from the same code (`src/summary.ts`).
+
+**Not yet verified:**
+- a real screen-reader pass (NVDA, VoiceOver, TalkBack);
+- tagged-PDF structure;
+- testing with caregivers and clinicians.
+
+These are tracked in [titoude/owly#4](https://github.com/titoude/owly/issues/4) and in [docs/accessibility-evidence.md](docs/accessibility-evidence.md).
 
 ## Privacy by architecture
 
-Owly is **local-first**: every observation lives in IndexedDB on your device. No account, no server, no analytics, no cloud. Journal data is never transmitted — the only network traffic is same-origin asset fetches and service-worker update checks (verifiable in dev tools). All assets (including PDF fonts) are bundled and precached, so the app keeps working offline. Optional PIN lock, full JSON export/import, and one-tap total data deletion.
+Owly is **local-first**: every observation lives in IndexedDB on your device. There is no account, server, analytics or cloud, and journal data is never transmitted. The only network traffic is same-origin asset fetches and service-worker update checks, which you can verify in dev tools. All assets, including the PDF fonts, are bundled and precached.
+
+Optional features:
+- a PIN lock;
+- full JSON export and import;
+- one-tap deletion of all data.
+
+The passport's contact lines exist only on paper, so Owly never stores phone numbers. See [docs/privacy.md](docs/privacy.md).
 
 ## Quick start
 
-Requires **Node.js ^20.19 or ≥22.12** (Vite 8's requirement); built and tested on Node 24.
+Requires **Node.js ^20.19 or ≥22.12** (Vite 8's requirement). Built and tested on Node 22 and 24.
 
 ```bash
 npm ci --ignore-scripts   # frozen install
 npm run dev               # http://localhost:5173
 ```
 
-Then press **"Load demo data"** in Settings (or on the onboarding screen) — you'll get *Léo*, a fictional 9-year-old with 3 weeks of realistic observations, so every feature is visible in 30 seconds.
+Then press **"Explore the demo instead"** on the welcome screen (or *Load demo data* in Settings).
 
-### Production
+### Production and live demo
 
 ```bash
-npm run build      # → dist/
+npm run build      # → dist/ (fully static, no backend, ever)
 npm run preview    # serve the production build
 ```
 
-`dist/` is fully static — host it on any static server (GitHub Pages, Netlify, a Raspberry Pi). No backend required, ever.
+`dist/` runs on any static host. To serve it from a sub-path, set `OWLY_BASE`, for example `OWLY_BASE=/owly/ npm run build`. The [Live demo workflow](.github/workflows/pages.yml) publishes `main` to GitHub Pages. To enable it, go to *Settings → Pages → Source: GitHub Actions*.
 
 ## Verify the release
 
-Install dependencies and run fast checks:
-
 ```bash
 npm ci --ignore-scripts
-npm run typecheck
-npm run lint
-npm run i18n:check
-npm test
+npm run typecheck && npm run lint && npm run i18n:check
+npm test                 # 44 unit and integration tests
 npm run build
 npx playwright install chromium
 ```
 
-Run `npm run preview -- --host 127.0.0.1 --port 4173` in one terminal, then run these commands in another:
+With `npm run preview -- --host 127.0.0.1 --port 4173` running:
 
 ```bash
-npm run e2e
-npm run e2e:full
-npm run e2e:keys
-node e2e/offline.mjs
+npm run e2e              # 9 golden-path checks
+npm run e2e:full         # 44 flows: PDF, PIN, import/export, drafts, demo data…
+npm run e2e:keys         # 17 keyboard checks
+npm run e2e:features     # 33 checks: pain passport, on-screen report, print, night mode, RTL
+node e2e/offline.mjs     # offline cold reload + PDF bytes
 node scripts/a11y/audit.mjs --out a11y-audit/local
 ```
 
-The accessibility command fails if any declared route/state is unverified or an automated rule could not execute. Passing does **not** certify complete WCAG conformance, accessible PDFs, clinical efficacy, or authorization to redistribute FLACC wording. See [evidence and limitations](docs/evidence-matrix.md). CI reruns these checks on pull requests and `main`.
-
-## Try the demo story
-
-1. Load Léo's data → open **Patterns**: nearly all episodes cluster at night and point to the ears
-2. Open **Report** → generate the PDF → that's the page you'd hand the pediatrician
-3. Record a new observation yourself through the guided wizard
+The accessibility audit fails if any declared route or state is unverified, or if an automated rule could not run. A pass is not a claim of full WCAG conformance. See [docs/evidence-matrix.md](docs/evidence-matrix.md) for what each claim rests on.
 
 ## Tech
 
-- React 19 + TypeScript (strict) + Vite 8 + Tailwind v4
-- Dexie (IndexedDB) — local-first storage
-- pdf-lib — on-device PDF generation
-- vite-plugin-pwa — offline, installable
-- Vitest + Testing Library + fake-indexeddb (34 unit/integration tests)
-- Playwright e2e against the production build: `npm run e2e` (9 golden-path scenarios), `npm run e2e:full` (44 scenarios: PDF download incl. chunk-failure recovery, PIN lock, import/export incl. cancel/reject paths, drafts, demo data…), `npm run e2e:keys` (17 keyboard checks: radio groups, skip link, dialog focus), `node e2e/offline.mjs` (offline cold reload + PDF bytes)
-- axe-core accessibility audit over the full route/state manifest: `node scripts/a11y/audit.mjs` — 33 scenarios, 0 violations
-- oxlint + `tsc -b` in CI
-- i18next — 9 languages: English, French, Spanish, Portuguese, German, Italian, Arabic (RTL), Hindi, Simplified Chinese
+- React 19, TypeScript (strict), Vite 8, Tailwind v4
+- Dexie (IndexedDB) for local-first storage
+- pdf-lib with fontkit and bidi-js: on-device PDF with Arabic, Devanagari and CJK shaping
+- vite-plugin-pwa: offline and installable
+- i18next: 9 languages, with plural rules checked per locale
+- Vitest, Testing Library and fake-indexeddb; Playwright end-to-end tests against the production build; axe-core over a declared route/state manifest; oxlint and `tsc -b` in CI
 
 ## Project layout
 
 ```
 src/
+  summary.ts       one source of truth for the numbers (PDF, on-screen report, passport, patterns)
+  report.ts        pdf-lib doctor report builder
   flacc.ts         FLACC descriptors, bands, body zones, intervention types
   db.ts            Dexie schema (children, observations, settings)
-  demo.ts          Seed data for "Léo" (demo child)
-  report.ts        pdf-lib doctor report builder
+  theme.ts         light / night / automatic appearance
+  demo.ts          seed data for "Léo" (fictional demo child)
   export.ts        JSON backup/restore/wipe
-  pin.ts           SHA-256 PIN hashing for app lock
-  pages/           Onboarding, Observe (8-step wizard), History, Patterns,
-                   Report, Settings, RedFlags, ChildForm, LockScreen
-  components/      FlaccPicker, BodyMap, ScoreBadge
+  pin.ts           SHA-256 PIN hashing for the app lock
+  pages/           Onboarding, Observe (8-step wizard), History, Patterns, Report,
+                   ReportView, Passport, Settings, RedFlags, ChildForm, LockScreen
+  components/      FlaccPicker, BodyMap, ScoreBadge, ObsRow, icons
   test/            unit + integration tests
-e2e/smoke.mjs      golden-path e2e (playwright + system chrome)
+e2e/               Playwright suites (smoke, full, keyboard, features, offline, overflow)
+scripts/a11y/      axe audit + the manifest of every audited route and state
 ```
 
-## Roadmap (post-hackathon)
+## Roadmap
 
-- Optional encrypted sync across a family's devices (still no server we run)
+- Optional end-to-end encrypted sync across a family's devices (still no server we run)
 - FHIR export for EHR integration
-- Sleep/feeds context fields
-- Caregiver handoff mode (school nurses, respite care)
+- Sleep and feeding context fields
+- Native-speaker review of every locale
 
-## Disclosure
+## Clinical scale and licensing
 
-Built with AI assistance (Devin / Cognition) — scaffolding, i18n, tests and docs are AI-generated; review status is tracked in `docs/`. The English FLACC descriptors follow the published instrument (Merkel et al., 1997); the individualized descriptors follow rFLACC (Malviya et al., 2006). See below for instrument licensing.
+Owly is an observation journal. It records what caregivers observe and does not diagnose. It has not undergone any medical-device assessment, and the red-flags screen exists for a reason: when in doubt, call a doctor.
 
-**Competition note:** this PR builds on a pre-existing repository for Opethon. Existing-repo and start-date eligibility are **unconfirmed** — verify with the organizers before counting this as a submission.
+The English FLACC descriptors follow the published instrument (Merkel et al., 1997). The individualized descriptors follow rFLACC (Malviya et al., 2006). FLACC is owned by the University of Michigan, and Owly's MIT license covers Owly's code, not the scale. Redistribution and translation terms are being clarified in [titoude/owly#3](https://github.com/titoude/owly/issues/3).
 
-## Instrument licensing
+Until then, the scale wording ships in English in every locale except French. French uses an existing translation that is marked for review ([docs/i18n-review.md](docs/i18n-review.md)).
 
-FLACC is a published clinical instrument. Redistribution and translation terms vary by source:
+## Credits and notices
 
-- University of Michigan (instrument origin) describes commercial and authorized academic/research licenses, English-only official wording, licensee-managed translation: https://available-inventions.umich.edu/product/face-legs-activity-cry-consolability-observational-tool-as-a-measure-of-pain
-- PhenX Toolkit describes the protocol as freely available for use: https://phenxtoolkit.org/protocols/view/860403
-
-Owly ships the English wording in every locale **except French**, which carries a pre-existing French translation whose provenance and validation status are unverified — it is marked `lang="fr"` on screen and flagged for review (see `docs/i18n-review.md`). We do **not** claim the scale is public domain or that its translation is authorized. Whether a license already exists for this redistribution is **unknown — no licensor has been contacted**; machine-translated clinical wording is not shipped as a validated scale.
-
-**Owly is an observation journal** — it records what caregivers observe; it does not diagnose, and it has not undergone any medical-device regulatory assessment. The red-flags screen is there for a reason: when in doubt, call a doctor.
-
-## Third-party notices
-
-- **Noto fonts** (Noto Sans Regular/Bold, Noto Sans Arabic, Noto Sans Devanagari, Noto Sans SC subset): vendored in `src/assets/fonts/` under the SIL Open Font License 1.1 (full text: `src/assets/fonts/OFL.txt`). The SC file is a subset limited to the official 8 105-character GB 18030 / Table of General Standard Chinese Characters scope plus ASCII and CJK punctuation, used so the PDF report can render CJK offline.
-- The PDF report embeds these fonts so Arabic, Indic and CJK text render (shaped via fontkit) instead of being stripped. If a record contains a character no bundled font can draw (emoji, rare CJK extension-B…), generation aborts with a clear error naming the offending characters — the report is never produced with silent boxes, and the journal data is unaffected.
-- Runtime libraries: pdf-lib (MIT), @pdf-lib/fontkit (MIT), bidi-js (MIT), regenerator-runtime (MIT, required at runtime by fontkit's Indic shaper), React/Dexie/i18next and friends per their package licenses; dev-time libraries: axe-core (MPL-2.0), Playwright (Apache-2.0).
+- Built with AI assistance (Devin, Claude Code). Review status is tracked in `docs/`.
+- **Noto fonts** (Sans, Arabic, Devanagari, SC subset) are vendored in `src/assets/fonts/` under the SIL Open Font License 1.1 (`src/assets/fonts/OFL.txt`). The SC subset covers the 8,105-character Table of General Standard Chinese Characters plus ASCII and CJK punctuation, so the PDF can render Chinese offline. If a record contains a character no bundled font can draw, PDF generation stops with an error naming it, rather than printing empty boxes.
+- **Runtime libraries:** pdf-lib, @pdf-lib/fontkit, bidi-js and regenerator-runtime (MIT); React, Dexie and i18next under their own licenses.
+- **Dev tools:** axe-core (MPL-2.0) and Playwright (Apache-2.0).
 
 ## Docs
 
-- [docs/demo-script.md](docs/demo-script.md) — 3-minute walkthrough
-- [docs/privacy.md](docs/privacy.md) — what is stored where, honest limits
-- [docs/accessibility-statement.md](docs/accessibility-statement.md) + [docs/accessibility-evidence.md](docs/accessibility-evidence.md) — what's verified vs not
-- [docs/evidence-matrix.md](docs/evidence-matrix.md) — every claim mapped to its proof
-- [docs/i18n-review.md](docs/i18n-review.md) — translation review status
+- [docs/demo-script.md](docs/demo-script.md): 3-minute walkthrough
+- [docs/privacy.md](docs/privacy.md): what is stored where, and the limits
+- [docs/accessibility-statement.md](docs/accessibility-statement.md) and [docs/accessibility-evidence.md](docs/accessibility-evidence.md): what's verified and what isn't
+- [docs/evidence-matrix.md](docs/evidence-matrix.md): every claim mapped to the test that backs it
 - [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md)
-
-## Related open-source project
-
-[Accessibility with evidence](https://github.com/titoude/accessibilite-conformite) is a separately maintained toolkit for AI coding agents to repair web accessibility barriers and independently verify changes.
-
-## License
-
-The original Owly code is MIT licensed — see [LICENSE](LICENSE). Third-party assets and the clinical-instrument wording may have separate terms; consult **Instrument licensing** and **Third-party notices** above before redistribution.

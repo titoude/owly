@@ -1,5 +1,5 @@
 {
-  "base": "http://localhost:4173",
+  "base": "http://127.0.0.1:4180",
   "tags": [
     "wcag2a",
     "wcag2aa",
@@ -8,7 +8,7 @@
     "wcag22aa",
     "best-practice"
   ],
-  "when": "2026-10-04T15:53:57.138Z",
+  "when": "2026-10-26T17:56:04.425Z",
   "results": [
     {
       "id": "route:/",
@@ -59,6 +59,35 @@
       "passes": 35
     },
     {
+      "id": "route:/passport",
+      "description": "pain passport (printable carer card)",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 39
+    },
+    {
+      "id": "route:/report/view",
+      "description": "on-screen doctor report (accessible alternative to the PDF)",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 16,
+          "targets": [
+            "th[scope=\"col\"]:nth-child(5)",
+            "th[scope=\"col\"]:nth-child(6)",
+            ".align-top:nth-child(1) > td:nth-child(5)",
+            ".align-top:nth-child(1) > td[dir=\"auto\"]",
+            ".align-top:nth-child(2) > td:nth-child(5)",
+            ".align-top:nth-child(2) > td[dir=\"auto\"]"
+          ]
+        }
+      ],
+      "passes": 49
+    },
+    {
       "id": "route:/welcome",
       "description": "onboarding",
       "status": "PASS",
@@ -83,6 +112,83 @@
       "violations": [],
       "incomplete": [],
       "passes": 37
+    },
+    {
+      "id": "night-dashboard",
+      "description": "dashboard in night mode",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 34
+    },
+    {
+      "id": "night-observe",
+      "description": "observe wizard step 1 in night mode",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 1,
+          "targets": [
+            ".btn-primary"
+          ]
+        }
+      ],
+      "passes": 37
+    },
+    {
+      "id": "night-patterns",
+      "description": "patterns in night mode",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 40
+    },
+    {
+      "id": "night-report",
+      "description": "report options in night mode",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 38
+    },
+    {
+      "id": "night-report-view",
+      "description": "on-screen report in night mode",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 16,
+          "targets": [
+            "th[scope=\"col\"]:nth-child(5)",
+            "th[scope=\"col\"]:nth-child(6)",
+            ".align-top:nth-child(1) > td:nth-child(5)",
+            ".align-top:nth-child(1) > td[dir=\"auto\"]",
+            ".align-top:nth-child(2) > td:nth-child(5)",
+            ".align-top:nth-child(2) > td[dir=\"auto\"]"
+          ]
+        }
+      ],
+      "passes": 49
+    },
+    {
+      "id": "night-passport",
+      "description": "pain passport in night mode",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 39
+    },
+    {
+      "id": "night-settings",
+      "description": "settings in night mode",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 38
     },
     {
       "id": "observe-step0",
@@ -384,6 +490,14 @@
       "violations": [],
       "incomplete": [],
       "passes": 33
+    },
+    {
+      "id": "empty-passport",
+      "description": "pain passport for a child with no signs or observations yet",
+      "status": "PASS",
+      "violations": [],
+      "incomplete": [],
+      "passes": 38
     },
     {
       "id": "pin-locked",

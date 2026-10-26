@@ -12,8 +12,8 @@ service-worker update checks — plus whatever you deliberately share
 | Data | Location | Leaves the device? |
 |---|---|---|
 | Children, observations, drafts, settings | IndexedDB (`owly` database) | Never |
-| UI language | `localStorage` (`owly-lang`) | Never |
-| Exported backups / PDF reports | Downloaded files you keep or share | Only if you share them |
+| UI language, appearance (light / night / automatic) | `localStorage` (`owly-lang`, `owly-theme`) | Never |
+| Exported backups / PDF reports / printed pain passports | Downloaded or printed files you keep or share | Only if you share them |
 | Asset fetches / SW update checks | Same-origin HTTP only | n/a (no journal data) |
 
 ## Honest limits
@@ -27,6 +27,9 @@ service-worker update checks — plus whatever you deliberately share
 - **PDF reports contain everything you choose to include** — child
   name, scores, notes. They are generated on-device; once downloaded,
   sharing is your decision.
+- **The pain passport is meant to be shared** — it carries the child's
+  name, conditions and how they show pain. Its contact lines are blank
+  on paper by design: Owly never stores phone numbers.
 - **Uninstalling or clearing site data deletes everything.** There is
   no cloud copy to restore from — keep backups.
 

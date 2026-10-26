@@ -11,10 +11,14 @@ production build (`vite preview`). The audited scope is fixed by
 `scripts/a11y/manifest.json` — every reachable route plus the interactive
 states that a route crawl misses. Reports land in `a11y-audit/*/`.
 
-Coverage (33 scenarios, all PASS — 0 violations):
+Coverage (43 scenarios, all PASS — 0 violations):
 
-- All 9 routes: `/` `/welcome` `/observe` `/history` `/patterns` `/report`
-  `/settings` `/redflags` `/child/new` (+ `/child/:id/edit`).
+- All 11 routes: `/` `/welcome` `/observe` `/history` `/patterns` `/report`
+  `/report/view` `/passport` `/settings` `/redflags` `/child/new`
+  (+ `/child/:id/edit`).
+- Night mode: dashboard, observe, patterns, report, on-screen report,
+  passport and settings re-audited with the dark palette (`night-*`).
+- Empty pain passport (child with no signs or observations).
 - All 8 observe wizard steps, audited live while advancing.
 - States: child edit form, empty dashboard/history/patterns (zero
   observations — each audited separately), PIN lock screen, wrong-PIN
@@ -34,7 +38,14 @@ without disturbing the HashRouter route and focuses `<main>`), and the
 import-preview dialog (focus enters on open, Tab is contained, Escape
 dismisses and restores focus to the trigger).
 
-Reflow: nav labels verified unclipped at 320×800 in all 9 locales.
+Reflow: nav labels verified unclipped at 320×800 in all 9 locales; no
+horizontal overflow on 7 routes at 320/390/768/1024/1440 px in en, de
+and ar (`e2e/overflow-check.mjs`). The on-screen report's wide table
+scrolls inside its own keyboard-focusable region.
+
+Print: `e2e/features.mjs` prints the passport and the on-screen report
+through Chromium — one A4 page each, app chrome hidden, light palette
+even when night mode is on.
 
 ## Dispositions
 
@@ -59,9 +70,10 @@ Reflow: nav labels verified unclipped at 320×800 in all 9 locales.
 
 - **No real screen-reader pass**: axe + keyboard checks do not equal NVDA/
   VoiceOver/TalkBack validation. A human AT pass remains outstanding.
-- **No tagged-PDF claim**: the generated report is a visual document. PDF
+- **No tagged-PDF claim**: the generated PDF is a visual document. PDF
   structure tags, reading order, and AT behavior in a PDF reader were not
-  validated — the "accessibility" evidence here covers the web app only.
+  validated. The on-screen report (`/report/view`) carries the same
+  content as semantic HTML and is the accessible route.
 - **Zoom/reflow beyond nav labels**, reduced-motion, and live-region
   announcements are partially covered by manual checks, not exhaustively.
 - Human usefulness/translation quality: not validated by machines. The FLACC
